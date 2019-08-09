@@ -7,12 +7,11 @@ import agpar.multifacet.data_interface.review_tools.ReviewList;
 import agpar.multifacet.data_interface.User;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class PairwiseMetrics {
     public static boolean areFriends(User user1, User user2) {
-        return user2.getUserId().contains(user2.getUserId());
+        return user1.getFriends().contains(user2.getUserId());
     }
 
     public static boolean areFriendsOfFriends(User user1, User user2, UsersById usersById) {
@@ -28,11 +27,11 @@ public class PairwiseMetrics {
         return false;
     }
 
-    public static double reviewPcc(User user1, User user2, ReviewAvgCalculator avgCalculator, int minOverlap) {
+    public static Double reviewPcc(User user1, User user2, ReviewAvgCalculator avgCalculator, int minOverlap) {
         HashSet<String> mutuallyReviewed = new HashSet<>(user1.getItemsReviewed());
         mutuallyReviewed.retainAll(user2.getItemsReviewed());
         if (mutuallyReviewed.size() < minOverlap) {
-            return 0;
+            return null;
         }
 
         Review[] reviews1 = PairwiseMetrics.filterReviews(user1.getReviews(), mutuallyReviewed);
@@ -50,8 +49,6 @@ public class PairwiseMetrics {
         if (numer == 0) return 0;
         return numer / (user1.getFriends().size() + user2.getFriends().size());
     }
-
-
 
     public static Review[] filterReviews(ReviewList reviews, HashSet<String> itemSet) {
         Review[] filteredReviews = new Review[itemSet.size()];

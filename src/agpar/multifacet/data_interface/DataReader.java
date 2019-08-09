@@ -17,7 +17,7 @@ public class DataReader {
     public DataReader(Path dataDir) {
         this.dataDir = dataDir;
         this.userFile = Paths.get(dataDir.toString(), "user.json");
-        this.reviewFile = Paths.get(dataDir.toString(), "review.json");
+        this.reviewFile = Paths.get(dataDir.toString(), "review_no_text.json");
     }
 
     public UsersById loadUsers(int start, int stop) {
