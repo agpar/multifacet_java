@@ -47,9 +47,9 @@ public class DataReader {
         return users;
     }
 
-    public ReviewsByItem loadReviews(int start, int stop) {
+    public ReviewsById loadReviews(int start, int stop) {
         BufferedReader reader;
-        ReviewsByItem reviews = new ReviewsByItem();
+        ReviewsById reviews = new ReviewsById();
         try{
             reader = new BufferedReader(new FileReader(this.reviewFile.toString()));
             String line = reader.readLine();
@@ -57,9 +57,9 @@ public class DataReader {
             int lineno = 0;
             while (line != null) {
                 if (lineno >= start) {
-                    JsonObject obj =  parser.parse(line).getAsJsonObject();
+                    JsonObject obj = parser.parse(line).getAsJsonObject();
                     Review review = Review.fromJson(obj);
-                    reviews.put(review);
+                    reviews.put(review.getItemId(), review);
                 }
                 line = reader.readLine();
                 lineno += 1;
