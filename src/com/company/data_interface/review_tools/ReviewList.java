@@ -1,8 +1,10 @@
-package com.company.data_interface;
+package com.company.data_interface.review_tools;
+
+import com.company.data_interface.Review;
 
 import java.util.*;
 
-public class ReviewList  {
+public class ReviewList implements Iterable<Review>{
     private Review[] reviews;
     private HashSet<String> itemsReviewed;
 
@@ -51,5 +53,10 @@ public class ReviewList  {
 
     public Set<String> getItemsReviewed() {
         return Collections.unmodifiableSet(this.itemsReviewed);
+    }
+
+    @Override
+    public Iterator<Review> iterator() {
+        return Arrays.asList(this.reviews).iterator();
     }
 }

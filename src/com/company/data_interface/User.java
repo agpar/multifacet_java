@@ -1,5 +1,6 @@
 package com.company.data_interface;
 
+import com.company.data_interface.review_tools.ReviewList;
 import com.google.gson.JsonObject;
 
 import java.util.*;
@@ -34,6 +35,9 @@ public class User {
        this.reviews = new ReviewList(reviews);
     }
 
+    public ReviewList getReviews() {
+        return this.reviews;
+    }
 
     public Set<String> getItemsReviewed() {
         return this.reviews.getItemsReviewed();

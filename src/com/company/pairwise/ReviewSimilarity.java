@@ -1,23 +1,24 @@
 package com.company.pairwise;
 
-import java.util.List;
+import com.company.data_interface.Review;
 
 public class ReviewSimilarity {
-    public double pcc(List<Double> scores1, List<Double> avgs1,
-                      List<Double> scores2, List<Double> avgs2) {
-        assert(scores1.size() == avgs1.size());
-        assert(avgs1.size() == scores2.size());
-        assert(scores2.size() == avgs2.size());
-        if (scores1.size() == 0) return 0;
+    public static double pcc(Review[] reviews1, double[] avgs1,
+                             Review[] reviews2, double[] avgs2) {
+        assert(reviews1.length == avgs1.length);
+        assert(avgs1.length == reviews2.length);
+        assert(reviews2.length == avgs2.length);
+        if (reviews1.length == 0) return 0;
 
         double numer = 0.0;
         double denom1 = 0.0;
         double denom2 = 0.0;
-        for(int i = 0; i < scores1.size(); i++) {
-            Double score1 = scores1.get(i);
-            Double avg1 = avgs1.get(i);
-            Double score2 = scores2.get(i);
-            Double avg2 = avgs2.get(i);
+        for(int i = 0; i < reviews1.length; i++) {
+            assert(reviews1[i].getItemId().equals(reviews2[i].getItemId()));
+            double score1 = reviews1[i].getStars();
+            double avg1 = avgs1[i];
+            double score2 = reviews2[i].getStars();
+            double avg2 = avgs2[i];
 
             numer += (score1 - avg1) * (score2 - avg2);
             denom1 += Math.pow((score1 - avg1), 2);

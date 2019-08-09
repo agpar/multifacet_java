@@ -2,6 +2,7 @@ package com.company;
 
 import com.company.data_interface.*;
 
+import java.util.Collection;
 import java.util.List;
 
 public class YelpData {
@@ -19,6 +20,7 @@ public class YelpData {
         System.out.println("Loading Reviews");
         this.reviewsByItemId = reader.loadReviews(0, 10000000);
 
+        // Adding reviews to users.
         ReviewsById reviewsByUserId = new ReviewsById();
         for (List<Review> reviews: this.reviewsByItemId.values()) {
             for (Review review: reviews) {
@@ -26,10 +28,17 @@ public class YelpData {
             }
         }
 
-        // Adding reviews to users.
         for (User user : this.usersById.values()) {
             user.addReviews(reviewsByUserId.get(user.getUserId()));
         }
         System.out.println("Done");
+    }
+
+    public ReviewsById getReviewsByItemId() {
+        return this.reviewsByItemId;
+    }
+
+    public Collection<User> getUsers() {
+        return this.usersById.values();
     }
 }
