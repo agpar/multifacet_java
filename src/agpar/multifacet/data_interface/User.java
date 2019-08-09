@@ -27,8 +27,8 @@ public class User {
         return this.userId;
     }
 
-    public HashSet<String> getFriends() {
-        return this.friends;
+    public Set<String> getFriends() {
+        return Collections.unmodifiableSet(this.friends);
     }
 
     public void addReviews(List<Review> reviews) {

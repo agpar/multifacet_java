@@ -1,8 +1,6 @@
 package agpar.multifacet;
 
 import agpar.multifacet.data_interface.*;
-import aparment.multifacet.data_interface.*;
-import com.aparment.multifacet.data_interface.*;
 
 import java.util.Collection;
 import java.util.List;

@@ -22,7 +22,9 @@ public class PairwiseRunner implements Runnable{
         User outerUser = users.get(outerIndex);
         for(int j = outerIndex + 1; j < users.size(); j++) {
             User innerUser = users.get(j);
-            PairwiseMetrics.reviewPcc(outerUser, innerUser, avgCalculator, 3);
+            double pcc = PairwiseMetrics.reviewPcc(outerUser, innerUser, avgCalculator, 3);
+            boolean areFriends = PairwiseMetrics.areFriends(outerUser, innerUser);
+            double socialJacc = PairwiseMetrics.socialJaccard(outerUser, innerUser);
         }
         System.out.println(outerIndex);
     }

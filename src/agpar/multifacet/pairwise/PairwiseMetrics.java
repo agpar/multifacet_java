@@ -1,15 +1,31 @@
 package agpar.multifacet.pairwise;
 
 import agpar.multifacet.data_interface.Review;
+import agpar.multifacet.data_interface.UsersById;
 import agpar.multifacet.data_interface.review_tools.ReviewAvgCalculator;
 import agpar.multifacet.data_interface.review_tools.ReviewList;
 import agpar.multifacet.data_interface.User;
 
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class PairwiseMetrics {
     public static boolean areFriends(User user1, User user2) {
         return user2.getUserId().contains(user2.getUserId());
+    }
+
+    public static boolean areFriendsOfFriends(User user1, User user2, UsersById usersById) {
+        if (PairwiseMetrics.areFriends(user1, user2)) {
+            return true;
+        }
+        User lessFriends = user1.getFriends().size() < user2.getFriends().size() ? user1 : user2;
+        User moreFriends = user1 == lessFriends ? user2 : user1;
+        for (String friendId : lessFriends.getFriends()) {
+            User bridgeFriend = usersById.get(friendId);
+            if (bridgeFriend.getFriends().contains(moreFriends.getUserId())) return true;
+        }
+        return false;
     }
 
     public static double reviewPcc(User user1, User user2, ReviewAvgCalculator avgCalculator, int minOverlap) {
@@ -26,6 +42,16 @@ public class PairwiseMetrics {
 
         return ReviewSimilarity.pcc(reviews1, avgs1, reviews2, avgs2);
     }
+
+    public static double socialJaccard(User user1, User user2) {
+        Set<String> union = new HashSet<String>(user1.getFriends());
+        union.retainAll(user2.getFriends());
+        int numer = union.size();
+        if (numer == 0) return 0;
+        return numer / (user1.getFriends().size() + user2.getFriends().size());
+    }
+
+
 
     public static Review[] filterReviews(ReviewList reviews, HashSet<String> itemSet) {
         Review[] filteredReviews = new Review[itemSet.size()];
