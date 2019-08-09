@@ -1,6 +1,8 @@
-package com.company;
+package agpar.multifacet;
 
-import com.company.data_interface.*;
+import agpar.multifacet.data_interface.*;
+import aparment.multifacet.data_interface.*;
+import com.aparment.multifacet.data_interface.*;
 
 import java.util.Collection;
 import java.util.List;

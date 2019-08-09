@@ -1,6 +1,6 @@
-package com.company.data_interface;
+package agpar.multifacet.data_interface;
 
-import com.company.data_interface.review_tools.ReviewList;
+import agpar.multifacet.data_interface.review_tools.ReviewList;
 import com.google.gson.JsonObject;
 
 import java.util.*;

@@ -1,4 +1,4 @@
-package com.company.data_interface;
+package agpar.multifacet.data_interface;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

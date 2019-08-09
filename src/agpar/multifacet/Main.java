@@ -1,9 +1,9 @@
-package com.company;
+package agpar.multifacet;
 
-import com.company.data_interface.DataReader;
-import com.company.data_interface.User;
-import com.company.data_interface.review_tools.ItemReviewAvgCalculator;
-import com.company.pairwise.PairwiseRunner;
+import agpar.multifacet.data_interface.review_tools.ItemReviewAvgCalculator;
+import agpar.multifacet.pairwise.PairwiseRunner;
+import agpar.multifacet.data_interface.DataReader;
+import agpar.multifacet.data_interface.User;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

@@ -1,8 +1,8 @@
-package com.company.data_interface.review_tools;
+package agpar.multifacet.data_interface.review_tools;
 
-import com.company.data_interface.Review;
-import com.company.data_interface.ReviewsById;
-import com.company.data_interface.User;
+import agpar.multifacet.data_interface.Review;
+import agpar.multifacet.data_interface.ReviewsById;
+import agpar.multifacet.data_interface.User;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;

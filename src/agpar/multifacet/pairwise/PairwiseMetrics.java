@@ -1,9 +1,9 @@
-package com.company.pairwise;
+package agpar.multifacet.pairwise;
 
-import com.company.data_interface.Review;
-import com.company.data_interface.review_tools.ReviewAvgCalculator;
-import com.company.data_interface.review_tools.ReviewList;
-import com.company.data_interface.User;
+import agpar.multifacet.data_interface.Review;
+import agpar.multifacet.data_interface.review_tools.ReviewAvgCalculator;
+import agpar.multifacet.data_interface.review_tools.ReviewList;
+import agpar.multifacet.data_interface.User;
 
 import java.util.HashSet;
 

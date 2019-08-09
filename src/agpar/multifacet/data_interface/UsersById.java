@@ -1,4 +1,4 @@
-package com.company.data_interface;
+package agpar.multifacet.data_interface;
 
 import java.util.Collection;
 import java.util.HashMap;

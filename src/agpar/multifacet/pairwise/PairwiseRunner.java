@@ -1,7 +1,7 @@
-package com.company.pairwise;
+package agpar.multifacet.pairwise;
 
-import com.company.data_interface.User;
-import com.company.data_interface.review_tools.ReviewAvgCalculator;
+import agpar.multifacet.data_interface.User;
+import agpar.multifacet.data_interface.review_tools.ReviewAvgCalculator;
 
 import java.util.List;
 
