@@ -1,10 +1,10 @@
 package agpar.multifacet.pairwise;
 
-import agpar.multifacet.data_interface.Review;
-import agpar.multifacet.data_interface.UsersById;
-import agpar.multifacet.data_interface.review_tools.ReviewAvgCalculator;
-import agpar.multifacet.data_interface.review_tools.ReviewList;
-import agpar.multifacet.data_interface.User;
+import agpar.multifacet.data_interface.data_classes.Review;
+import agpar.multifacet.data_interface.collections.UsersById;
+import agpar.multifacet.pairwise.review_avg_calculators.ReviewAvgCalculator;
+import agpar.multifacet.data_interface.collections.ReviewList;
+import agpar.multifacet.data_interface.data_classes.User;
 
 import java.util.HashSet;
 import java.util.Set;

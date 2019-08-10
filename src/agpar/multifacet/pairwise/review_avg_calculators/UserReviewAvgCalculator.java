@@ -1,8 +1,8 @@
-package agpar.multifacet.data_interface.review_tools;
+package agpar.multifacet.pairwise.review_avg_calculators;
 
-import agpar.multifacet.data_interface.Review;
-import agpar.multifacet.data_interface.ReviewsById;
-import agpar.multifacet.data_interface.User;
+import agpar.multifacet.data_interface.data_classes.Review;
+import agpar.multifacet.data_interface.collections.ReviewsById;
+import agpar.multifacet.data_interface.data_classes.User;
 
 public class UserReviewAvgCalculator extends ReviewAvgCalculator {
 

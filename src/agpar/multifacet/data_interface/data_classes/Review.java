@@ -1,4 +1,4 @@
-package agpar.multifacet.data_interface;
+package agpar.multifacet.data_interface.data_classes;
 
 import com.google.gson.JsonObject;
 

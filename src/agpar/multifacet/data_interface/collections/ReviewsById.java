@@ -1,4 +1,6 @@
-package agpar.multifacet.data_interface;
+package agpar.multifacet.data_interface.collections;
+
+import agpar.multifacet.data_interface.data_classes.Review;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,6 +1,6 @@
 package agpar.multifacet.pairwise;
 
-import agpar.multifacet.data_interface.Review;
+import agpar.multifacet.data_interface.data_classes.Review;
 
 public class ReviewSimilarity {
     public static double pcc(Review[] reviews1, double[] avgs1,

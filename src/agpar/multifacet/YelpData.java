@@ -1,19 +1,21 @@
 package agpar.multifacet;
 
-import agpar.multifacet.data_interface.*;
+import agpar.multifacet.data_interface.io.DataReader;
+import agpar.multifacet.data_interface.collections.ReviewsById;
+import agpar.multifacet.data_interface.collections.UsersById;
+import agpar.multifacet.data_interface.data_classes.Review;
+import agpar.multifacet.data_interface.data_classes.User;
 
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 
 public class YelpData {
-    private Path dataDir = Path.of("/home/aparment/Documents/datasets/yelp/in_memory");
     private UsersById usersById;
     private ReviewsById reviewsByItemId;
     private DataReader reader;
 
     public YelpData() {
-        this.reader = new DataReader(this.dataDir);
+        this.reader = new DataReader(Settings.RAM_DATA_DIR);
     }
 
     public void load(int start, int stop) {

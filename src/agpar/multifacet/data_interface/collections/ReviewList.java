@@ -1,6 +1,6 @@
-package agpar.multifacet.data_interface.review_tools;
+package agpar.multifacet.data_interface.collections;
 
-import agpar.multifacet.data_interface.Review;
+import agpar.multifacet.data_interface.data_classes.Review;
 
 import java.util.*;
 

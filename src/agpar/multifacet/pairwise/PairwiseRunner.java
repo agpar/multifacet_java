@@ -1,46 +1,51 @@
 package agpar.multifacet.pairwise;
 
-import agpar.multifacet.data_interface.User;
-import agpar.multifacet.data_interface.review_tools.ReviewAvgCalculator;
+import agpar.multifacet.data_interface.data_classes.User;
+import agpar.multifacet.pairwise.io.ResultWriter;
+import agpar.multifacet.pairwise.review_avg_calculators.ReviewAvgCalculator;
+import agpar.multifacet.pairwise.result_calculators.ResultCalculator;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO:: Add some way to exclude calculations to save time.
+import static java.lang.System.exit;
+
 public class PairwiseRunner implements Runnable{
 
     private List<User> users;
-    private ReviewAvgCalculator avgCalculator;
+    private ResultCalculator resultCalculator;
+    private ResultWriter resultWriter;
     private int outerIndex;
-    private List<PairwiseResults> results;
 
-    public PairwiseRunner(List<User> users, ReviewAvgCalculator avgCalculator, int outerIndex) {
+    public PairwiseRunner(List<User> users,
+                          ResultCalculator resultCalculator,
+                          ResultWriter resultWriter,
+                          int outerIndex) {
         this.users = users;
-        this.avgCalculator = avgCalculator;
+        this.resultCalculator = resultCalculator;
+        this.resultWriter = resultWriter;
         this.outerIndex = outerIndex;
     }
 
     @Override
     public void run() {
         User outerUser = users.get(outerIndex);
-        this.results = new ArrayList<>(users.size() - (outerIndex + 1));
+        List<PairwiseResult> results = new ArrayList<>(users.size() - (outerIndex + 1));
         for(int j = outerIndex + 1; j < users.size(); j++) {
             User innerUser = users.get(j);
-            Double pcc = PairwiseMetrics.reviewPcc(outerUser, innerUser, avgCalculator, 3);
-            boolean areFriends = PairwiseMetrics.areFriends(outerUser, innerUser);
-            double socialJacc = PairwiseMetrics.socialJaccard(outerUser, innerUser);
-            this.results.add(new PairwiseResults(
-                    outerUser.getUserId(),
-                    innerUser.getUserId(),
-                    pcc,
-                    socialJacc,
-                    areFriends
-            ));
+            PairwiseResult result = resultCalculator.calc(outerUser, innerUser);
+            if (result != null) {
+                results.add(result);
+            }
+        }
+        try {
+            this.resultWriter.WriteResults(results);
+        } catch (IOException e) {
+            System.out.println("Failed to write results in thread.");
+            e.printStackTrace();
+            exit(1);
         }
         System.out.println(outerIndex);
-    }
-
-    public List<PairwiseResults> getResults() {
-        return this.results;
     }
 }

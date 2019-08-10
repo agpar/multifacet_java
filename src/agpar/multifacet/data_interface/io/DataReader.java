@@ -1,5 +1,9 @@
-package agpar.multifacet.data_interface;
+package agpar.multifacet.data_interface.io;
 
+import agpar.multifacet.data_interface.collections.UsersById;
+import agpar.multifacet.data_interface.collections.ReviewsById;
+import agpar.multifacet.data_interface.data_classes.Review;
+import agpar.multifacet.data_interface.data_classes.User;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -10,14 +14,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class DataReader {
-    private Path dataDir;
+    private String dataDir;
     private Path userFile;
     private Path reviewFile;
 
-    public DataReader(Path dataDir) {
+    public DataReader(String dataDir) {
         this.dataDir = dataDir;
-        this.userFile = Paths.get(dataDir.toString(), "user.json");
-        this.reviewFile = Paths.get(dataDir.toString(), "review_no_text.json");
+        this.userFile = Paths.get(dataDir, "user.json");
+        this.reviewFile = Paths.get(dataDir, "review_no_text.json");
     }
 
     public UsersById loadUsers(int start, int stop) {
