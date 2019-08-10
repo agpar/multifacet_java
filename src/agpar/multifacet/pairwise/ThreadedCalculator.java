@@ -21,7 +21,7 @@ public class ThreadedCalculator {
         boolean exited;
         try {
             executor.shutdown();
-            exited = executor.awaitTermination(1000, TimeUnit.SECONDS);
+            exited = executor.awaitTermination(1, TimeUnit.DAYS);
             if (!exited) {
                 throw new Exception("Executor did not terminate.");
             }
