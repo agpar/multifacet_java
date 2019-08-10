@@ -22,7 +22,7 @@ public class YelpData {
         System.out.println("Loading Users");
         this.usersById = reader.loadUsers(start, stop);
         System.out.println("Loading Reviews");
-        this.reviewsByItemId = reader.loadReviews(0, 10000000);
+        this.reviewsByItemId = reader.loadReviews(0, 100000000);
 
         // Adding reviews to users.
         ReviewsById reviewsByUserId = new ReviewsById();

@@ -7,7 +7,7 @@ import agpar.multifacet.pairwise.PairwiseResult;
 
 public class PCCOrNullCalculator extends ResultCalculator {
     public PCCOrNullCalculator(ReviewAvgCalculator avgCalculator, int minPCCOverlap) {
-        super(avgCalculator, minPCCOverlap);
+        super(avgCalculator,  minPCCOverlap);
     }
 
     @Override
@@ -23,7 +23,9 @@ public class PCCOrNullCalculator extends ResultCalculator {
                 user2.getUserId(),
                 pcc,
                 0,
-                areFriends
+                areFriends,
+                false,
+                0
         );
     }
 }

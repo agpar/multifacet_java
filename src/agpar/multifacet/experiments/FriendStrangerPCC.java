@@ -1,60 +1,40 @@
 package agpar.multifacet.experiments;
 
-import agpar.multifacet.Settings;
 import agpar.multifacet.YelpData;
 import agpar.multifacet.data_interface.data_classes.User;
+import agpar.multifacet.pairwise.ThreadedCalculator;
 import agpar.multifacet.pairwise.PairwiseResult;
 import agpar.multifacet.pairwise.io.ResultReader;
 import agpar.multifacet.pairwise.io.SynchronizedAppendResultWriter;
 import agpar.multifacet.pairwise.result_calculators.PCCOrNullCalculator;
 import agpar.multifacet.pairwise.result_calculators.ResultCalculator;
-import agpar.multifacet.pairwise.review_avg_calculators.ItemReviewAvgCalculator;
-import agpar.multifacet.pairwise.PairwiseRunner;
+import agpar.multifacet.pairwise.review_avg_calculators.ReviewAvgCalculator;
+import agpar.multifacet.pairwise.review_avg_calculators.UserReviewAvgCalculator;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import static java.lang.System.exit;
 
 public class FriendStrangerPCC {
-    public static String DATA_PATH = Path.of(Settings.RAM_DATA_DIR, "friend_stranger_pcc.csv").toString();
 
-    public static void generateData(int userCount) {
+    public static void generateData(String path, int userCount) {
         YelpData yd = new YelpData();
         yd.load(0, userCount);
         System.out.println("Done loading.");
 
-        ItemReviewAvgCalculator avgCalculator = new ItemReviewAvgCalculator(yd.getReviewsByItemId());
-        ResultCalculator resultCalculator = new PCCOrNullCalculator(avgCalculator, 3);
-        SynchronizedAppendResultWriter writer = new SynchronizedAppendResultWriter(FriendStrangerPCC.DATA_PATH);
+        ReviewAvgCalculator avgCalculator = new UserReviewAvgCalculator(yd.getReviewsByItemId());
+        ResultCalculator resultCalculator = new PCCOrNullCalculator(avgCalculator,3);
+        SynchronizedAppendResultWriter writer = new SynchronizedAppendResultWriter(path);
         List<User> users = new ArrayList<User>(yd.getUsers());
 
-        ExecutorService executor = Executors.newFixedThreadPool(16);
-        for (int i = 0; i < users.size(); i++) {
-            PairwiseRunner runner = new PairwiseRunner(users, resultCalculator, writer, i);
-            executor.execute(runner);
-        }
-        boolean exited;
-        try {
-            executor.shutdown();
-            exited = executor.awaitTermination(1000, TimeUnit.SECONDS);
-            if (!exited) {
-                throw new Exception("Executor did not terminate.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            exit(1);
-        }
+        ThreadedCalculator.calc(users, resultCalculator, writer);
     }
 
-    public static void averagePCC() {
+    public static void averagePCC(String path) {
         try {
-            List<PairwiseResult> results = new ResultReader(FriendStrangerPCC.DATA_PATH).read();
+            List<PairwiseResult> results = new ResultReader(path).read();
             FriendStrangerPCC.calcAvg(results);
         } catch (IOException e) {
             e.printStackTrace();

@@ -6,18 +6,29 @@ public class PairwiseResult {
     public Double pcc;
     public Double socialJaccard;
     public boolean areFriends;
+    public boolean friendsOfFriends;
+    public Double itemJaccard;
 
-    public PairwiseResult(String user1Id, String user2Id, Double pcc, double socialJaccard, boolean areFriends) {
+    public PairwiseResult(String user1Id,
+                          String user2Id,
+                          Double pcc,
+                          double socialJaccard,
+                          boolean areFriends,
+                          boolean friendOfFriends,
+                          double itemJaccard) {
         this.user1Id = user1Id;
         this.user2Id = user2Id;
         this.pcc = pcc;
         this.socialJaccard = socialJaccard;
         this.areFriends = areFriends;
+        this.friendsOfFriends = friendOfFriends;
+        this.itemJaccard = itemJaccard;
     }
 
     public String toString() {
         int areFriends = this.areFriends ? 1 : 0;
-        return String.format("%s,%s,%f,%f,%d", this.user1Id, this.user2Id, this.pcc, this.socialJaccard, areFriends);
+        int areFriendsOfFriends = this.friendsOfFriends ? 1 : 0;
+        return String.format("%s,%s,%f,%f,%d,%d,%f", this.user1Id, this.user2Id, this.pcc, this.socialJaccard, areFriends, areFriendsOfFriends, this.itemJaccard);
     }
 
     public static PairwiseResult fromString(String commaSeperated) {
@@ -27,11 +38,17 @@ public class PairwiseResult {
             splitString[1],
             Double.parseDouble(splitString[2]),
             Double.parseDouble(splitString[3]),
-            Integer.parseInt(splitString[4]) == 1
+            Integer.parseInt(splitString[4]) == 1,
+            Integer.parseInt(splitString[5]) ==1,
+            Double.parseDouble(splitString[6])
         );
     }
 
     public static String header() {
-        return String.format("%s,%s,%s,%s,%s", "user1Id", "user2Id", "PCC", "socialJacc", "areFriends");
+        return String.format("%s,%s,%s,%s,%s,%s,%s", "user1Id", "user2Id", "PCC", "socialJacc", "areFriends", "areFriendsOfFriends", "itemJacc");
+    }
+
+    public boolean isEmpty() {
+        return (pcc == null) && (socialJaccard == 0) && (!areFriends) && (!friendsOfFriends) && (itemJaccard == 0);
     }
 }

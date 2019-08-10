@@ -23,9 +23,15 @@ public class ResultReader {
         // Throw away the header.
         String line = this.reader.readLine();
         line = this.reader.readLine();
+        int lineno =1;
         while(line != null) {
-            results.add(PairwiseResult.fromString(line));
+            try {
+                results.add(PairwiseResult.fromString(line));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             line = this.reader.readLine();
+            lineno++;
         }
         return results;
     }

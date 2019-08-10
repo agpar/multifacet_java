@@ -1,7 +1,6 @@
 package agpar.multifacet.pairwise;
 
 import agpar.multifacet.data_interface.data_classes.Review;
-import agpar.multifacet.data_interface.collections.UsersById;
 import agpar.multifacet.pairwise.review_avg_calculators.ReviewAvgCalculator;
 import agpar.multifacet.data_interface.collections.ReviewList;
 import agpar.multifacet.data_interface.data_classes.User;
@@ -12,19 +11,6 @@ import java.util.Set;
 public class PairwiseMetrics {
     public static boolean areFriends(User user1, User user2) {
         return user1.getFriends().contains(user2.getUserId());
-    }
-
-    public static boolean areFriendsOfFriends(User user1, User user2, UsersById usersById) {
-        if (PairwiseMetrics.areFriends(user1, user2)) {
-            return true;
-        }
-        User lessFriends = user1.getFriends().size() < user2.getFriends().size() ? user1 : user2;
-        User moreFriends = user1 == lessFriends ? user2 : user1;
-        for (String friendId : lessFriends.getFriends()) {
-            User bridgeFriend = usersById.get(friendId);
-            if (bridgeFriend.getFriends().contains(moreFriends.getUserId())) return true;
-        }
-        return false;
     }
 
     public static Double reviewPcc(User user1, User user2, ReviewAvgCalculator avgCalculator, int minOverlap) {
@@ -42,12 +28,22 @@ public class PairwiseMetrics {
         return ReviewSimilarity.pcc(reviews1, avgs1, reviews2, avgs2);
     }
 
+    protected static <T> double jaccard(Set<T> set1, Set<T> set2) {
+        Set<T> intersection = new HashSet<T>(set1);
+        intersection.retainAll(set2);
+        if (intersection.size() == 0) {
+            return 0.0;
+        }
+        Set<T> union = new HashSet<T>(set1);
+        union.addAll(set2);
+        return intersection.size() / union.size();
+    }
     public static double socialJaccard(User user1, User user2) {
-        Set<String> union = new HashSet<String>(user1.getFriends());
-        union.retainAll(user2.getFriends());
-        int numer = union.size();
-        if (numer == 0) return 0;
-        return numer / (user1.getFriends().size() + user2.getFriends().size());
+        return PairwiseMetrics.jaccard(user1.getFriends(), user2.getFriends());
+    }
+
+    public static double itemJaccard(User user1, User user2) {
+        return PairwiseMetrics.jaccard(user1.getItemsReviewed(), user2.getItemsReviewed());
     }
 
     public static Review[] filterReviews(ReviewList reviews, HashSet<String> itemSet) {

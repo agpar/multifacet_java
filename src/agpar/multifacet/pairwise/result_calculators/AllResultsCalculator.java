@@ -15,14 +15,22 @@ public class AllResultsCalculator extends ResultCalculator{
     @Override
     public PairwiseResult calc(User user1, User user2) {
         Double pcc = PairwiseMetrics.reviewPcc(user1, user2, this.avgCalculator, this.minPCCOverlap);
-        boolean areFriends = PairwiseMetrics.areFriends(user1, user2);
         double socialJacc = PairwiseMetrics.socialJaccard(user1, user2);
-        return new PairwiseResult(
+        boolean areFriends = PairwiseMetrics.areFriends(user1, user2);
+        double itemJacc = PairwiseMetrics.itemJaccard(user1, user2);
+        PairwiseResult result =  new PairwiseResult(
                 user1.getUserId(),
                 user2.getUserId(),
                 pcc,
                 socialJacc,
-                areFriends
-        );
+                areFriends,
+                socialJacc > 0,
+                itemJacc);
+
+        if (result.isEmpty()) {
+            return null;
+        } else {
+            return result;
+        }
     }
 }
