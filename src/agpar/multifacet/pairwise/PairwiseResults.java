@@ -14,4 +14,9 @@ public class PairwiseResults {
         this.socialJaccard = socialJaccard;
         this.areFriends = areFriends;
     }
+
+    public String toString() {
+        int areFriends = this.areFriends ? 1 : 0;
+        return String.format("%s,%s,%f,%f,%d", this.user1Id, this.user2Id, this.pcc, this.socialJaccard, areFriends);
+    }
 }

@@ -5,6 +5,7 @@ import agpar.multifacet.data_interface.User;
 import agpar.multifacet.data_interface.review_tools.ItemReviewAvgCalculator;
 import agpar.multifacet.pairwise.PairwiseResults;
 import agpar.multifacet.pairwise.PairwiseRunner;
+import agpar.multifacet.pairwise.ResultWriter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +48,10 @@ public class FriendStrangerPCC {
         long friend_pcc_count = 0;
         double stranger_pcc_sum = 0;
         long stranger_pcc_count = 0;
+        ArrayList<PairwiseResults> allResults = new ArrayList<PairwiseResults>();
         for (PairwiseRunner runner : runners) {
             for (PairwiseResults result : runner.getResults()) {
+                allResults.add(result);
                 if (result.pcc == null) {
                     continue;
                 }
@@ -61,9 +64,12 @@ public class FriendStrangerPCC {
                 }
             }
         }
+        ResultWriter.WriteResults(allResults);
         double friend_avg = friend_pcc_sum / friend_pcc_count;
         double stranger_avg = stranger_pcc_sum / stranger_pcc_count;
         System.out.printf("Friend pcc avg: %f\n", friend_avg);
         System.out.printf("Stranger pcc avg: %f\n", stranger_avg);
+
+
     }
 }
