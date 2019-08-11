@@ -6,7 +6,7 @@ import java.util.*;
 
 public class ReviewList implements Iterable<Review>{
     private Review[] reviews;
-    private HashSet<String> itemsReviewed;
+    private HashSet<Integer> itemsReviewed;
 
     public ReviewList(List<Review> reviews) {
         this.reviews = this.dedupeReviews(reviews);
@@ -15,7 +15,7 @@ public class ReviewList implements Iterable<Review>{
     private void initItemsReviewed(List<Review> reviews) {
         this.itemsReviewed = new HashSet<>();
         for (Review review : reviews) {
-            this.itemsReviewed.add(review.getItemId());
+            this.itemsReviewed.add(review.getItemIdInt());
         }
     }
 
@@ -51,7 +51,7 @@ public class ReviewList implements Iterable<Review>{
         return dedupedReviews;
     }
 
-    public Set<String> getItemsReviewed() {
+    public Set<Integer> getItemsReviewed() {
         return Collections.unmodifiableSet(this.itemsReviewed);
     }
 

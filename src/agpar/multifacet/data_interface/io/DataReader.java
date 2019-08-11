@@ -17,11 +17,18 @@ public class DataReader {
     private String dataDir;
     private Path userFile;
     private Path reviewFile;
+    private IdStringToIntMap userIdMap;
+    private IdStringToIntMap reviewIdMap;
+    private IdStringToIntMap itemIdMap;
+
 
     public DataReader(String dataDir) {
         this.dataDir = dataDir;
         this.userFile = Paths.get(dataDir, "user.json");
         this.reviewFile = Paths.get(dataDir, "review_no_text.json");
+        this.userIdMap = new IdStringToIntMap();
+        this.reviewIdMap = new IdStringToIntMap();
+        this.itemIdMap = new IdStringToIntMap();
     }
 
     public UsersById loadUsers(int start, int stop) {
@@ -35,7 +42,7 @@ public class DataReader {
             while (line != null) {
                 if (lineno >= start) {
                     JsonObject obj =  parser.parse(line).getAsJsonObject();
-                    User user = User.fromJson(obj);
+                    User user = User.fromJson(obj, this.userIdMap);
                     users.put(user);
                 }
                 line = reader.readLine();
@@ -62,7 +69,7 @@ public class DataReader {
             while (line != null) {
                 if (lineno >= start) {
                     JsonObject obj = parser.parse(line).getAsJsonObject();
-                    Review review = Review.fromJson(obj);
+                    Review review = Review.fromJson(obj, this.itemIdMap);
                     reviews.put(review.getItemId(), review);
                 }
                 line = reader.readLine();

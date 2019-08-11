@@ -14,7 +14,7 @@ public class PairwiseMetrics {
     }
 
     public static Double reviewPcc(User user1, User user2, ReviewAvgCalculator avgCalculator, int minOverlap) {
-        HashSet<String> mutuallyReviewed = new HashSet<>(user1.getItemsReviewed());
+        HashSet<Integer> mutuallyReviewed = new HashSet<>(user1.getItemsReviewed());
         mutuallyReviewed.retainAll(user2.getItemsReviewed());
         if (mutuallyReviewed.size() < minOverlap) {
             return null;
@@ -36,21 +36,22 @@ public class PairwiseMetrics {
         }
         Set<T> union = new HashSet<T>(set1);
         union.addAll(set2);
-        return intersection.size() / union.size();
+        return ((double) intersection.size()) / union.size();
     }
+
     public static double socialJaccard(User user1, User user2) {
-        return PairwiseMetrics.jaccard(user1.getFriends(), user2.getFriends());
+        return PairwiseMetrics.jaccard(user1.getFriendsInt(), user2.getFriendsInt());
     }
 
     public static double itemJaccard(User user1, User user2) {
         return PairwiseMetrics.jaccard(user1.getItemsReviewed(), user2.getItemsReviewed());
     }
 
-    public static Review[] filterReviews(ReviewList reviews, HashSet<String> itemSet) {
+    public static Review[] filterReviews(ReviewList reviews, HashSet<Integer> itemSet) {
         Review[] filteredReviews = new Review[itemSet.size()];
         int i = 0;
         for (Review review : reviews) {
-            if (itemSet.contains(review.getItemId())) {
+            if (itemSet.contains(review.getItemIdInt())) {
                 filteredReviews[i] = review;
                 i++;
             }
