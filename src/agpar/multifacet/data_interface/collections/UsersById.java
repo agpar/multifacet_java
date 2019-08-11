@@ -6,17 +6,17 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class UsersById {
-    private HashMap<String, User> users = new HashMap<>();
+    private HashMap<Integer, User> users = new HashMap<>();
 
     public void put(User user) {
-        this.users.put(user.getUserId(), user);
+        this.users.put(user.getUserIdInt(), user);
     }
 
-    public User get(String userId) {
+    public User get(int userId) {
         return this.users.get(userId);
     }
 
-    public boolean containsKey(String userId) {
+    public boolean containsKey(int userId) {
         return this.users.containsKey(userId);
     }
 

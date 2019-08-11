@@ -11,8 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 // caching of results.
 public abstract class ReviewAvgCalculator {
     private ReviewsById reviewsByItems;
-    private ConcurrentHashMap<String, Double> avgItemReviews = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, Double> avgUserReviews = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, Double> avgItemReviews = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, Double> avgUserReviews = new ConcurrentHashMap<>();
     private static double GLOBAL_AVG_REVIEW_SCORE = 3.7161;
 
     public ReviewAvgCalculator(ReviewsById reviewsByItems) {
@@ -22,12 +22,12 @@ public abstract class ReviewAvgCalculator {
     public abstract double[] getAvgs(Review[] reviews, User user);
 
     public double getUserAvg(User user) {
-        Double cachedAvg = this.avgUserReviews.get(user.getUserId());
+        Double cachedAvg = this.avgUserReviews.get(user.getUserIdInt());
         if(cachedAvg != null) {
             return cachedAvg;
         } else {
             double val = this.avg(user.getReviews());
-            this.avgUserReviews.put(user.getUserId(), val);
+            this.avgUserReviews.put(user.getUserIdInt(), val);
             return val;
         }
     }
@@ -36,7 +36,7 @@ public abstract class ReviewAvgCalculator {
         return this.GLOBAL_AVG_REVIEW_SCORE;
     }
 
-    public double getItemAvg(String itemId) {
+    public double getItemAvg(int itemId) {
         Double cachedAvg = this.avgItemReviews.get(itemId);
         if(cachedAvg != null) {
             return cachedAvg;

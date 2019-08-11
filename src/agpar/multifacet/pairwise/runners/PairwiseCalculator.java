@@ -1,8 +1,9 @@
-package agpar.multifacet.pairwise;
+package agpar.multifacet.pairwise.runners;
 
 import agpar.multifacet.data_interface.data_classes.User;
 import agpar.multifacet.pairwise.io.ResultWriter;
 import agpar.multifacet.pairwise.result_calculators.ResultCalculator;
+import agpar.multifacet.pairwise.runners.PairwiseRunner;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -11,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import static java.lang.System.exit;
 
-public class ThreadedCalculator {
+public class PairwiseCalculator {
     public static void calc(List<User> users, ResultCalculator resultCalculator, ResultWriter writer) {
         ExecutorService executor = Executors.newFixedThreadPool(16);
         for (int i = 0; i < users.size(); i++) {

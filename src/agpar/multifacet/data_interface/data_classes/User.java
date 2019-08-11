@@ -9,14 +9,12 @@ import java.util.*;
 public class User {
     private String userId;
     private int userIdInt;
-    private HashSet<String> friends;
     private HashSet<Integer> friendsInt;
     private ReviewList reviews;
 
-    public User(String userId, int userIdInt, HashSet<String> friends, HashSet<Integer> friendsInt) {
+    public User(String userId, int userIdInt, HashSet<Integer> friendsInt) {
         this.userId = userId;
         this.userIdInt = userIdInt;
-        this.friends = friends;
         this.friendsInt = friendsInt;
     }
 
@@ -25,12 +23,11 @@ public class User {
         int userIdInt = userIdMap.getInt(userId);
         String friendStr = obj.get("friends").getAsString();
         Collection<String> friendSplit = Arrays.asList(friendStr.split(", "));
-        HashSet<String> friends = new HashSet<String>(friendSplit);
         HashSet<Integer> friendsInt = new HashSet<>();
         for(String friendId : friendSplit) {
             friendsInt.add(userIdMap.getInt(friendId));
         }
-        return new User(userId, userIdInt, friends, friendsInt);
+        return new User(userId, userIdInt, friendsInt);
     }
 
     public String getUserId() {
@@ -39,10 +36,6 @@ public class User {
 
     public int getUserIdInt() {
         return this.userIdInt;
-    }
-
-    public Set<String> getFriends() {
-        return Collections.unmodifiableSet(this.friends);
     }
 
     public Set<Integer> getFriendsInt() {

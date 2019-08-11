@@ -1,6 +1,7 @@
-package agpar.multifacet.pairwise;
+package agpar.multifacet.pairwise.runners;
 
 import agpar.multifacet.data_interface.data_classes.User;
+import agpar.multifacet.pairwise.PairwiseResult;
 import agpar.multifacet.pairwise.io.ResultWriter;
 import agpar.multifacet.pairwise.review_avg_calculators.ReviewAvgCalculator;
 import agpar.multifacet.pairwise.result_calculators.ResultCalculator;

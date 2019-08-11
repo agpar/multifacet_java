@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class PairwiseMetrics {
     public static boolean areFriends(User user1, User user2) {
-        return user1.getFriends().contains(user2.getUserId());
+        return user1.getFriendsInt().contains(user2.getUserIdInt());
     }
 
     public static Double reviewPcc(User user1, User user2, ReviewAvgCalculator avgCalculator, int minOverlap) {

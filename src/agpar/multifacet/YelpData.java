@@ -13,9 +13,17 @@ public class YelpData {
     private UsersById usersById;
     private ReviewsById reviewsByItemId;
     private DataReader reader;
+    private static YelpData instance;
 
-    public YelpData() {
+    private YelpData() {
         this.reader = new DataReader(Settings.RAM_DATA_DIR);
+    }
+
+    public static YelpData getInstance() {
+        if(YelpData.instance == null) {
+            YelpData.instance = new YelpData();
+        }
+        return YelpData.instance;
     }
 
     public void load(int start, int stop) {
@@ -28,12 +36,12 @@ public class YelpData {
         ReviewsById reviewsByUserId = new ReviewsById();
         for (List<Review> reviews: this.reviewsByItemId.values()) {
             for (Review review: reviews) {
-                reviewsByUserId.put(review.getUserId(), review);
+                reviewsByUserId.put(review.getUserIdInt(), review);
             }
         }
 
         for (User user : this.usersById.values()) {
-            user.addReviews(reviewsByUserId.get(user.getUserId()));
+            user.addReviews(reviewsByUserId.get(user.getUserIdInt()));
         }
     }
 
@@ -43,5 +51,9 @@ public class YelpData {
 
     public Collection<User> getUsers() {
         return this.usersById.values();
+    }
+
+    public UsersById getUsersById() {
+        return this.usersById;
     }
 }

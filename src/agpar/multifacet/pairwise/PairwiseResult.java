@@ -49,6 +49,6 @@ public class PairwiseResult {
     }
 
     public boolean isEmpty() {
-        return (pcc == null) && (socialJaccard == 0) && (!areFriends) && (!friendsOfFriends);
+        return (pcc == null) && (socialJaccard == 0) && (!areFriends) && (!friendsOfFriends) && (itemJaccard == 0);
     }
 }

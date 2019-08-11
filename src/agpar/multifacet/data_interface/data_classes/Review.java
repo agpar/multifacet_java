@@ -5,27 +5,26 @@ import com.google.gson.JsonObject;
 
 public class Review {
     private String reviewId;
-    private String userId;
-    private String itemId;
+    private int userIdInt;
     private int itemIdInt;
     private String date;
     private double stars;
 
 
-    public Review(String reviewId, String userId, String itemId, int itemIdInt, String date, double stars) {
+    public Review(String reviewId, int userIdInt, String itemId, int itemIdInt, String date, double stars) {
         this.reviewId = reviewId;
-        this.userId = userId;
-        this.itemId = itemId;
+        this.userIdInt = userIdInt;
         this.itemIdInt = itemIdInt;
         this.date = date;
         this.stars = stars;
     }
 
-    public static Review fromJson(JsonObject obj, IdStringToIntMap itemIdMap) {
+    public static Review fromJson(JsonObject obj, IdStringToIntMap itemIdMap, IdStringToIntMap userIdMap) {
         String itemId = obj.get("business_id").getAsString();
+        String userId = obj.get("user_id").getAsString();
         return new Review(
                 obj.get("review_id").getAsString(),
-                obj.get("user_id").getAsString(),
+                userIdMap.getInt(userId),
                 itemId,
                 itemIdMap.getInt(itemId),
                 obj.get("date").getAsString(),
@@ -37,12 +36,8 @@ public class Review {
         return reviewId;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public String getItemId() {
-        return itemId;
+    public int getUserIdInt() {
+        return userIdInt;
     }
 
     public int getItemIdInt() {

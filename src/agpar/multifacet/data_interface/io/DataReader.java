@@ -69,8 +69,8 @@ public class DataReader {
             while (line != null) {
                 if (lineno >= start) {
                     JsonObject obj = parser.parse(line).getAsJsonObject();
-                    Review review = Review.fromJson(obj, this.itemIdMap);
-                    reviews.put(review.getItemId(), review);
+                    Review review = Review.fromJson(obj, this.itemIdMap, this.userIdMap);
+                    reviews.put(review.getItemIdInt(), review);
                 }
                 line = reader.readLine();
                 lineno += 1;

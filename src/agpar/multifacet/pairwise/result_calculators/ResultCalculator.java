@@ -7,6 +7,7 @@ import agpar.multifacet.pairwise.PairwiseResult;
 
 public abstract class ResultCalculator {
     protected ReviewAvgCalculator avgCalculator;
+    protected UsersById usersById;
     protected int minPCCOverlap;
 
     public ResultCalculator(ReviewAvgCalculator avgCalculator, int minPCCOverlap) {

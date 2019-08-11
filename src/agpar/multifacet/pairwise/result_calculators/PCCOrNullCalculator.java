@@ -1,13 +1,15 @@
 package agpar.multifacet.pairwise.result_calculators;
 
+import agpar.multifacet.data_interface.collections.UsersById;
 import agpar.multifacet.data_interface.data_classes.User;
 import agpar.multifacet.pairwise.review_avg_calculators.ReviewAvgCalculator;
 import agpar.multifacet.pairwise.PairwiseMetrics;
 import agpar.multifacet.pairwise.PairwiseResult;
 
 public class PCCOrNullCalculator extends ResultCalculator {
+
     public PCCOrNullCalculator(ReviewAvgCalculator avgCalculator, int minPCCOverlap) {
-        super(avgCalculator,  minPCCOverlap);
+        super(avgCalculator, minPCCOverlap);
     }
 
     @Override

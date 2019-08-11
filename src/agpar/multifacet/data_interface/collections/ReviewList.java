@@ -23,26 +23,26 @@ public class ReviewList implements Iterable<Review>{
         if (this.itemsReviewed == null) {
             this.initItemsReviewed(reviews);
         }
-        reviews.sort((review1, review2) -> review1.getItemId().compareTo(review2.getItemId()));
+        reviews.sort(Comparator.comparingInt(Review::getItemIdInt));
         if (this.itemsReviewed.size() == reviews.size()) {
-            reviews.toArray();
+            return reviews.toArray(new Review[reviews.size()]);
         }
 
         int i = 0;
         int j = 0;
         Review[] dedupedReviews = new Review[this.itemsReviewed.size()];
-        String currentItem = reviews.get(0).getItemId();
+        int currentItem = reviews.get(0).getItemIdInt();
         Review latestReviewForItem = reviews.get(0);
         while (i < reviews.size() - 1) {
             Review nextReview = reviews.get(i + 1);
-            if (nextReview.getItemId().equals(currentItem)) {
+            if (nextReview.getItemIdInt() == (currentItem)) {
                 if(nextReview.getDate().compareTo(latestReviewForItem.getDate()) > 0) {
                     latestReviewForItem = nextReview;
                 }
             } else {
                 dedupedReviews[j] = (latestReviewForItem);
                 j++;
-                currentItem = nextReview.getItemId();
+                currentItem = nextReview.getItemIdInt();
                 latestReviewForItem = nextReview;
             }
             i++;

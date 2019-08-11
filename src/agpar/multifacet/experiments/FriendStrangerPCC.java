@@ -2,7 +2,7 @@ package agpar.multifacet.experiments;
 
 import agpar.multifacet.YelpData;
 import agpar.multifacet.data_interface.data_classes.User;
-import agpar.multifacet.pairwise.ThreadedCalculator;
+import agpar.multifacet.pairwise.runners.PairwiseCalculator;
 import agpar.multifacet.pairwise.PairwiseResult;
 import agpar.multifacet.pairwise.io.ResultReader;
 import agpar.multifacet.pairwise.io.SynchronizedAppendResultWriter;
@@ -20,7 +20,7 @@ import static java.lang.System.exit;
 public class FriendStrangerPCC {
 
     public static void generateData(String path, int userCount) {
-        YelpData yd = new YelpData();
+        YelpData yd = YelpData.getInstance();
         yd.load(0, userCount);
         System.out.println("Done loading.");
 
@@ -29,7 +29,7 @@ public class FriendStrangerPCC {
         SynchronizedAppendResultWriter writer = new SynchronizedAppendResultWriter(path);
         List<User> users = new ArrayList<User>(yd.getUsers());
 
-        ThreadedCalculator.calc(users, resultCalculator, writer);
+        PairwiseCalculator.calc(users, resultCalculator, writer);
     }
 
     public static void averagePCC(String path) {
