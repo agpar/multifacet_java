@@ -31,8 +31,8 @@ public class PairwiseResult {
         return String.format("%s,%s,%f,%f,%d,%d,%f", this.user1Id, this.user2Id, this.pcc, this.socialJaccard, areFriends, areFriendsOfFriends, this.itemJaccard);
     }
 
-    public static PairwiseResult fromString(String commaSeperated) {
-        String[] splitString = commaSeperated.split(",");
+    public static PairwiseResult fromString(String commaSeparated) {
+        String[] splitString = commaSeparated.split(",");
         return new PairwiseResult(
             splitString[0],
             splitString[1],
@@ -49,6 +49,6 @@ public class PairwiseResult {
     }
 
     public boolean isEmpty() {
-        return (pcc == null) && (socialJaccard == 0) && (!areFriends) && (!friendsOfFriends) && (itemJaccard == 0);
+        return (pcc == null) && (!areFriends);
     }
 }

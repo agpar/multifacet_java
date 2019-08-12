@@ -8,8 +8,8 @@ import java.nio.file.Path;
 public class Main {
 
     public static void main(String[] args) {
-        String path = Path.of(Settings.RAM_DATA_DIR, "all_500kfriends_3overlap_itemavg2.csv").toString();
-        GenerateFriendsOnly.generateData(path, 500_000);
+        String path = Path.of(Settings.RAM_DATA_DIR, "all_100k_3overlap_itemavg.csv").toString();
+        GenerateAllPairwise.generateData(path, 100_000);
 
     }
 }

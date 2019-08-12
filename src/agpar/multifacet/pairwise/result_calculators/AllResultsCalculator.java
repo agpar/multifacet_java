@@ -1,6 +1,5 @@
 package agpar.multifacet.pairwise.result_calculators;
 
-import agpar.multifacet.data_interface.collections.UsersById;
 import agpar.multifacet.data_interface.data_classes.User;
 import agpar.multifacet.pairwise.review_avg_calculators.ReviewAvgCalculator;
 import agpar.multifacet.pairwise.PairwiseMetrics;
@@ -16,8 +15,11 @@ public class AllResultsCalculator extends ResultCalculator{
     @Override
     public PairwiseResult calc(User user1, User user2) {
         Double pcc = PairwiseMetrics.reviewPcc(user1, user2, this.avgCalculator, this.minPCCOverlap);
-        double socialJacc = PairwiseMetrics.socialJaccard(user1, user2);
         boolean areFriends = PairwiseMetrics.areFriends(user1, user2);
+        if ((pcc == null) && (!areFriends)) {
+            return null;
+        }
+        double socialJacc = PairwiseMetrics.socialJaccard(user1, user2);
         double itemJacc = PairwiseMetrics.itemJaccard(user1, user2);
         PairwiseResult result =  new PairwiseResult(
                 user1.getUserId(),
