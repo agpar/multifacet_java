@@ -18,15 +18,18 @@ public class PairwiseRunner implements Runnable{
     private ResultCalculator resultCalculator;
     private ResultWriter resultWriter;
     private int outerIndex;
+    private boolean printProgress;
 
     public PairwiseRunner(List<User> users,
                           ResultCalculator resultCalculator,
                           ResultWriter resultWriter,
-                          int outerIndex) {
+                          int outerIndex,
+                          boolean printProgress) {
         this.users = users;
         this.resultCalculator = resultCalculator;
         this.resultWriter = resultWriter;
         this.outerIndex = outerIndex;
+        this.printProgress = printProgress;
     }
 
     @Override
@@ -47,6 +50,8 @@ public class PairwiseRunner implements Runnable{
             e.printStackTrace();
             exit(1);
         }
-        System.out.println(outerIndex);
+        if (this.printProgress) {
+            System.out.println(outerIndex);
+        }
     }
 }

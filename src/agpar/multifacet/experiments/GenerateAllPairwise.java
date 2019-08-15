@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GenerateAllPairwise {
-    public static void generateData(String path, int userCount) {
+    public static void generateData(String path, int userCount, boolean printProgress) {
         YelpData yd = YelpData.getInstance();
         yd.load(0, userCount);
         System.out.println("Done loading.");
@@ -24,6 +24,10 @@ public class GenerateAllPairwise {
         SynchronizedAppendResultWriter writer = new SynchronizedAppendResultWriter(path);
         List<User> users = new ArrayList<User>(yd.getUsers());
 
-        PairwiseCalculator.calc(users, resultCalculator, writer);
+        PairwiseCalculator.calc(users, resultCalculator, writer, printProgress);
+    }
+
+    public static void generateData(String path, int userCount) {
+        GenerateAllPairwise.generateData(path, userCount, true);
     }
 }

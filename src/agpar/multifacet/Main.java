@@ -1,15 +1,23 @@
 package agpar.multifacet;
 
-import agpar.multifacet.experiments.GenerateAllPairwise;
-import agpar.multifacet.experiments.GenerateFriendsOnly;
+import agpar.multifacet.recommend.RatingTupleGenerator;
+import agpar.multifacet.recommend.SocialMFReommender;
+import net.librec.common.LibrecException;
 
 import java.nio.file.Path;
+
+import static java.lang.System.exit;
 
 public class Main {
 
     public static void main(String[] args) {
-        String path = Path.of(Settings.RAM_DATA_DIR, "all_100k_3overlap_itemavg.csv").toString();
-        GenerateAllPairwise.generateData(path, 100_000);
-
+        try {
+            SocialMFReommender.learn(Settings.EXPERIMENT_DIR, "ratings_2000.txt", "predictions_2000.txt");
+        } catch(LibrecException e) {
+            e.printStackTrace();
+            exit(1);
+        }
+//        ExperimentRunner exp = new ExperimentRunner();
+//        exp.runFriendPredict("first_try", 2000);
     }
 }

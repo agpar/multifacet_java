@@ -16,11 +16,13 @@ public class AllResultsCalculator extends ResultCalculator{
     public PairwiseResult calc(User user1, User user2) {
         Double pcc = PairwiseMetrics.reviewPcc(user1, user2, this.avgCalculator, this.minPCCOverlap);
         boolean areFriends = PairwiseMetrics.areFriends(user1, user2);
-        if ((pcc == null) && (!areFriends)) {
-            return null;
-        }
         double socialJacc = PairwiseMetrics.socialJaccard(user1, user2);
         double itemJacc = PairwiseMetrics.itemJaccard(user1, user2);
+
+        if ((pcc == null) && (!areFriends) && itemJacc == 0 && socialJacc == 0) {
+            return null;
+        }
+
         PairwiseResult result =  new PairwiseResult(
                 user1.getUserId(),
                 user2.getUserId(),
@@ -30,10 +32,6 @@ public class AllResultsCalculator extends ResultCalculator{
                 socialJacc > 0,
                 itemJacc);
 
-        if (result.isEmpty()) {
-            return null;
-        } else {
-            return result;
-        }
+        return result;
     }
 }

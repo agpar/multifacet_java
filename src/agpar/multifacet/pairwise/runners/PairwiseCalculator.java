@@ -13,10 +13,10 @@ import java.util.concurrent.TimeUnit;
 import static java.lang.System.exit;
 
 public class PairwiseCalculator {
-    public static void calc(List<User> users, ResultCalculator resultCalculator, ResultWriter writer) {
+    public static void calc(List<User> users, ResultCalculator resultCalculator, ResultWriter writer, boolean printProgress) {
         ExecutorService executor = Executors.newFixedThreadPool(16);
         for (int i = 0; i < users.size(); i++) {
-            PairwiseRunner runner = new PairwiseRunner(users, resultCalculator, writer, i);
+            PairwiseRunner runner = new PairwiseRunner(users, resultCalculator, writer, i, printProgress);
             executor.execute(runner);
         }
         boolean exited;

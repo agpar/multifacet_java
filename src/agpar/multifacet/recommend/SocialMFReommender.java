@@ -12,12 +12,12 @@ import net.librec.recommender.context.rating.SocialMFRecommender;
 
 
 public class SocialMFReommender {
-    public static void learn() throws net.librec.common.LibrecException {
+    public static void learn(String exp_dir, String rating_file, String social_file) throws net.librec.common.LibrecException {
         // recommender configuration
         Configuration conf = new Configuration();
-        conf.set("data.input.path", "review_tuples.txt");
-        conf.set("dfs.data.dir", "/home/aparment/Documents/datasets/yelp/derivitives");
-        conf.set("data.appender.path", "empty.txt");
+        conf.set("data.input.path", rating_file);
+        conf.set("dfs.data.dir", exp_dir);
+        conf.set("data.appender.path", social_file);
         conf.set("data.appender.class", "net.librec.data.convertor.appender.SocialDataAppender");
         conf.set("rec.neighbors.knn.number", "3");
         conf.set("rec.iterator.maximum", "100");

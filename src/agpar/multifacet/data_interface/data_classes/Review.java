@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 
 public class Review {
     private String reviewId;
+    private String itemId;
     private int userIdInt;
     private int itemIdInt;
     private String date;
@@ -13,6 +14,7 @@ public class Review {
 
     public Review(String reviewId, int userIdInt, String itemId, int itemIdInt, String date, double stars) {
         this.reviewId = reviewId;
+        this.itemId = itemId;
         this.userIdInt = userIdInt;
         this.itemIdInt = itemIdInt;
         this.date = date;
@@ -42,6 +44,10 @@ public class Review {
 
     public int getItemIdInt() {
         return itemIdInt;
+    }
+
+    public String getItemId() {
+        return this.itemId;
     }
 
     public String getDate() {

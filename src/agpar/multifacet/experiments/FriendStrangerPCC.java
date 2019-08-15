@@ -29,7 +29,7 @@ public class FriendStrangerPCC {
         SynchronizedAppendResultWriter writer = new SynchronizedAppendResultWriter(path);
         List<User> users = new ArrayList<User>(yd.getUsers());
 
-        PairwiseCalculator.calc(users, resultCalculator, writer);
+        PairwiseCalculator.calc(users, resultCalculator, writer, true);
     }
 
     public static void averagePCC(String path) {
