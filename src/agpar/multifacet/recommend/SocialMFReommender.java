@@ -6,6 +6,7 @@ import net.librec.data.model.TextDataModel;
 import net.librec.eval.RecommenderEvaluator;
 import net.librec.eval.rating.MAEEvaluator;
 import net.librec.eval.rating.MSEEvaluator;
+import net.librec.math.algorithm.Randoms;
 import net.librec.recommender.Recommender;
 import net.librec.recommender.RecommenderContext;
 import net.librec.recommender.context.rating.SocialMFRecommender;
@@ -21,8 +22,8 @@ public class SocialMFReommender {
         conf.set("data.appender.class", "net.librec.data.convertor.appender.SocialDataAppender");
         conf.set("rec.neighbors.knn.number", "3");
         conf.set("rec.iterator.maximum", "100");
-        conf.set("rec.random.seed", "1");
 
+        Randoms.seed(1);
 
         // build data model
         DataModel dataModel = new TextDataModel(conf);

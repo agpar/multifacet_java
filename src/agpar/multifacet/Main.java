@@ -1,10 +1,7 @@
 package agpar.multifacet;
 
-import agpar.multifacet.recommend.RatingTupleGenerator;
 import agpar.multifacet.recommend.SocialMFReommender;
 import net.librec.common.LibrecException;
-
-import java.nio.file.Path;
 
 import static java.lang.System.exit;
 
