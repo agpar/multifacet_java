@@ -17,8 +17,10 @@ Runs an entire experiment from beginning to end.
 public class ExperimentRunner {
 
     private String expDir;
+    private String name;
 
     public ExperimentRunner(String name) {
+        this.name = name;
         this.expDir = Path.of(Settings.EXPERIMENT_DIR, name).toString();
         if(!Files.exists(Path.of(this.expDir))) {
             new File(this.expDir).mkdirs();
@@ -26,8 +28,8 @@ public class ExperimentRunner {
     }
 
 
-    public void runFriendPredict(String title, int numUsers) throws LibrecException{
-        System.out.printf("Running %s with %d users.\n", title, numUsers);
+    public void runFriendPredict(int numUsers) throws LibrecException{
+        System.out.printf("Running %s with %d users.\n", this.name, numUsers);
         this.initSingleVects(numUsers);
         this.initPairwiseVects(numUsers);
         this.initPredictions(numUsers);
@@ -97,22 +99,22 @@ public class ExperimentRunner {
 
     private String singleVectFilePath(int numUsers) {
         String singleVectFileName = String.format("single_%d.csv", numUsers);
-        return Path.of(Settings.EXPERIMENT_DIR, singleVectFileName).toString();
+        return Path.of(this.expDir, singleVectFileName).toString();
     }
 
     private String pairwiseVectFilePath(int numUsers) {
         String pairwiseVectFileName = String.format("pairwise_%d.csv", numUsers);
-        return Path.of(Settings.EXPERIMENT_DIR, pairwiseVectFileName).toString();
+        return Path.of(this.expDir, pairwiseVectFileName).toString();
     }
 
     private String predictionsFilePath(int numUsers) {
         String pairwiseVectFileName = String.format("predictions_%d.txt", numUsers);
-        return Path.of(Settings.EXPERIMENT_DIR, pairwiseVectFileName).toString();
+        return Path.of(this.expDir, pairwiseVectFileName).toString();
     }
 
     private String ratingFilePath(int numUsers) {
         String pairwiseVectFileName = String.format("ratings_%d.txt", numUsers);
-        return Path.of(Settings.EXPERIMENT_DIR, pairwiseVectFileName).toString();
+        return Path.of(this.expDir, pairwiseVectFileName).toString();
     }
 
     private void generateSingleVects(int numUsers) {
