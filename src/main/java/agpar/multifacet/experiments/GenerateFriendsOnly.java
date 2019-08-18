@@ -4,7 +4,6 @@ import agpar.multifacet.YelpData;
 import agpar.multifacet.data_interface.data_classes.User;
 import agpar.multifacet.pairwise.result_calculators.AllResultsCalculator;
 import agpar.multifacet.pairwise.runners.FriendOnlyCalculator;
-import agpar.multifacet.pairwise.runners.PairwiseCalculator;
 import agpar.multifacet.pairwise.io.SynchronizedAppendResultWriter;
 import agpar.multifacet.pairwise.result_calculators.ResultCalculator;
 import agpar.multifacet.pairwise.review_avg_calculators.ItemReviewAvgCalculator;

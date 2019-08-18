@@ -5,7 +5,6 @@ import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.data_classes.User;
 
 import java.io.BufferedWriter;
-import java.io.FileDescriptor;
 import java.io.FileWriter;
 import java.io.IOException;
 

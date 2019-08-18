@@ -3,7 +3,6 @@ package agpar.multifacet.pairwise.runners;
 import agpar.multifacet.data_interface.data_classes.User;
 import agpar.multifacet.pairwise.io.ResultWriter;
 import agpar.multifacet.pairwise.result_calculators.ResultCalculator;
-import agpar.multifacet.pairwise.runners.PairwiseRunner;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;

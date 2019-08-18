@@ -10,7 +10,6 @@ import net.librec.math.algorithm.Randoms;
 import net.librec.recommender.Recommender;
 import net.librec.recommender.RecommenderContext;
 import net.librec.recommender.context.rating.SoRecRecommender;
-import net.librec.recommender.context.rating.SocialMFRecommender;
 
 
 public class SocialMFReommender {
