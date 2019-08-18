@@ -1,4 +1,4 @@
-package agpar.multifacet.experiments;
+package agpar.multifacet.data_generators;
 
 import agpar.multifacet.YelpData;
 import agpar.multifacet.data_interface.data_classes.User;
