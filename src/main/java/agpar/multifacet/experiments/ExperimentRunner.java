@@ -1,11 +1,13 @@
-package agpar.multifacet;
+package agpar.multifacet.experiments;
 
-import agpar.multifacet.experiments.GenerateAllPairwise;
+import agpar.multifacet.Settings;
+import agpar.multifacet.data_generators.GenerateAllPairwise;
 import agpar.multifacet.recommend.RatingTupleGenerator;
-import agpar.multifacet.recommend.SocialMFReommender;
+import agpar.multifacet.recommend.RecRunner;
 import net.librec.common.LibrecException;
+import net.librec.math.algorithm.Randoms;
 
-import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -14,21 +16,23 @@ import static java.lang.System.exit;
 /*
 Runs an entire experiment from beginning to end.
  */
-public class ExperimentRunner {
+public abstract class ExperimentRunner {
 
-    private String expDir;
-    private String name;
+    protected String expDir;
+    protected String name;
+    protected RecRunner recommender;
 
-    public ExperimentRunner(String name) {
+    public ExperimentRunner(String name, RecRunner recommender, int seed) throws IOException{
         this.name = name;
         this.expDir = Path.of(Settings.EXPERIMENT_DIR, name).toString();
+        this.recommender = recommender;
+        Randoms.seed(seed);
         if(!Files.exists(Path.of(this.expDir))) {
-            new File(this.expDir).mkdirs();
+            throw new IOException("%s does not exist. Create it and copy any files you want to re use.");
         }
     }
 
-
-    public void runFriendPredict(int numUsers) throws LibrecException{
+    public void run(int numUsers) throws LibrecException{
         System.out.printf("Running %s with %d users.\n", this.name, numUsers);
         this.initSingleVects(numUsers);
         this.initPairwiseVects(numUsers);
@@ -37,15 +41,15 @@ public class ExperimentRunner {
         this.evaluatePredictions(numUsers);
     }
 
-    private void evaluatePredictions(int numUsers) throws LibrecException {
-        SocialMFReommender.learn(
+    protected  void evaluatePredictions(int numUsers) throws LibrecException {
+        this.recommender.learn(
                 this.expDir,
                 Path.of(this.ratingFilePath(numUsers)).getFileName().toString(),
                 Path.of(this.predictionsFilePath(numUsers)).getFileName().toString()
         );
-    }
+    };
 
-    private void initSingleVects(int numUsers) {
+    protected void initSingleVects(int numUsers) {
         if(!this.singleVectsExists(numUsers)) {
             System.out.println("Single vects not generated. Generating...");
             this.generateSingleVects(numUsers);
@@ -54,7 +58,7 @@ public class ExperimentRunner {
         }
     }
 
-    private void initPairwiseVects(int numUsers) {
+    protected void initPairwiseVects(int numUsers) {
         if(!this.pairwiseVectsExists(numUsers)) {
             System.out.println("Pairwise vects not generated. Generating...");
             this.generatePairwiseVects(numUsers);
@@ -63,7 +67,7 @@ public class ExperimentRunner {
         }
     }
 
-    private void initPredictions(int numUsers) {
+    protected void initPredictions(int numUsers) {
         if(!this.predictionsFileExists(numUsers)) {
             System.out.println("Predictions not generated. Generating...");
             this.generatePredictions(numUsers);
@@ -72,7 +76,7 @@ public class ExperimentRunner {
         }
     }
 
-    private void initRatings(int numUsers) {
+    protected void initRatings(int numUsers) {
         if(!this.ratingFileExists(numUsers)) {
             System.out.println("Rating tuples not generated. Generating...");
             this.generateRating(numUsers);
@@ -81,43 +85,43 @@ public class ExperimentRunner {
         }
     }
 
-    private boolean singleVectsExists(int numUsers) {
+    protected boolean singleVectsExists(int numUsers) {
         return Files.exists(Path.of(this.singleVectFilePath(numUsers)));
     }
 
-    private boolean pairwiseVectsExists(int numUsers) {
+    protected boolean pairwiseVectsExists(int numUsers) {
         return Files.exists(Path.of(this.pairwiseVectFilePath(numUsers)));
     }
 
-    private boolean predictionsFileExists(int numUsers) {
+    protected boolean predictionsFileExists(int numUsers) {
         return Files.exists(Path.of(this.predictionsFilePath(numUsers)));
     }
 
-    private boolean ratingFileExists(int numUsers) {
+    protected boolean ratingFileExists(int numUsers) {
         return Files.exists(Path.of(this.ratingFilePath(numUsers)));
     }
 
-    private String singleVectFilePath(int numUsers) {
+    protected String singleVectFilePath(int numUsers) {
         String singleVectFileName = String.format("single_%d.csv", numUsers);
         return Path.of(this.expDir, singleVectFileName).toString();
     }
 
-    private String pairwiseVectFilePath(int numUsers) {
+    protected String pairwiseVectFilePath(int numUsers) {
         String pairwiseVectFileName = String.format("pairwise_%d.csv", numUsers);
         return Path.of(this.expDir, pairwiseVectFileName).toString();
     }
 
-    private String predictionsFilePath(int numUsers) {
+    protected String predictionsFilePath(int numUsers) {
         String pairwiseVectFileName = String.format("predictions_%d.txt", numUsers);
         return Path.of(this.expDir, pairwiseVectFileName).toString();
     }
 
-    private String ratingFilePath(int numUsers) {
+    protected String ratingFilePath(int numUsers) {
         String pairwiseVectFileName = String.format("ratings_%d.txt", numUsers);
         return Path.of(this.expDir, pairwiseVectFileName).toString();
     }
 
-    private void generateSingleVects(int numUsers) {
+    protected void generateSingleVects(int numUsers) {
         String scriptPath = Path.of(Settings.PYTHON_PROJECT_DIR, "generate_single_vects.py").toString();
         String cmd = String.format("%s 0 %d %s", scriptPath, numUsers, this.singleVectFilePath(numUsers));
         try {
@@ -131,11 +135,11 @@ public class ExperimentRunner {
         }
     }
 
-    private void generatePairwiseVects(int numUsers) {
+    protected void generatePairwiseVects(int numUsers) {
         GenerateAllPairwise.generateData(this.pairwiseVectFilePath(numUsers), numUsers, false);
     }
 
-    private void generatePredictions(int numUsers) {
+    protected void generatePredictions(int numUsers) {
         String scriptPath = Path.of(Settings.PYTHON_PROJECT_DIR, "predict_friendship.py").toString();
         String cmd = String.format("%s %s %s %s",
                 scriptPath,
@@ -154,7 +158,7 @@ public class ExperimentRunner {
         }
     }
 
-    private void generateRating(int numUsers) {
+    protected void generateRating(int numUsers) {
         RatingTupleGenerator.GenerateReviewTuples(numUsers, this.ratingFilePath(numUsers));
     }
 }

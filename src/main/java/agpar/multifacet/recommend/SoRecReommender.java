@@ -1,5 +1,6 @@
 package agpar.multifacet.recommend;
 
+import net.librec.common.LibrecException;
 import net.librec.conf.Configuration;
 import net.librec.data.DataModel;
 import net.librec.data.model.TextDataModel;
@@ -12,20 +13,14 @@ import net.librec.recommender.RecommenderContext;
 import net.librec.recommender.context.rating.SoRecRecommender;
 
 
-public class SocialMFReommender {
-    public static void learn(String exp_dir, String rating_file, String social_file) throws net.librec.common.LibrecException {
+public class SoRecReommender extends RecRunner{
+
+    @Override
+    protected void learnImplementation() throws LibrecException {
         // recommender configuration
-        Configuration conf = new Configuration();
-        conf.set("data.input.path", rating_file);
-        conf.set("dfs.data.dir", exp_dir);
-        conf.set("data.appender.path", social_file);
-        conf.set("data.appender.class", "net.librec.data.convertor.appender.SocialDataAppender");
-        conf.set("rec.neighbors.knn.number", "3");
-        conf.set("rec.iterator.maximum", "200");
-        conf.setFloat("rec.social.regularization", 10f);
-        conf.setFloat("rec.rate.social.regularization", 0.01F);
-        conf.setFloat("rec.user.social.regularization", 0.01F);
-        Randoms.seed(2);
+//        conf.setFloat("rec.social.regularization", 1f);
+//        conf.setFloat("rec.rate.social.regularization", 0.01F);
+//        conf.setFloat("rec.user.social.regularization", 0.01F);
 
         // build data model
         DataModel dataModel = new TextDataModel(conf);

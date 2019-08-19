@@ -19,27 +19,16 @@ class FangTrust():
         return self._cache[user['user_id']].get(indicator_title, None)
 
     def get_vector(self, truster, trustee):
-        vect = []
-        #vect.append(self.benevolence_pcc(truster, trustee))
-        #vect.append(self.benevolence_cos(truster, trustee))
-        vect.append(self.integrity_pcc(trustee))
-        vect.append(self.integrity_cos(trustee))
-        vect.append(self.integrity_pcc(truster))
-        vect.append(self.integrity_cos(truster))
-        vect.append(self.competence(trustee))
-        vect.append(self.competence(truster))
+        vect = [self.integrity_pcc(trustee), self.integrity_cos(trustee), self.integrity_pcc(truster),
+                self.integrity_cos(truster), self.competence(trustee), self.competence(truster)]
         return vect
 
     def get_solo_vector(self, truster):
-        vect = []
-        vect.append(self.integrity_pcc(truster))
-        vect.append(self.competence(truster))
+        vect = [self.integrity_pcc(truster), self.competence(truster)]
         return vect
 
     def vector_labels(self):
         return [
-            #'benevolence_pcc',
-            #'benevolence_cos',
             'trustee_integrity_pcc',
             'trustee_integrity_cos',
             'truster_integrity_pcc',

@@ -17,6 +17,7 @@ public class PairwiseMetrics {
         HashSet<Integer> mutuallyReviewed = new HashSet<>(user1.getItemsReviewed());
         mutuallyReviewed.retainAll(user2.getItemsReviewed());
         if (mutuallyReviewed.size() < minOverlap) {
+            //TODO should this be null or 0?
             return null;
         }
 
