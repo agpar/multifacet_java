@@ -10,6 +10,7 @@ public class User {
     private String userId;
     private int userIdInt;
     private HashSet<Integer> friendsInt;
+    private HashSet<Integer> categoriesReviewed;
     private ReviewList reviews;
 
     public User(String userId, int userIdInt, HashSet<Integer> friendsInt) {
@@ -52,5 +53,9 @@ public class User {
 
     public Set<Integer> getItemsReviewed() {
         return this.reviews.getItemsReviewed();
+    }
+
+    public Set<Integer> getCategoriesReviewed() {
+        return this.categoriesReviewed;
     }
 }

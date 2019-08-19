@@ -1,5 +1,6 @@
 package agpar.multifacet;
 
+import agpar.multifacet.data_interface.data_classes.Business;
 import agpar.multifacet.data_interface.io.DataReader;
 import agpar.multifacet.data_interface.collections.ReviewsById;
 import agpar.multifacet.data_interface.collections.UsersById;
@@ -7,11 +8,13 @@ import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.data_classes.User;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class YelpData {
     private UsersById usersById;
     private ReviewsById reviewsByItemId;
+    private HashMap<Integer, Business> businesses;
     private DataReader reader;
     private static YelpData instance;
 
@@ -30,9 +33,11 @@ public class YelpData {
         System.out.println("Loading Users");
         this.usersById = reader.loadUsers(start, stop);
         System.out.println("Loading Reviews");
-        this.reviewsByItemId = reader.loadReviews(0, 100000000);
+        this.reviewsByItemId = reader.loadReviews();
+        System.out.println("Loading Businesses");
+        this.businesses = reader.loadBusinesses();
 
-        // Adding reviews to users.
+        // Adding reviews and categories to users.
         ReviewsById reviewsByUserId = new ReviewsById();
         for (List<Review> reviews: this.reviewsByItemId.values()) {
             for (Review review: reviews) {
@@ -43,6 +48,14 @@ public class YelpData {
         for (User user : this.usersById.values()) {
             user.addReviews(reviewsByUserId.get(user.getUserIdInt()));
         }
+
+        // Adding categories
+        for(User user: this.usersById.values()) {
+            for (Review review : user.getReviews()) {
+                user.getCategoriesReviewed().addAll(this.businesses.get(review.getItemIdInt()).categories);
+            }
+        }
+
     }
 
     public ReviewsById getReviewsByItemId() {
