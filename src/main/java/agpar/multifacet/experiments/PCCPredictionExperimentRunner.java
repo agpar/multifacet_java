@@ -1,8 +1,8 @@
 package agpar.multifacet.experiments;
 
 import agpar.multifacet.Settings;
-import agpar.multifacet.recommend.RecRunner;
-import net.librec.common.LibrecException;
+import agpar.multifacet.pairwise.io.ResultWriter;
+import agpar.multifacet.recommend.RecommenderTester;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -11,10 +11,10 @@ import static java.lang.System.exit;
 
 public class PCCPredictionExperimentRunner extends ExperimentRunner {
 
-    public PCCPredictionExperimentRunner(String name, RecRunner recommender, int seed) throws IOException {
-        super(name, recommender, seed);
-    }
 
+    public PCCPredictionExperimentRunner(ExperimentDescription description, RecommenderTester recommender, ResultWriter resultWriter) throws IOException {
+        super(description, recommender, resultWriter);
+    }
 
     @Override
     protected String predictionsFilePath(int numUsers) {

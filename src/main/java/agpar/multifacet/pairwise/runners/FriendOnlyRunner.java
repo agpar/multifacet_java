@@ -49,7 +49,7 @@ public class FriendOnlyRunner implements Runnable {
             results.add(result);
         }
         try {
-            this.resultWriter.WriteResults(results);
+            this.resultWriter.writeResults(results);
         } catch (IOException e) {
             System.out.println("Failed to write results in thread.");
             e.printStackTrace();

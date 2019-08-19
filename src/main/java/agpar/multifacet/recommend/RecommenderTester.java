@@ -1,5 +1,6 @@
 package agpar.multifacet.recommend;
 
+import agpar.multifacet.experiments.ExperimentDescription;
 import net.librec.common.LibrecException;
 import net.librec.conf.Configuration;
 import net.librec.eval.RecommenderEvaluator;
@@ -10,7 +11,7 @@ import net.librec.recommender.Recommender;
 import java.util.Dictionary;
 import java.util.HashMap;
 
-public abstract class RecRunner {
+public abstract class RecommenderTester {
     protected String experimentDir;
     protected String ratingFile;
     protected String socialFile;
@@ -21,11 +22,12 @@ public abstract class RecRunner {
         this.ratingFile = ratingFile;
         this.socialFile = socialFile;
         this.conf = new Configuration();
+
         conf.set("data.input.path", this.ratingFile);
         conf.set("dfs.data.dir", this.experimentDir);
         conf.set("data.appender.path", this.socialFile);
         conf.set("data.appender.class", "net.librec.data.convertor.appender.SocialDataAppender");
-        conf.set("rec.iterator.maximum", "1000");
+
         Recommender recommender = this.learnImplementation();
         return this.evaluate(recommender);
     };
@@ -42,5 +44,8 @@ public abstract class RecRunner {
         return results;
 
     }
+
+    public abstract void loadDescription(ExperimentDescription description);
+
     protected abstract Recommender learnImplementation() throws LibrecException;
 }

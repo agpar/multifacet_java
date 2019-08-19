@@ -16,7 +16,7 @@ public class SynchronizedAppendResultWriter implements ResultWriter{
         this.filePath = filePath;
     }
 
-    public synchronized void WriteResults(List<PairwiseResult> results) throws IOException{
+    public synchronized void writeResults(List<PairwiseResult> results) throws IOException{
         if (this.writer == null) {
             this.open();
         }
@@ -24,6 +24,13 @@ public class SynchronizedAppendResultWriter implements ResultWriter{
         for (PairwiseResult result : results) {
             this.writer.write(String.format("%s\n", result.toString()));
         }
+    }
+
+    public synchronized void writeResults(String result) throws IOException {
+        if (this.writer == null) {
+            this.open();
+        }
+        this.writer.write(result);
     }
 
     public synchronized void open() throws IOException{

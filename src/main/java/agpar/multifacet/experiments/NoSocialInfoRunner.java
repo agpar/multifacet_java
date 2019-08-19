@@ -1,19 +1,20 @@
 package agpar.multifacet.experiments;
 
-import agpar.multifacet.pairwise.PairwiseResult;
-import agpar.multifacet.recommend.RecRunner;
+import agpar.multifacet.pairwise.io.ResultWriter;
+import agpar.multifacet.recommend.RecommenderTester;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.nio.file.Path;
 
 import static java.lang.System.exit;
 
 public class NoSocialInfoRunner extends ExperimentRunner {
-    public NoSocialInfoRunner(String name, RecRunner recommender, int seed) throws IOException {
-        super(name, recommender, seed);
+
+
+    public NoSocialInfoRunner(ExperimentDescription description, RecommenderTester recommender, ResultWriter resultWriter) throws IOException {
+        super(description, recommender, resultWriter);
     }
 
     protected String predictionsFilePath(int numUsers) {

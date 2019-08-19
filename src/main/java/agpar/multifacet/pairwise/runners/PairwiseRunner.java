@@ -43,7 +43,7 @@ public class PairwiseRunner implements Runnable{
             }
         }
         try {
-            this.resultWriter.WriteResults(results);
+            this.resultWriter.writeResults(results);
         } catch (IOException e) {
             System.out.println("Failed to write results in thread.");
             e.printStackTrace();

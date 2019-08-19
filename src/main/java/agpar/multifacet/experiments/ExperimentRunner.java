@@ -2,47 +2,63 @@ package agpar.multifacet.experiments;
 
 import agpar.multifacet.Settings;
 import agpar.multifacet.data_generators.GenerateAllPairwise;
+import agpar.multifacet.pairwise.io.ResultWriter;
 import agpar.multifacet.recommend.RatingTupleGenerator;
-import agpar.multifacet.recommend.RecRunner;
+import agpar.multifacet.recommend.RecommenderTester;
 import net.librec.common.LibrecException;
 import net.librec.math.algorithm.Randoms;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 
 import static java.lang.System.exit;
 
 /*
 Runs an entire experiment from beginning to end.
  */
-public abstract class ExperimentRunner {
+public abstract class ExperimentRunner implements Runnable {
 
     protected String expDir;
     protected String name;
-    protected RecRunner recommender;
+    protected RecommenderTester recommender;
+    protected ExperimentDescription description;
+    protected ResultWriter resultWriter;
 
-    public ExperimentRunner(String name, RecRunner recommender, int seed) throws IOException{
-        this.name = name;
+    public ExperimentRunner(ExperimentDescription description, RecommenderTester recommender, ResultWriter resultWriter) throws IOException{
+        this.name = description.getName();
         this.expDir = Path.of(Settings.EXPERIMENT_DIR, name).toString();
         this.recommender = recommender;
-        Randoms.seed(seed);
+        this.description = description;
+        Randoms.seed(description.getRandomSeed());
         if(!Files.exists(Path.of(this.expDir))) {
             throw new IOException(String.format("%s does not exist. Create it and copy any files you want to re use.", this.expDir));
         }
     }
 
-    public void run(int numUsers) throws LibrecException{
-        System.out.printf("Running %s with %d users.\n", this.name, numUsers);
-        this.initSingleVects(numUsers);
-        this.initPairwiseVects(numUsers);
-        this.initPredictions(numUsers);
-        this.initRatings(numUsers);
-        this.evaluatePredictions(numUsers);
+    public void run() {
+        System.out.printf("Running %s with %d users.\n", this.name, this.description.getNumUsers());
+        this.initSingleVects(this.description.getNumUsers());
+        this.initPairwiseVects(this.description.getNumUsers());
+        this.initPredictions(this.description.getNumUsers());
+        this.initRatings(this.description.getNumUsers());
+        try {
+            HashMap<String, Double> results = this.evaluatePredictions(this.description.getNumUsers());
+            String resultString = description.toString() + String.format("MAE: %f\nMSE: %f\n\n", results.get("MAE"), results.get("MSE"));
+            resultWriter.writeResults(resultString);
+        } catch (LibrecException e) {
+            System.out.println("Recommender system failed.");
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("Failed to write results.");
+            e.printStackTrace();
+        }
     }
 
-    protected  void evaluatePredictions(int numUsers) throws LibrecException {
-        this.recommender.learn(
+    protected HashMap<String, Double> evaluatePredictions(int numUsers) throws LibrecException {
+        this.recommender.loadDescription(this.description);
+        return this.recommender.learn(
                 this.expDir,
                 Path.of(this.ratingFilePath(numUsers)).getFileName().toString(),
                 Path.of(this.predictionsFilePath(numUsers)).getFileName().toString()
