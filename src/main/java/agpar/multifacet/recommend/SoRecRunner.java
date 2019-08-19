@@ -13,14 +13,21 @@ import net.librec.recommender.RecommenderContext;
 import net.librec.recommender.context.rating.SoRecRecommender;
 
 
-public class SoRecReommender extends RecRunner{
+public class SoRecRunner extends RecRunner{
 
     @Override
-    protected void learnImplementation() throws LibrecException {
-        // recommender configuration
-//        conf.setFloat("rec.social.regularization", 1f);
-//        conf.setFloat("rec.rate.social.regularization", 0.01F);
-//        conf.setFloat("rec.user.social.regularization", 0.01F);
+    protected Recommender learnImplementation() throws LibrecException {
+        /*
+        The important hyper parameter here is rec.social.regularization, as this controls the level
+        of impact the social graph has on the optimization.
+        Social graph should have entries in (0, 1], where a 0 indicates an unknown.
+
+        I'm pretty sure 'rec.social.regularization' is not actually used by this recommender.
+         */
+
+        //conf.setFloat("rec.social.regularization", 10F);
+        conf.setFloat("rec.rate.social.regularization", 10F);
+        conf.setFloat("rec.user.social.regularization", 0.01F);
 
         // build data model
         DataModel dataModel = new TextDataModel(conf);
@@ -33,12 +40,6 @@ public class SoRecReommender extends RecRunner{
         Recommender recommender = new SoRecRecommender();
         recommender.recommend(context);
 
-        // evaluation
-        RecommenderEvaluator evaluator = new MAEEvaluator();
-        Double MAE = recommender.evaluate(evaluator);
-        RecommenderEvaluator evaluator2 = new MSEEvaluator();
-        Double MSE = recommender.evaluate(evaluator2);
-        System.out.printf("MAE: %f\n", MAE);
-        System.out.printf("MSE: %f\n", MSE);
+        return recommender;
     }
 }

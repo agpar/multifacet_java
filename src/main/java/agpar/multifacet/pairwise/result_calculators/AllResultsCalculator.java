@@ -19,10 +19,6 @@ public class AllResultsCalculator extends ResultCalculator{
         double socialJacc = PairwiseMetrics.socialJaccard(user1, user2);
         double itemJacc = PairwiseMetrics.itemJaccard(user1, user2);
 
-        if ((pcc == null) && (!areFriends) && itemJacc == 0 && socialJacc == 0) {
-            return null;
-        }
-
         PairwiseResult result =  new PairwiseResult(
                 user1.getUserId(),
                 user2.getUserId(),

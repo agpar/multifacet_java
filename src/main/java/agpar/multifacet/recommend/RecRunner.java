@@ -2,6 +2,13 @@ package agpar.multifacet.recommend;
 
 import net.librec.common.LibrecException;
 import net.librec.conf.Configuration;
+import net.librec.eval.RecommenderEvaluator;
+import net.librec.eval.rating.MAEEvaluator;
+import net.librec.eval.rating.MSEEvaluator;
+import net.librec.recommender.Recommender;
+
+import java.util.Dictionary;
+import java.util.HashMap;
 
 public abstract class RecRunner {
     protected String experimentDir;
@@ -9,7 +16,7 @@ public abstract class RecRunner {
     protected String socialFile;
     public Configuration conf;
 
-    public  void learn(String experimentDir, String ratingFile, String socialFile) throws LibrecException {
+    public  HashMap<String, Double> learn(String experimentDir, String ratingFile, String socialFile) throws LibrecException {
         this.experimentDir = experimentDir;
         this.ratingFile = ratingFile;
         this.socialFile = socialFile;
@@ -19,8 +26,21 @@ public abstract class RecRunner {
         conf.set("data.appender.path", this.socialFile);
         conf.set("data.appender.class", "net.librec.data.convertor.appender.SocialDataAppender");
         conf.set("rec.iterator.maximum", "1000");
-        this.learnImplementation();
+        Recommender recommender = this.learnImplementation();
+        return this.evaluate(recommender);
     };
 
-    protected abstract void learnImplementation() throws LibrecException;
+    protected HashMap<String, Double> evaluate(Recommender recommender) throws LibrecException{
+        RecommenderEvaluator evaluator = new MAEEvaluator();
+        Double MAE = recommender.evaluate(evaluator);
+        RecommenderEvaluator evaluator2 = new MSEEvaluator();
+        Double MSE = recommender.evaluate(evaluator2);
+
+        HashMap<String, Double> results = new HashMap<>();
+        results.put("MAE", MAE);
+        results.put("MSE", MSE);
+        return results;
+
+    }
+    protected abstract Recommender learnImplementation() throws LibrecException;
 }
