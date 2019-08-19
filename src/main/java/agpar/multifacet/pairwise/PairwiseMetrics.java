@@ -48,6 +48,10 @@ public class PairwiseMetrics {
         return PairwiseMetrics.jaccard(user1.getItemsReviewed(), user2.getItemsReviewed());
     }
 
+    public static double categoryJaccard(User user1, User user2) {
+        return PairwiseMetrics.jaccard(user1.getCategoriesReviewed(), user2.getCategoriesReviewed());
+    }
+
     public static Review[] filterReviews(ReviewList reviews, HashSet<Integer> itemSet) {
         Review[] filteredReviews = new Review[itemSet.size()];
         int i = 0;

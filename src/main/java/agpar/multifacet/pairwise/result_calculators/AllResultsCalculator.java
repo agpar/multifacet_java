@@ -18,6 +18,7 @@ public class AllResultsCalculator extends ResultCalculator{
         boolean areFriends = PairwiseMetrics.areFriends(user1, user2);
         double socialJacc = PairwiseMetrics.socialJaccard(user1, user2);
         double itemJacc = PairwiseMetrics.itemJaccard(user1, user2);
+        double categoryJacc = PairwiseMetrics.categoryJaccard(user1, user2);
 
         PairwiseResult result =  new PairwiseResult(
                 user1.getUserId(),
@@ -26,7 +27,8 @@ public class AllResultsCalculator extends ResultCalculator{
                 socialJacc,
                 areFriends,
                 socialJacc > 0,
-                itemJacc);
+                itemJacc,
+                categoryJacc);
 
         return result;
     }

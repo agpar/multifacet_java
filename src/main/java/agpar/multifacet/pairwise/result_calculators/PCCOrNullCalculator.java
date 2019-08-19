@@ -26,6 +26,7 @@ public class PCCOrNullCalculator extends ResultCalculator {
                 0,
                 areFriends,
                 false,
+                0,
                 0
         );
     }
