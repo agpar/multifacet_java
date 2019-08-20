@@ -15,13 +15,12 @@ public abstract class RecommenderTester {
     protected String experimentDir;
     protected String ratingFile;
     protected String socialFile;
-    public Configuration conf;
+    public Configuration conf = new Configuration();
 
     public  HashMap<String, Double> learn(String experimentDir, String ratingFile, String socialFile) throws LibrecException {
         this.experimentDir = experimentDir;
         this.ratingFile = ratingFile;
         this.socialFile = socialFile;
-        this.conf = new Configuration();
 
         conf.set("data.input.path", this.ratingFile);
         conf.set("dfs.data.dir", this.experimentDir);

@@ -27,8 +27,6 @@ public class SoRecTester extends RecommenderTester {
         I'm pretty sure 'rec.social.regularization' is not actually used by this recommender.
          */
 
-        conf.setFloat("rec.rate.social.regularization", 10F);
-
         // build data model
         DataModel dataModel = new TextDataModel(conf);
         dataModel.buildDataModel();
