@@ -26,5 +26,6 @@ public class Main {
         ResultWriter writer = new SynchronizedAppendResultWriter(resultPath);
         ExperimentRunner exp = new FriendPredictionExperimentRunner(desc, recommender, writer);
         exp.run();
+        writer.close();
     }
 }

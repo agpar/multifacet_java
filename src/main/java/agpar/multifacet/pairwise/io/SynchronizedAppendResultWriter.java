@@ -28,9 +28,13 @@ public class SynchronizedAppendResultWriter implements ResultWriter{
 
     public synchronized void writeResults(String result) throws IOException {
         if (this.writer == null) {
-            this.open();
+            this.openNoHeader();
         }
         this.writer.write(result);
+    }
+
+    private synchronized void openNoHeader() throws IOException {
+        this.writer = new BufferedWriter(new FileWriter(this.filePath, true));
     }
 
     public synchronized void open() throws IOException{
