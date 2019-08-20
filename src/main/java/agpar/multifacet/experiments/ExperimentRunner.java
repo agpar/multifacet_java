@@ -9,6 +9,7 @@ import net.librec.common.LibrecException;
 import net.librec.math.algorithm.Randoms;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -139,13 +140,18 @@ public abstract class ExperimentRunner implements Runnable {
 
     protected void generateSingleVects(int numUsers) {
         String scriptPath = Path.of(Settings.PYTHON_PROJECT_DIR, "generate_single_vects.py").toString();
-        String outputPath = Path.of(Settings.EXPERIMENT_DIR, "single_vects.out").toString();
-        String cmd = String.format("%s 0 %d %s > %s 2>&1",
-                scriptPath, numUsers, this.singleVectFilePath(numUsers), outputPath);
         try {
-            Process p = Runtime.getRuntime().exec(cmd);
+            Process p = new ProcessBuilder(
+                    scriptPath,
+                    String.valueOf(0),
+                    String.valueOf(numUsers),
+                    this.singleVectFilePath(numUsers))
+                .redirectError(ProcessBuilder.Redirect.INHERIT)
+                .redirectOutput(ProcessBuilder.Redirect.INHERIT).start();
             int statusCode = p.waitFor();
-            if(statusCode != 0) throw new Exception("Failed to generate single vectors");
+            if(statusCode != 0) {
+                throw new Exception("Failed to generate single vectors");
+            }
         } catch (Exception e) {
             System.out.println("Failed to generate single vects!");
             e.printStackTrace();
@@ -159,18 +165,18 @@ public abstract class ExperimentRunner implements Runnable {
 
     protected void generatePredictions(int numUsers) {
         String scriptPath = Path.of(Settings.PYTHON_PROJECT_DIR, "predict_friendship.py").toString();
-        String outputPath = Path.of(Settings.EXPERIMENT_DIR, "predictions.out").toString();
-        String cmd = String.format("%s %s %s %s > %s 2>&1",
-                scriptPath,
-                this.singleVectFilePath(numUsers),
-                this.pairwiseVectFilePath(numUsers),
-                this.predictionsFilePath(numUsers),
-                outputPath);
-
         try {
-            Process p = Runtime.getRuntime().exec(cmd);
+            Process p = new ProcessBuilder(
+                    scriptPath,
+                    this.singleVectFilePath(numUsers),
+                    this.pairwiseVectFilePath(numUsers),
+                    this.predictionsFilePath(numUsers))
+                .redirectError(ProcessBuilder.Redirect.INHERIT)
+                .redirectOutput(ProcessBuilder.Redirect.INHERIT).start();
             int statusCode = p.waitFor();
-            if(statusCode != 0) throw new Exception("Failed to generate predictions");
+            if(statusCode != 0) {
+                throw new Exception("Failed to generate predictions");
+            }
         } catch (Exception e) {
             System.out.println("Failed to generate predictions!");
             e.printStackTrace();
