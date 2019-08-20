@@ -6,7 +6,7 @@ import csv
 from data_set import DataSet
 from regression import learn_logit
 
-PCC_IND = 22
+PCC_IND = -6
 
 
 def parse_pairwise_line(line):
