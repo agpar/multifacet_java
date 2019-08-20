@@ -172,7 +172,7 @@ public abstract class ExperimentRunner implements Runnable {
             int statusCode = p.waitFor();
             if(statusCode != 0) throw new Exception("Failed to generate predictions");
         } catch (Exception e) {
-            System.out.println("Failed to generate single vects!");
+            System.out.println("Failed to generate predictions!");
             e.printStackTrace();
             exit(1);
         }
