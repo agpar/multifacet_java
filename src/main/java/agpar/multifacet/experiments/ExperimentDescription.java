@@ -18,7 +18,7 @@ public class ExperimentDescription {
     }
 
     public String toString() {
-        String template = "Experiment: %s\nRecommender: %s\nNumUsers: %d, Seed: %d\nIters: %d\nSocialReg: \f\n";
+        String template = "Experiment: %s\nRecommender: %s\nNumUsers: %d\nSeed: %d\nIters: %d\nSocialReg: %f\n";
         return String.format(template, this.name, this.recommenderName, this.numUsers, this.randomSeed, this.numIterations, this.socialReg);
     }
 
