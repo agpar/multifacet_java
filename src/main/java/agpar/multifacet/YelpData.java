@@ -52,7 +52,8 @@ public class YelpData {
         // Adding categories
         for(User user: this.usersById.values()) {
             for (Review review : user.getReviews()) {
-                user.getCategoriesReviewed().addAll(this.businesses.get(review.getItemIdInt()).categories);
+                Business business = this.businesses.get(review.getItemIdInt());
+                user.getCategoriesReviewed().addAll(business.categories);
             }
         }
 
