@@ -14,7 +14,7 @@ public class SoRecTester extends RecommenderTester {
     @Override
     public void loadDescription(ExperimentDescription description) {
         conf.setFloat("rec.rate.social.regularization", description.getSocialReg());
-
+        conf.set("rec.iterator.maximum", String.valueOf(description.getNumIterations()));
     }
 
     @Override
