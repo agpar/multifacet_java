@@ -139,7 +139,9 @@ public abstract class ExperimentRunner implements Runnable {
 
     protected void generateSingleVects(int numUsers) {
         String scriptPath = Path.of(Settings.PYTHON_PROJECT_DIR, "generate_single_vects.py").toString();
-        String cmd = String.format("%s 0 %d %s", scriptPath, numUsers, this.singleVectFilePath(numUsers));
+        String outputPath = Path.of(Settings.EXPERIMENT_DIR, "single_vects.out").toString();
+        String cmd = String.format("%s 0 %d %s > %s 2>&1",
+                scriptPath, numUsers, this.singleVectFilePath(numUsers), outputPath);
         try {
             Process p = Runtime.getRuntime().exec(cmd);
             int statusCode = p.waitFor();
@@ -157,11 +159,13 @@ public abstract class ExperimentRunner implements Runnable {
 
     protected void generatePredictions(int numUsers) {
         String scriptPath = Path.of(Settings.PYTHON_PROJECT_DIR, "predict_friendship.py").toString();
-        String cmd = String.format("%s %s %s %s",
+        String outputPath = Path.of(Settings.EXPERIMENT_DIR, "predictions.out").toString();
+        String cmd = String.format("%s %s %s %s > %s 2>&1",
                 scriptPath,
                 this.singleVectFilePath(numUsers),
                 this.pairwiseVectFilePath(numUsers),
-                this.predictionsFilePath(numUsers));
+                this.predictionsFilePath(numUsers),
+                outputPath);
 
         try {
             Process p = Runtime.getRuntime().exec(cmd);
