@@ -1,0 +1,10 @@
+[
+  {
+    "name": "NoPrediction",
+    "recommenderName": "SoRec",
+    "numUsers": 2000,
+    "randomSeed": 4,
+    "numIterations": 500,
+    "socialReg": 5
+  }
+]

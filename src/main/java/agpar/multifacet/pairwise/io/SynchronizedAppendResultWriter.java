@@ -5,12 +5,14 @@ import agpar.multifacet.pairwise.PairwiseResult;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 
 
 public class SynchronizedAppendResultWriter implements ResultWriter{
     private String filePath;
-    private Writer writer;
+    private BufferedWriter writer;
+    private static HashMap<String, SynchronizedAppendResultWriter> staticWriters = new HashMap<>();
 
     public SynchronizedAppendResultWriter(String filePath) {
         this.filePath = filePath;
@@ -46,6 +48,24 @@ public class SynchronizedAppendResultWriter implements ResultWriter{
     }
 
     public synchronized void close() throws IOException{
-        this.writer.close();
+        if (this.writer != null) {
+            this.writer.close();
+        }
+    }
+
+    public static synchronized SynchronizedAppendResultWriter getSingleton(String path) {
+        if (SynchronizedAppendResultWriter.staticWriters.containsKey(path)) {
+            return SynchronizedAppendResultWriter.staticWriters.get(path);
+        } else {
+            SynchronizedAppendResultWriter writer = new SynchronizedAppendResultWriter(path);
+            SynchronizedAppendResultWriter.staticWriters.put(path, writer);
+            return writer;
+        }
+    }
+
+    public static synchronized void closeAllSingletons() throws IOException {
+        for (ResultWriter writer : SynchronizedAppendResultWriter.staticWriters.values()) {
+            writer.close();
+        }
     }
 }
