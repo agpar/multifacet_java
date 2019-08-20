@@ -22,7 +22,7 @@ public class Main {
                 1000,
                 10f
         );
-        String resultPath = Path.of(Settings.EXPERIMENT_DIR, desc.getName()).toString();
+        String resultPath = Path.of(Settings.EXPERIMENT_DIR, desc.getName(), "results.txt").toString();
         ResultWriter writer = new SynchronizedAppendResultWriter(resultPath);
         ExperimentRunner exp = new PCCPredictionExperimentRunner(desc, recommender, writer);
         exp.run();
