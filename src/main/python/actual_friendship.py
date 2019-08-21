@@ -15,7 +15,7 @@ def write_real_friends(ds_all, path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
         print("Usage: actual_friendship.py {single_vectors_path} {pairwise_vectors_path} {output_path}")
         exit(1)
 
