@@ -9,24 +9,16 @@ import java.nio.file.Path;
 
 import static java.lang.System.exit;
 
-public class PCCPredictionExperimentRunner extends ExperimentRunner {
+public class RealFriendsRunner extends ExperimentRunner{
 
-
-    public PCCPredictionExperimentRunner(ExperimentDescription description, RecommenderTester recommender, ResultWriter resultWriter) throws IOException {
+    public RealFriendsRunner(ExperimentDescription description, RecommenderTester recommender, ResultWriter resultWriter) throws IOException {
         super(description, recommender, resultWriter);
     }
 
-    @Override
-    protected String predictionsFilePath(int numUsers) {
-        String pairwiseVectFileName = String.format("predictions_pcc_%d.txt", numUsers);
-        return Path.of(this.expDir, pairwiseVectFileName).toString();
-    }
-
-    @Override
     protected void generatePredictions(int numUsers) {
-        String scriptPath = Path.of(Settings.PYTHON_PROJECT_DIR, "predict_pcc.py").toString();
+        String scriptPath = Path.of(Settings.PYTHON_PROJECT_DIR, "actual_friendship.py").toString();
         try {
-           Process p = new ProcessBuilder(
+            Process p = new ProcessBuilder(
                     scriptPath,
                     this.singleVectFilePath(numUsers),
                     this.pairwiseVectFilePath(numUsers),
@@ -34,9 +26,9 @@ public class PCCPredictionExperimentRunner extends ExperimentRunner {
                 .redirectError(ProcessBuilder.Redirect.INHERIT)
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT).start();
             int statusCode = p.waitFor();
-            if(statusCode != 0) throw new Exception("Failed to generate predictions");
+            if (statusCode != 0) throw new Exception("Failed to generate predictions");
         } catch (Exception e) {
-            System.out.println("Failed to generate  predictions!");
+            System.out.println("Failed to generate single predictions!");
             e.printStackTrace();
             exit(1);
         }

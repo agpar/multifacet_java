@@ -73,20 +73,9 @@ def write_predictions(ds_all, clf, path):
             f.write(f"{user2_id} {user1_id} {prediction}\n")
 
 
-def write_real_friends(ds_all, path):
-    with open(path, 'w') as f:
-        friend_index = ds_all.labels.index('H_areFriends')
-        for data_line in ds_all.data:
-            if data_line[friend_index]:
-                user1_id = data_line[0]
-                user2_id = data_line[1]
-                f.write(f"{user1_id} {user2_id} 1.0\n")
-                f.write(f"{user2_id} {user1_id} 1.0\n")
-
-
 if __name__ == '__main__':
     if len(sys.argv) != 4:
-        print("Usage: predict_friendship.py {single_vectors_path} {pairwise_vectors_path}")
+        print("Usage: predict_friendship.py {single_vectors_path} {pairwise_vectors_path} {output_path}")
         exit(1)
 
     single_path = sys.argv[1]
@@ -108,7 +97,6 @@ if __name__ == '__main__':
     ds_all = ds_all.split(header.index('areFriends'), start_col=2)
     ds_all = ds_all.scale()
     write_predictions(ds_all, clf, output_path)
-    #write_real_friends(ds_all, output_path)
 
 
 

@@ -13,7 +13,7 @@ import java.util.List;
 
 public class DescriptionLoader {
     public static String VALID_RECOMMENDERS = "SoRec, TrustSVD";
-    public static String VALID_NAMES = "FriendPrediction, NoPrediction, PCCPrediction";
+    public static String VALID_NAMES = "FriendPrediction, NoPrediction, PCCPrediction, RealFriends";
 
     public static ExperimentRunner load(ExperimentDescription description) throws Exception {
         RecommenderTester recommender = DescriptionLoader.getRecommender(description.getRecommenderName());
@@ -52,6 +52,8 @@ public class DescriptionLoader {
             return new NoSocialInfoRunner(description, recommender, writer);
         } else if (name.equals("PCCPrediction")) {
             return new PCCPredictionExperimentRunner(description, recommender, writer);
+        } else if (name.equals("RealFriends")) {
+            return new RealFriendsRunner(description, recommender, writer);
         } else {
             throw new Exception(String.format("Unknown experiment name: %s. Valid names are: %s",
                     name, DescriptionLoader.VALID_NAMES));

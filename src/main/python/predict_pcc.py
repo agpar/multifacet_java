@@ -5,7 +5,7 @@ import sys
 
 if __name__ == '__main__':
     if len(sys.argv) != 4:
-        print("Usage: predict_friendship.py {single_vectors_path} {pairwise_vectors_path}")
+        print("Usage: predict_pcc.py {single_vectors_path} {pairwise_vectors_path} {output_path}")
         exit(1)
 
     single_path = sys.argv[1]

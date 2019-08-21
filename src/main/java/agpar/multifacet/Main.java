@@ -27,7 +27,9 @@ public class Main {
         }
 
         try {
-            loadExperiments(args);
+            List<ExperimentRunner> experiments = loadExperiments(args);
+            runAllExperiments(experiments);
+
         } finally {
             SynchronizedAppendResultWriter.closeAllSingletons();
         }
