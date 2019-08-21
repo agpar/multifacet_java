@@ -33,10 +33,13 @@ public abstract class ExperimentRunner implements Runnable {
         this.recommender = recommender;
         this.description = description;
         this.resultWriter = resultWriter;
-        Randoms.seed(description.getRandomSeed());
         if(!Files.exists(Path.of(this.expDir))) {
             throw new IOException(String.format("%s does not exist. Create it and copy any files you want to re use.", this.expDir));
         }
+    }
+
+    public ExperimentDescription getDescription() {
+        return description;
     }
 
     public void run() {

@@ -4,17 +4,21 @@ import agpar.multifacet.experiments.ExperimentDescription;
 import net.librec.common.LibrecException;
 import net.librec.data.DataModel;
 import net.librec.data.model.TextDataModel;
+import net.librec.math.algorithm.Randoms;
 import net.librec.recommender.Recommender;
 import net.librec.recommender.RecommenderContext;
 import net.librec.recommender.context.rating.SoRecRecommender;
+
+import java.util.Random;
 
 
 public class SoRecTester extends RecommenderTester {
 
     @Override
     public void loadDescription(ExperimentDescription description) {
+        super.loadDescription(description);
         conf.setFloat("rec.rate.social.regularization", description.getSocialReg());
-        conf.set("rec.iterator.maximum", String.valueOf(description.getNumIterations()));
+
     }
 
     @Override

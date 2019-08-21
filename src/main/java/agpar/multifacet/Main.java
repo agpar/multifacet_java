@@ -11,7 +11,13 @@ import com.google.gson.stream.JsonReader;
 import java.io.FileReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import static java.lang.System.exit;
 
 public class Main {
 
@@ -37,5 +43,36 @@ public class Main {
             reader.close();
         }
         return experiments;
+    }
+
+    public static void runAllExperiments(List<ExperimentRunner> experiments) {
+        // Experiments must be groups by seed, as the seed is a global static.
+        HashMap<Integer, List<ExperimentRunner>> experimentsBySeed = new HashMap<>();
+        for(ExperimentRunner exp : experiments) {
+            if(!experimentsBySeed.containsKey(exp.getDescription().getRandomSeed())) {
+                experimentsBySeed.put(exp.getDescription().getRandomSeed(), new ArrayList<ExperimentRunner>());
+            }
+            experimentsBySeed.get(exp.getDescription().getRandomSeed()).add(exp);
+        }
+
+        // Run all experiments with the same seed in parallel
+        for(Integer key : experimentsBySeed.keySet()) {
+            List<ExperimentRunner> experimentsWithSeed = experimentsBySeed.get(key);
+            ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+            for (ExperimentRunner exp : experimentsWithSeed) {
+               executor.execute(exp);
+            }
+            boolean exited;
+            try {
+                executor.shutdown();
+                exited = executor.awaitTermination(1, TimeUnit.DAYS);
+                if (!exited) {
+                    throw new Exception("Executor did not terminate.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                exit(1);
+            }
+        }
     }
 }

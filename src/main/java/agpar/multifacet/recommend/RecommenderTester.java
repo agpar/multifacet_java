@@ -6,6 +6,7 @@ import net.librec.conf.Configuration;
 import net.librec.eval.RecommenderEvaluator;
 import net.librec.eval.rating.MAEEvaluator;
 import net.librec.eval.rating.MSEEvaluator;
+import net.librec.math.algorithm.Randoms;
 import net.librec.recommender.Recommender;
 
 import java.util.Dictionary;
@@ -44,7 +45,10 @@ public abstract class RecommenderTester {
 
     }
 
-    public abstract void loadDescription(ExperimentDescription description);
+    public void loadDescription(ExperimentDescription description) {
+        conf.set("rec.iterator.maximum", String.valueOf(description.getNumIterations()));
+        Randoms.seed(description.getRandomSeed());
+    };
 
     protected abstract Recommender learnImplementation() throws LibrecException;
 }

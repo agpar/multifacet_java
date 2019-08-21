@@ -11,6 +11,7 @@ import net.librec.recommender.context.rating.TrustSVDRecommender;
 public class TrustSVDTester extends RecommenderTester {
     @Override
     public void loadDescription(ExperimentDescription description) {
+        super.loadDescription(description);
         conf.setFloat("rec.social.regularization", description.getSocialReg());
     }
 
