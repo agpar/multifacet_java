@@ -5,6 +5,7 @@ import sys
 import csv
 from data_set import DataSet
 from regression import learn_logit
+from sklearn.model_selection import train_test_split
 
 PCC_IND = -6
 
@@ -14,19 +15,6 @@ def parse_pairwise_line(line):
     if line[PCC_IND] == 'null':
         line[PCC_IND] = 0.0
     return [float(x) for x in line]
-
-
-def combined_vectors_with_pcc(pairwise_vects, solo_vects):
-    solo_by_id = {v[0]: v[1:] for v in solo_vects}
-    combined = []
-    for pair in pairwise_vects:
-        if pair[PCC_IND] == 'null':
-            continue
-        user1_vect = solo_by_id[pair[0]]
-        user2_vect = solo_by_id[pair[1]]
-        vect = user1_vect + user2_vect + pair[2:]
-        combined.append(pair[:2] + parse_pairwise_line(vect))
-    return combined
 
 
 def combined_vectors_all(pairwise_vects, solo_vects):
@@ -83,20 +71,18 @@ if __name__ == '__main__':
     output_path = sys.argv[3]
     singles = read_csv(single_path)
     pairwise = read_csv(pairwise_path)
-    combined_with_pcc = combined_vectors_with_pcc(pairwise, singles)
+    combined = combined_vectors_all(pairwise, singles)
     header = combined_headers(single_path, pairwise_path)
 
-    ds = DataSet(combined_with_pcc, header)
+    ds = DataSet(combined, header)
     ds = ds.split(header.index('areFriends'), start_col=2)
     ds = ds.scale()
 
-    clf = learn_logit(ds.X, ds.Y)
+    X, Y, X_test, Y_test = train_test_split(ds.X, ds.Y, train_size=1_000_000, shuffle=True, random_state=42)
+    clf = learn_logit(X, Y)
+    print(clf.score(X_test, Y_test))
 
-    all_combined = combined_vectors_all(pairwise, singles)
-    ds_all = DataSet(all_combined, header)
-    ds_all = ds_all.split(header.index('areFriends'), start_col=2)
-    ds_all = ds_all.scale()
-    write_predictions(ds_all, clf, output_path)
+    write_predictions(ds, clf, output_path);
 
 
 

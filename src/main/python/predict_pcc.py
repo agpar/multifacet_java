@@ -13,10 +13,10 @@ if __name__ == '__main__':
     output_path = sys.argv[3]
     singles = read_csv(single_path)
     pairwise = read_csv(pairwise_path)
-    combined_with_pcc = combined_vectors_with_pcc(pairwise, singles)
+    combined_ = combined_vectors_all(pairwise, singles)
     header = combined_headers(single_path, pairwise_path)
 
-    ds = DataSet(combined_with_pcc, header)
+    ds = DataSet(combined, header)
     ds = ds.split(header.index('PCC'), start_col=2)
     ds = ds.scale()
 
@@ -27,13 +27,8 @@ if __name__ == '__main__':
             X.append(x)
             Y.append(y)
 
-
+    X, Y, X_test, Y_test = train_test_split(X, Y, train_size=1_000_000, shuffle=True, random_state=42)
     clf = learn_logit(X, Y)
+    print(clf.score(X_test, Y_test))
 
-    print(f"Classifier accuracy: {clf.score(X, Y)}")
-
-    all_combined = combined_vectors_all(pairwise, singles)
-    ds_all = DataSet(all_combined, header)
-    ds_all = ds_all.split(header.index('PCC'), start_col=2)
-    ds_all = ds_all.scale()
-    write_predictions(ds_all, clf, output_path)
+    write_predictions(ds, clf, output_path)
