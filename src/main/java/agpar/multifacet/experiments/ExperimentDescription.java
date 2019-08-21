@@ -1,6 +1,7 @@
 package agpar.multifacet.experiments;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 public class ExperimentDescription {
     private String name;
@@ -9,6 +10,8 @@ public class ExperimentDescription {
     private int randomSeed;
     private int numIterations;
     private float socialReg;
+    private double  MAE;
+    private double MSE;
 
     public ExperimentDescription(String name, String recommenderName, int numUsers, int randomSeed, int numIterations, float socialReg) {
         this.name = name;
@@ -33,6 +36,23 @@ public class ExperimentDescription {
                 obj.get("numIterations").getAsInt(),
                 obj.get("socialReg").getAsInt()
         );
+    }
+
+    public String toJson() {
+        JsonObject result = new JsonObject();
+        result.add("name", new JsonPrimitive(this.name));
+        result.add("recommenderName", new JsonPrimitive(this.recommenderName));
+        result.add("numUsers", new JsonPrimitive(this.numUsers));
+        result.add("numIterations", new JsonPrimitive(this.numIterations));
+        result.add("socialReg", new JsonPrimitive(this.socialReg));
+        result.add("MAE", new JsonPrimitive(this.MAE));
+        result.add("MSE", new JsonPrimitive(this.MSE));
+        return result.toString();
+    }
+
+    public void addResults(double MAE, double MSE) {
+        this.MAE = MAE;
+        this.MSE = MSE;
     }
 
     public String getName() {

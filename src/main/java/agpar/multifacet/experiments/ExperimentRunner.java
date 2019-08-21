@@ -50,8 +50,9 @@ public abstract class ExperimentRunner implements Runnable {
         this.initRatings(this.description.getNumUsers());
         try {
             HashMap<String, Double> results = this.evaluatePredictions(this.description.getNumUsers());
-            String resultString = description.toString() + String.format("MAE: %f\nMSE: %f\n\n", results.get("MAE"), results.get("MSE"));
-            resultWriter.writeResults(resultString);
+            description.addResults(results.get("MAE"), results.get("MSE"));
+            String resultString = description.toJson();
+            resultWriter.writeResults(String.format("%s\n", resultString));
         } catch (LibrecException e) {
             System.out.println("Recommender system failed.");
             e.printStackTrace();
