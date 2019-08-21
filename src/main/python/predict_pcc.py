@@ -13,7 +13,7 @@ if __name__ == '__main__':
     output_path = sys.argv[3]
     singles = read_csv(single_path)
     pairwise = read_csv(pairwise_path)
-    combined_ = combined_vectors_all(pairwise, singles)
+    combined_ = combined_vectors_balanced(pairwise, singles)
     header = combined_headers(single_path, pairwise_path)
 
     ds = DataSet(combined, header)
