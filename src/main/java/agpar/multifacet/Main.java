@@ -21,21 +21,45 @@ import static java.lang.System.exit;
 
 public class Main {
 
+    private static int NUM_EXPERIMENTS = Runtime.getRuntime().availableProcessors();
+
     public static void main(String[] args) throws Exception {
         if(args.length == 0) {
             throw new Exception("At least one experiment description file is required.");
         }
 
-        try {
-            List<ExperimentRunner> experiments = loadExperiments(args);
-            runAllExperiments(experiments);
+        ArrayList<String> flags = new ArrayList<>();
+        ArrayList<String> files = new ArrayList<>();
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            if (arg.startsWith("-")) {
+                flags.add(arg);
+            } else {
+                files.add(arg);
+            }
+        }
 
+        try {
+            setFlags(flags);
+            List<ExperimentRunner> experiments = loadExperiments(files);
+            runAllExperiments(experiments);
         } finally {
             SynchronizedAppendResultWriter.closeAllSingletons();
         }
     }
 
-    public static List<ExperimentRunner> loadExperiments(String[] files) throws Exception {
+    public static void setFlags(List<String> flags) {
+        for(String flag : flags) {
+            if (flag.startsWith("--numthreads")) {
+                NUM_EXPERIMENTS = Integer.parseInt(flag.split("=")[1]);
+            } else {
+                System.out.printf("Unknown flag %s\n", flag);
+                exit(1);
+            }
+        }
+    }
+
+    public static List<ExperimentRunner> loadExperiments(List<String> files) throws Exception {
         Type DESCRIPTION_TYPE = new TypeToken<List<ExperimentDescription>>() { }.getType();
         List<ExperimentRunner> experiments = new ArrayList<>();
         for(String descriptionFile : files) {
@@ -60,7 +84,7 @@ public class Main {
         // Run all experiments with the same seed in parallel
         for(Integer key : experimentsBySeed.keySet()) {
             List<ExperimentRunner> experimentsWithSeed = experimentsBySeed.get(key);
-            ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+            ExecutorService executor = Executors.newFixedThreadPool(NUM_EXPERIMENTS);
             for (ExperimentRunner exp : experimentsWithSeed) {
                executor.execute(exp);
             }
