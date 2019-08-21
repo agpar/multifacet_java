@@ -8,6 +8,7 @@ from regression import learn_logit
 from sklearn.model_selection import train_test_split
 
 PCC_IND = -6
+FIEND_IND = -3
 
 
 def parse_pairwise_line(line):
@@ -17,15 +18,22 @@ def parse_pairwise_line(line):
     return [float(x) for x in line]
 
 
-def combined_vectors_all(pairwise_vects, solo_vects):
+def combined_vectors_balanced(pairwise_vects, solo_vects):
     solo_by_id = {v[0]: v[1:] for v in solo_vects}
-    combined = []
-    for pair in pairwise_vects:
+
+    def build_vect(pair):
         user1_vect = solo_by_id[pair[0]]
         user2_vect = solo_by_id[pair[1]]
         vect = user1_vect + user2_vect + pair[2:]
-        combined.append(pair[:2] + parse_pairwise_line(vect))
-    return combined
+        return pair[:2] + parse_pairwise_line(vect)
+
+    stranger_vects, friend_vects = [], []
+    for pair in pairwise_vects:
+        if pair[FIEND_IND]:
+            friend_vects.append(build_vect(pair))
+        elif len(stranger_vects) < len(friend_vects):
+            stranger_vects.append(build_vect(pair))
+    return friend_vects + stranger_vects
 
 
 def combined_headers(single_path, pairwise_path):
@@ -71,7 +79,7 @@ if __name__ == '__main__':
     output_path = sys.argv[3]
     singles = read_csv(single_path)
     pairwise = read_csv(pairwise_path)
-    combined = combined_vectors_all(pairwise, singles)
+    combined = combined_vectors_balanced(pairwise, singles)
     header = combined_headers(single_path, pairwise_path)
 
     ds = DataSet(combined, header)
@@ -82,7 +90,4 @@ if __name__ == '__main__':
     clf = learn_logit(X, Y)
     print(clf.score(X_test, Y_test))
 
-    write_predictions(ds, clf, output_path);
-
-
-
+    write_predictions(ds, clf, output_path)

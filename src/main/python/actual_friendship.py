@@ -25,7 +25,7 @@ if __name__ == "__main__":
     singles = read_csv(single_path)
     pairwise = read_csv(pairwise_path)
 
-    combined = combined_vectors_all(pairwise, singles)
+    combined = combined_vectors_balanced(pairwise, singles)
     header = combined_headers(single_path, pairwise_path)
 
     ds = DataSet(combined, header)
