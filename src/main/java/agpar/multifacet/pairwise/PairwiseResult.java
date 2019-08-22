@@ -50,7 +50,7 @@ public class PairwiseResult {
     }
 
     public static String header() {
-        return String.format("%s,%s,%s,%s,%s,%s,%s", "user1Id", "user2Id", "PCC", "socialJacc", "areFriends", "areFriendsOfFriends", "itemJacc");
+        return String.format("%s,%s,%s,%s,%s,%s,%s,%s", "user1Id", "user2Id", "PCC", "socialJacc", "areFriends", "areFriendsOfFriends", "itemJacc", "categoryJacc");
     }
 
     public boolean isEmpty() {
