@@ -13,13 +13,12 @@ def load_combined(singlePath, pairPath, outputPath):
     if os.path.exists(outputPath):
         return read_csv(outputPath)
     else:
-        combine(singlePath, pairPath, outputPath)
+        combine(singlePath, pairPath)
         return read_csv(outputPath)
 
 
-def combine(singlePath, pairPath, outputPath):
+def combine(singlePath, pairPath, num_vects):
     with open(singlePath, 'r') as f:
-        headerSingle = [h.strip() for h in f.readline().split(',')][1:]
         reader = csv.reader(f)
         singleById = {line[0]: line[1:] for line in reader}
 
@@ -30,24 +29,18 @@ def combine(singlePath, pairPath, outputPath):
         return pair[:2] + parse_pairwise_line(vect)
 
     strangerCount, friendCount = 0, 0
-    with open(outputPath, 'w') as fout:
-        writer = csv.writer(fout)
-        with open(pairPath, 'r') as fin:
-            headerPair = [h.strip() for h in fin.readline().split(',')][1:]
-            header = (["user1_id", "user2_id"] + 
-                      ["user1_" + h for h in headerSingle] +
-                      ["user2_" + h for h in headerSingle] + 
-                      headerPair)
-            writer.writerow(header)
-
-            reader = csv.reader(fin)
-            for pair in tqdm(reader):
-                if int(pair[FRIEND_IND]):
-                    writer.writerow(build_vect(pair))
-                    friendCount += 1
-                elif strangerCount < friendCount:
-                    writer.writerow(build_vect(pair))
-                    strangerCount += 1
+    vects = []
+    with open(pairPath, 'r') as fin:
+        reader = csv.reader(fin)
+        for pair in tqdm(reader):
+            if int(pair[FRIEND_IND]):
+                vects.append(build_vect(pair))
+                friendCount += 1
+            elif strangerCount < friendCount:
+                vects.append(build_vect(pair))
+                strangerCount += 1
+            if len(vects) >= num_vects:
+                return vects
 
 
 if __name__ == '__main__':
