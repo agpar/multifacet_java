@@ -8,7 +8,7 @@ from regression import learn_logit
 from sklearn.model_selection import train_test_split
 
 PCC_IND = -6
-FIEND_IND = -3
+FRIEND_IND = -3
 
 
 def parse_pairwise_line(line):
@@ -29,7 +29,7 @@ def combined_vectors_balanced(pairwise_vects, solo_vects):
 
     stranger_vects, friend_vects = [], []
     for pair in pairwise_vects:
-        if pair[FIEND_IND]:
+        if int(pair[FRIEND_IND]):
             friend_vects.append(build_vect(pair))
         elif len(stranger_vects) < len(friend_vects):
             stranger_vects.append(build_vect(pair))
