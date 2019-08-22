@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-from prediction_tools import *
 from data_set import *
 from combine_vectors import *
 from sklearn.model_selection import train_test_split
@@ -18,8 +17,8 @@ if __name__ == '__main__':
     output_path = sys.argv[3]
     singles = read_csv(single_path)
     pairwise = read_csv(pairwise_path)
-    combined_ = combine_balanced_num(pairwise, singles, 200_000)
     header = combined_headers(single_path, pairwise_path)
+    combined_ = combine_balanced_num(pairwise, singles, 200_000)
 
     ds = DataSet(combined, header)
     ds = ds.split(header.index('PCC'), start_col=2)

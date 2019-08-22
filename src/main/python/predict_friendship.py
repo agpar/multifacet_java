@@ -1,16 +1,9 @@
 #!/usr/bin/python3
 
-
-import sys
-import csv
 from data_set import DataSet
 from regression import learn_logit
 from sklearn.model_selection import train_test_split
-from prediction_tools import *
 from combine_vectors import *
-
-
-
 
 
 if __name__ == '__main__':
@@ -22,8 +15,8 @@ if __name__ == '__main__':
     pairwise_path = sys.argv[2]
     output_path = sys.argv[3]
     os.path.dirname(output_path)
-    combined = combine_balanced_num(single_path, pairwise_path, 200_000)
     header = combined_headers(single_path, pairwise_path)
+    combined = combine_balanced_num(single_path, pairwise_path, 200_000)
 
     ds = DataSet(combined, header)
     ds = ds.split(header.index('areFriends'), start_col=2)

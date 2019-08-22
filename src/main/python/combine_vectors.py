@@ -13,6 +13,7 @@ def build_vect(pair, singleById):
 
 def combine_balanced_num(singlePath, pairPath, num_vects):
     """Pull in `num_vects` size balanced from singlePath and pairPath"""
+    init_indexes(singlePath, pairPath)
     with open(singlePath, 'r') as f:
         f.readline()
         reader = csv.reader(f)
@@ -24,7 +25,7 @@ def combine_balanced_num(singlePath, pairPath, num_vects):
         fin.readline()
         reader = csv.reader(fin)
         for pair in reader:
-            if int(pair[FRIEND_IND]):
+            if int(pair[INDEXES['areFriends']]):
                 vects.append(build_vect(pair, singleById))
                 friendCount += 1
             elif strangerCount < friendCount:

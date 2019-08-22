@@ -1,13 +1,15 @@
 import csv
-import os
 
-PCC_IND = -6
-FRIEND_IND = -3
+INDEXES = {
+    'PCC': None,
+    'areFriends': None
+}
 
 
 def parse_pairwise_line(line):
-    if line[PCC_IND] == 'null':
-        line[PCC_IND] = 0.0
+    pcc_ind = INDEXES['PCC']
+    if line[pcc_ind] == 'null':
+        line[pcc_ind] = 0.0
     return [float(x) for x in line]
 
 
@@ -30,6 +32,12 @@ def combined_headers(single_path, pairwise_path):
     user2Headers = ["user2_" + s for s in singleHeader]
     pairwiseHeader = read_csv_header(pairwise_path)
     return pairwiseHeader[:2] + user1Headers + user2Headers + pairwiseHeader[2:]
+
+
+def init_indexes(single_path, pairwise_path):
+    full_header = combined_headers(single_path, pairwise_path)
+    INDEXES['PCC'] = len(full_header) - (full_header.index("PCC") + 2)
+    INDEXES['areFriends'] = len(full_header) - (full_header.index("areFriends") + 2)
 
 
 def write_predictions(ds_all, clf, path):
