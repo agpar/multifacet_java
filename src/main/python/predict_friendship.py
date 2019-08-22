@@ -29,7 +29,7 @@ if __name__ == '__main__':
     ds = ds.split(header.index('areFriends'), start_col=2)
     ds = ds.scale()
 
-    X, Y, X_test, Y_test = train_test_split(ds.X, ds.Y, train_size=150_000, shuffle=True, random_state=42)
+    X, X_test, Y, Y_test = train_test_split(ds.X, ds.Y, train_size=150_000, shuffle=True, random_state=42)
     clf = learn_logit(X, Y)
     print(clf.score(X_test, Y_test))
 

@@ -1,6 +1,4 @@
 #!/usr/bin/python3
-import csv
-import os
 import sys
 from tqdm import tqdm
 from prediction_tools import *
@@ -25,7 +23,7 @@ def combine_balanced_num(singlePath, pairPath, num_vects):
     with open(pairPath, 'r') as fin:
         fin.readline()
         reader = csv.reader(fin)
-        for pair in tqdm(reader):
+        for pair in reader:
             if int(pair[FRIEND_IND]):
                 vects.append(build_vect(pair, singleById))
                 friendCount += 1
@@ -47,7 +45,7 @@ def combine_balanced_ids(singlePath, pairPath, userIds):
     with open(pairPath, 'r') as fin:
         fin.readline()
         reader = csv.reader(fin)
-        for pair in tqdm(reader):
+        for pair in reader:
             if pair[0] in userIds or pair[1] in userIds:
                 vects.append(build_vect(pair, singleById))
         return vects
