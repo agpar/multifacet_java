@@ -6,7 +6,7 @@ from prediction_tools import *
 
 
 def get_combined_path(outputPath):
-    return os.paht.join(os.path.dirname(outputPath), 'combined.csv')
+    return os.path.join(os.path.dirname(outputPath), 'combined.csv')
 
 
 def load_combined(singlePath, pairPath, outputPath):

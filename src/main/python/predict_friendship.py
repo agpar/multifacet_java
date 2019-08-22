@@ -31,7 +31,7 @@ if __name__ == '__main__':
     pairwise_path = sys.argv[2]
     output_path = sys.argv[3]
     os.path.dirname(output_path)
-    combined = load_combined(single_path, pairwise_path, get_combined_path(outputPath))
+    combined = load_combined(single_path, pairwise_path, get_combined_path(output_path))
     header = combined_headers(single_path, pairwise_path)
 
     ds = DataSet(combined, header)
