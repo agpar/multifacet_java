@@ -15,10 +15,8 @@ if __name__ == '__main__':
     single_path = sys.argv[1]
     pairwise_path = sys.argv[2]
     output_path = sys.argv[3]
-    singles = read_csv(single_path)
-    pairwise = read_csv(pairwise_path)
     header = combined_headers(single_path, pairwise_path)
-    combined_ = combine_balanced_num(pairwise, singles, 200_000)
+    combined = combine_balanced_num(single_path, pairwise_path, 200_000)
 
     ds = DataSet(combined, header)
     ds = ds.split(header.index('PCC'), start_col=2)

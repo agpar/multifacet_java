@@ -21,6 +21,7 @@ def combine_balanced_num(singlePath, pairPath, num_vects):
 
     strangerCount, friendCount = 0, 0
     vects = []
+    t = tqdm(total=num_vects)
     with open(pairPath, 'r') as fin:
         fin.readline()
         reader = csv.reader(fin)
@@ -28,10 +29,13 @@ def combine_balanced_num(singlePath, pairPath, num_vects):
             if int(pair[INDEXES['areFriends']]):
                 vects.append(build_vect(pair, singleById))
                 friendCount += 1
+                t.update()
             elif strangerCount < friendCount:
                 vects.append(build_vect(pair, singleById))
                 strangerCount += 1
+                t.update()
             if len(vects) >= num_vects:
+                t.close()
                 return vects
 
 

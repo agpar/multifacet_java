@@ -36,8 +36,8 @@ def combined_headers(single_path, pairwise_path):
 
 def init_indexes(single_path, pairwise_path):
     full_header = combined_headers(single_path, pairwise_path)
-    INDEXES['PCC'] = len(full_header) - (full_header.index("PCC") + 2)
-    INDEXES['areFriends'] = len(full_header) - (full_header.index("areFriends") + 2)
+    INDEXES['PCC'] = full_header.index("PCC") - len(full_header) 
+    INDEXES['areFriends'] = full_header.index("areFriends") - len(full_header) 
 
 
 def write_predictions(ds_all, clf, path):
