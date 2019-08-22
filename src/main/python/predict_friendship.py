@@ -6,55 +6,8 @@ import csv
 from data_set import DataSet
 from regression import learn_logit
 from sklearn.model_selection import train_test_split
-
-PCC_IND = -6
-FRIEND_IND = -3
-
-
-def parse_pairwise_line(line):
-    parsed = []
-    if line[PCC_IND] == 'null':
-        line[PCC_IND] = 0.0
-    return [float(x) for x in line]
-
-
-def combined_vectors_balanced(pairwise_vects, solo_vects):
-    solo_by_id = {v[0]: v[1:] for v in solo_vects}
-
-    def build_vect(pair):
-        user1_vect = solo_by_id[pair[0]]
-        user2_vect = solo_by_id[pair[1]]
-        vect = user1_vect + user2_vect + pair[2:]
-        return pair[:2] + parse_pairwise_line(vect)
-
-    stranger_vects, friend_vects = [], []
-    for pair in pairwise_vects:
-        if int(pair[FRIEND_IND]):
-            friend_vects.append(build_vect(pair))
-        elif len(stranger_vects) < len(friend_vects):
-            stranger_vects.append(build_vect(pair))
-    return friend_vects + stranger_vects
-
-
-def combined_headers(single_path, pairwise_path):
-    singleHeader = read_csv_header(single_path)[1:]
-    user1Headers = ["user1_" + s for s in singleHeader]
-    user2Headers = ["user2_" + s for s in singleHeader]
-    pairwiseHeader = read_csv_header(pairwise_path)
-    return pairwiseHeader[:2] + user1Headers + user2Headers + pairwiseHeader[2:]
-
-
-def read_csv(path):
-    with open(path, 'r') as f:
-        header = f.readline()
-        reader = csv.reader(f)
-        return list(reader)
-
-
-def read_csv_header(path):
-    with open(path, 'r') as f:
-        header = f.readline().replace("\n", "")
-        return header.split(",")
+from prediction_tools import *
+from combine_vectors import *
 
 
 def write_predictions(ds_all, clf, path):
@@ -77,9 +30,8 @@ if __name__ == '__main__':
     single_path = sys.argv[1]
     pairwise_path = sys.argv[2]
     output_path = sys.argv[3]
-    singles = read_csv(single_path)
-    pairwise = read_csv(pairwise_path)
-    combined = combined_vectors_balanced(pairwise, singles)
+    os.path.dirname(output_path)
+    combined = load_combined(single_path, pairwise_path, get_combined_path(outputPath))
     header = combined_headers(single_path, pairwise_path)
 
     ds = DataSet(combined, header)
@@ -90,4 +42,4 @@ if __name__ == '__main__':
     clf = learn_logit(X, Y)
     print(clf.score(X_test, Y_test))
 
-    write_predictions(ds, clf, output_path)
+    #write_predictions(ds, clf, output_path)

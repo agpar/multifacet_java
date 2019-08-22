@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
-from predict_friendship import *
+from prediction_tools import *
+from data_set import *
 import sys
 
 if __name__ == '__main__':

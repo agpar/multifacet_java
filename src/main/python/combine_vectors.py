@@ -1,10 +1,23 @@
 #!/usr/bin/python3
 import csv
-from predict_friendship import *
+import os
 from tqdm import tqdm
+from prediction_tools import *
 
 
-def combine(singlePath, pairPath, outupt_path):
+def get_combined_path(outputPath):
+    return os.paht.join(os.path.dirname(outputPath), 'combined.csv')
+
+
+def load_combined(singlePath, pairPath, outputPath):
+    if os.path.exists(outputPath):
+        return read_csv(outputPath)
+    else:
+        combine(singlePath, pairPath, outputPath)
+        return read_csv(outputPath)
+
+
+def combine(singlePath, pairPath, outputPath):
     with open(singlePath, 'r') as f:
         headerSingle = [h.strip() for h in f.readline().split(',')][1:]
         reader = csv.reader(f)
