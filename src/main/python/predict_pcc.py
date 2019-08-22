@@ -2,6 +2,10 @@
 
 from prediction_tools import *
 from data_set import *
+from combine_vectors import *
+from sklearn.model_selection import train_test_split
+from regression import learn_logit
+
 import sys
 
 if __name__ == '__main__':
@@ -14,7 +18,7 @@ if __name__ == '__main__':
     output_path = sys.argv[3]
     singles = read_csv(single_path)
     pairwise = read_csv(pairwise_path)
-    combined_ = combined_vectors_balanced(pairwise, singles)
+    combined_ = combine_balanced_num(pairwise, singles, 200_000)
     header = combined_headers(single_path, pairwise_path)
 
     ds = DataSet(combined, header)
@@ -28,7 +32,7 @@ if __name__ == '__main__':
             X.append(x)
             Y.append(y)
 
-    X, Y, X_test, Y_test = train_test_split(X, Y, train_size=1_000_000, shuffle=True, random_state=42)
+    X, Y, X_test, Y_test = train_test_split(X, Y, train_size=150_000, shuffle=True, random_state=42)
     clf = learn_logit(X, Y)
     print(clf.score(X_test, Y_test))
 
