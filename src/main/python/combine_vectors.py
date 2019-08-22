@@ -16,12 +16,14 @@ def build_vect(pair, singleById):
 def combine_balanced_num(singlePath, pairPath, num_vects):
     """Pull in `num_vects` size balanced from singlePath and pairPath"""
     with open(singlePath, 'r') as f:
+        f.readline()
         reader = csv.reader(f)
         singleById = {line[0]: line[1:] for line in reader}
 
     strangerCount, friendCount = 0, 0
     vects = []
     with open(pairPath, 'r') as fin:
+        fin.readline()
         reader = csv.reader(fin)
         for pair in tqdm(reader):
             if int(pair[FRIEND_IND]):
@@ -37,16 +39,19 @@ def combine_balanced_num(singlePath, pairPath, num_vects):
 def combine_balanced_ids(singlePath, pairPath, userIds):
     """Pull in vects involving `userIds` from singlePath and pairPath"""
     with open(singlePath, 'r') as f:
+        f.readline()
         reader = csv.reader(f)
         singleById = {line[0]: line[1:] for line in reader}
 
     vects = []
     with open(pairPath, 'r') as fin:
+        fin.readline()
         reader = csv.reader(fin)
         for pair in tqdm(reader):
             if pair[0] in userIds or pair[1] in userIds:
                 vects.append(build_vect(pair, singleById))
         return vects
+
 
 if __name__ == '__main__':
     singlePath, pairPath, outputPath = sys.argv[1:]
