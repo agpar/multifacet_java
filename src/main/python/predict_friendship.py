@@ -16,16 +16,22 @@ if __name__ == '__main__':
     output_path = sys.argv[3]
     print("Loading data")
     header = combined_headers(single_path, pairwise_path)
-    combined = combine_balanced_num(single_path, pairwise_path, 200_000)
+    combined = combine_balanced_num(single_path, pairwise_path, 500_000)
 
     print("Scaling")
     ds = DataSet(combined, header)
     ds = ds.split(header.index('areFriends'), start_col=2)
-    ds = ds.scale()
+    #ds = ds.scale()
 
-    print("Learing")
-    X, X_test, Y, Y_test = train_test_split(ds.X, ds.Y, train_size=150_000, shuffle=True, random_state=42)
+    print("Learning")
+    X, X_test, Y, Y_test = train_test_split(ds.X, ds.Y, train_size=400_000, shuffle=True, random_state=42)
     clf = learn_logit(X, Y)
     print(clf.score(X_test, Y_test))
 
-    write_predictions(ds, clf, output_path)
+    def pairfilter(pair):
+        pair[INDEXES['areFriends']] = 0
+        return pair[2:]
+
+    stream = combine_stream(single_path, pairwise_path)
+    write_predictions(stream, pairfilter, clf, output_path)
+

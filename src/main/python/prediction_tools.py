@@ -40,14 +40,13 @@ def init_indexes(single_path, pairwise_path):
     INDEXES['areFriends'] = full_header.index("areFriends") - len(full_header) 
 
 
-def write_predictions(ds_all, clf, path):
-    predictions = [x for x in clf.predict(ds_all.X)]
+def write_predictions(stream, pair_filter, clf, path):
     with open(path, 'w') as f:
-        for data_line, prediction in zip(ds_all.data, predictions):
-            if prediction != 1:
-                continue
-            user1_id = data_line[0]
-            user2_id = data_line[1]
-            f.write(f"{user1_id} {user2_id} {prediction}\n")
-            f.write(f"{user2_id} {user1_id} {prediction}\n")
+        for pair in stream:
+            prediction = int(clf.predict([pair_filter(pair)])[0])
+            if prediction == 1:
+                user1_id = pair[0]
+                user2_id = pair[1]
+                f.write(f"{user1_id} {user2_id} {prediction}\n")
+                f.write(f"{user2_id} {user1_id} {prediction}\n")
 

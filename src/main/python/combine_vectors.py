@@ -56,6 +56,19 @@ def combine_balanced_ids(singlePath, pairPath, userIds):
         return vects
 
 
+def combine_stream(singlePath, pairPath):
+    with open(singlePath, 'r') as f:
+        f.readline()
+        reader = csv.reader(f)
+        singleById = {line[0]: line[1:] for line in reader}
+
+    with open(pairPath, 'r') as fin:
+        fin.readline()
+        reader = csv.reader(fin)
+        for pair in reader:
+            yield build_vect(pair, singleById)
+
+
 if __name__ == '__main__':
     singlePath, pairPath, outputPath = sys.argv[1:]
     combined = combine_balanced_num(singlePath, pairPath, 100_000)

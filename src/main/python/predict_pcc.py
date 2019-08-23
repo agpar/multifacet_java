@@ -16,11 +16,11 @@ if __name__ == '__main__':
     pairwise_path = sys.argv[2]
     output_path = sys.argv[3]
     header = combined_headers(single_path, pairwise_path)
-    combined = combine_balanced_num(single_path, pairwise_path, 200_000)
+    combined = combine_balanced_num(single_path, pairwise_path, 500_000)
 
     ds = DataSet(combined, header)
     ds = ds.split(header.index('PCC'), start_col=2)
-    ds = ds.scale()
+    #ds = ds.scale()
 
     Y_disc = [1 if y > 0 else 0 for y in ds.Y]
     X, Y = [], []
@@ -29,8 +29,13 @@ if __name__ == '__main__':
             X.append(x)
             Y.append(y)
 
-    X, X_test, Y, Y_test = train_test_split(X, Y, train_size=150_000, shuffle=True, random_state=42)
+    X, X_test, Y, Y_test = train_test_split(X, Y, train_size=400_000, shuffle=True, random_state=42)
     clf = learn_logit(X, Y)
     print(clf.score(X_test, Y_test))
 
-    write_predictions(ds, clf, output_path)
+    def pairfilter(pair):
+        pair[INDEXES['PCC']] = 0
+        return pair[2:]
+
+    stream = combine_stream(single_path, pairwise_path)
+    write_predictions(stream, pairfilter, clf, outputPath)
