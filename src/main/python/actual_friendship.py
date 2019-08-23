@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import sys
-from prediction_tools import INDEXES
+from prediction_tools import INDEXES, init_indexes
 from combine_vectors import combine_stream, write_predictions
 
 
@@ -9,8 +9,7 @@ class FriendPredictor:
     def predict(self, pairs):
         predictions = []
         for pair in pairs:
-            if int(pair[INDEXES['areFriends']]):
-                predictions.append(1)
+            predictions.append(int(pair[INDEXES['areFriends']]))
         return predictions
 
 
@@ -26,6 +25,7 @@ if __name__ == "__main__":
     def pair_filter(pair):
         return pair[2:]
 
+    init_indexes(single_path, pairwise_path)
     stream = combine_stream(single_path, pairwise_path)
     write_predictions(stream, pair_filter, FriendPredictor(), output_path)
 

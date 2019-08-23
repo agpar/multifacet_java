@@ -29,7 +29,7 @@ if __name__ == '__main__':
             X.append(x)
             Y.append(y)
 
-    X, X_test, Y, Y_test = train_test_split(X, Y, train_size=400_000, shuffle=True, random_state=42)
+    X, X_test, Y, Y_test = train_test_split(X, Y, train_size=0.8, shuffle=True, random_state=42)
     clf = learn_logit(X, Y)
     print(clf.score(X_test, Y_test))
 

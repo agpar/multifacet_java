@@ -35,8 +35,9 @@ def combine_balanced_num(singlePath, pairPath, num_vects):
                 strangerCount += 1
                 t.update()
             if len(vects) >= num_vects:
-                t.close()
-                return vects
+                break
+    t.close()
+    return vects
 
 
 def combine_balanced_ids(singlePath, pairPath, userIds):
