@@ -7,6 +7,8 @@ import net.librec.data.model.TextDataModel;
 import net.librec.recommender.Recommender;
 import net.librec.recommender.RecommenderContext;
 import net.librec.recommender.context.rating.SoRegRecommender;
+import net.librec.similarity.PCCSimilarity;
+import net.librec.similarity.RecommenderSimilarity;
 
 public class SoRegTester extends RecommenderTester {
     @Override
@@ -31,6 +33,9 @@ public class SoRegTester extends RecommenderTester {
 
         // set recommendation context
         RecommenderContext context = new RecommenderContext(conf, dataModel);
+        RecommenderSimilarity similarity = new PCCSimilarity();
+        similarity.buildSimilarityMatrix(dataModel);
+        context.setSimilarity(similarity);
 
         // training
         Recommender recommender = new SoRegRecommender();
