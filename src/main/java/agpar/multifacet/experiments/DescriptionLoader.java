@@ -3,10 +3,7 @@ package agpar.multifacet.experiments;
 import agpar.multifacet.Settings;
 import agpar.multifacet.pairwise.io.ResultWriter;
 import agpar.multifacet.pairwise.io.SynchronizedAppendResultWriter;
-import agpar.multifacet.recommend.RecommenderTester;
-import agpar.multifacet.recommend.SoRecTester;
-import agpar.multifacet.recommend.TrustMFTester;
-import agpar.multifacet.recommend.TrustSVDTester;
+import agpar.multifacet.recommend.*;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -43,6 +40,8 @@ public class DescriptionLoader {
             return new TrustSVDTester();
         } else if (name.equals("TrustMF")) {
             return new TrustMFTester();
+        } else if (name.equals("SoReg")) {
+            return new SoRegTester();
         }
         else {
             throw new Exception(String.format("Unknown recommender name: %s. Valid recommenders are: %s",

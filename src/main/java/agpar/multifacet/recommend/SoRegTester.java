@@ -37,6 +37,5 @@ public class SoRegTester extends RecommenderTester {
         recommender.recommend(context);
 
         return recommender;
-
     }
 }
