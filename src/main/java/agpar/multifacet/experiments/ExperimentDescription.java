@@ -43,6 +43,7 @@ public class ExperimentDescription {
         result.add("name", new JsonPrimitive(this.name));
         result.add("recommenderName", new JsonPrimitive(this.recommenderName));
         result.add("numUsers", new JsonPrimitive(this.numUsers));
+        result.add("randomSeed", new JsonPrimitive(this.randomSeed));
         result.add("numIterations", new JsonPrimitive(this.numIterations));
         result.add("socialReg", new JsonPrimitive(this.socialReg));
         result.add("MAE", new JsonPrimitive(this.MAE));
