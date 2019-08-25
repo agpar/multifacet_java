@@ -38,4 +38,4 @@ if __name__ == '__main__':
         return pair[2:]
 
     stream = combine_stream(single_path, pairwise_path)
-    write_predictions(stream, pairfilter, clf, outputPath)
+    write_predictions(stream, pairfilter, clf, output_path)
