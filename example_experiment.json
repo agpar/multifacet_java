@@ -3,8 +3,8 @@
     "name": "NoPrediction",
     "recommenderName": "SoRec",
     "numUsers": 2000,
-    "randomSeed": 4,
+    "randomSeeds": [2, 2, 2, 2, 2, 2, 8, 8, 8, 8, 8, 8],
     "numIterations": 500,
-    "socialReg": 5
+    "socialRegs": [0.01, 0.1, 1, 2, 4, 8, 0.01, 0.1, 1, 2, 4, 8]
   }
 ]

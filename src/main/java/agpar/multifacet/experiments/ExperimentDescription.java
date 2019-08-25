@@ -3,13 +3,18 @@ package agpar.multifacet.experiments;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ExperimentDescription {
     private String name;
     private String recommenderName;
     private int numUsers;
     private int randomSeed;
+    private List<Integer> randomSeeds;
     private int numIterations;
     private float socialReg;
+    private List<Float> socialRegs;
     private double  MAE;
     private double MSE;
 
@@ -27,15 +32,29 @@ public class ExperimentDescription {
         return String.format(template, this.name, this.recommenderName, this.numUsers, this.randomSeed, this.numIterations, this.socialReg);
     }
 
-    public ExperimentDescription fromJson(JsonObject obj) {
-        return new ExperimentDescription(
-                obj.get("name").getAsString(),
-                obj.get("recommenderName").getAsString(),
-                obj.get("numUsers").getAsInt(),
-                obj.get("randomSeed").getAsInt(),
-                obj.get("numIterations").getAsInt(),
-                obj.get("socialReg").getAsInt()
-        );
+    public boolean isMulti() {
+        return randomSeeds != null || socialRegs != null;
+    }
+
+    public List<ExperimentDescription> multiToList() throws Exception {
+        if (!this.isMulti()) {
+            throw new Exception("This descriptions is not a multi!");
+        }
+        if (this.randomSeeds == null || this.socialRegs == null || (this.randomSeeds.size() != this.socialRegs.size())) {
+            throw new Exception("`randomSeeds` and `socialRegs` are not the same length!");
+        }
+        ArrayList<ExperimentDescription> descriptions = new ArrayList<>();
+        for(int i = 0; i < this.randomSeeds.size(); i++) {
+            descriptions.add(new ExperimentDescription(
+                   this.name,
+                   this.recommenderName,
+                   this.numUsers,
+                   this.randomSeeds.get(i),
+                   this.numIterations,
+                   this.socialRegs.get(i)
+            ));
+        }
+        return descriptions;
     }
 
     public String toJson() {
