@@ -5,6 +5,7 @@ import agpar.multifacet.pairwise.io.ResultWriter;
 import agpar.multifacet.pairwise.io.SynchronizedAppendResultWriter;
 import agpar.multifacet.recommend.RecommenderTester;
 import agpar.multifacet.recommend.SoRecTester;
+import agpar.multifacet.recommend.TrustMFTester;
 import agpar.multifacet.recommend.TrustSVDTester;
 
 import java.nio.file.Path;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DescriptionLoader {
-    public static String VALID_RECOMMENDERS = "SoRec, TrustSVD";
+    public static String VALID_RECOMMENDERS = "SoRec, TrustSVD, TrustMF";
     public static String VALID_NAMES = "FriendPrediction, NoPrediction, PCCPrediction, RealFriends";
 
     public static List<ExperimentRunner> load(ExperimentDescription description) throws Exception {
@@ -40,7 +41,10 @@ public class DescriptionLoader {
             return new SoRecTester();
         } else if (name.equals("TrustSVD")) {
             return new TrustSVDTester();
-        } else {
+        } else if (name.equals("TrustMF")) {
+            return new TrustMFTester();
+        }
+        else {
             throw new Exception(String.format("Unknown recommender name: %s. Valid recommenders are: %s",
                     name, DescriptionLoader.VALID_RECOMMENDERS));
         }
