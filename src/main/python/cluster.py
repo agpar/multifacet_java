@@ -16,9 +16,9 @@ Clustering ideas:
 
 import csv
 import sys
-from combine_vectors import combine_balanced_ids, combined_headers
+from combine_vectors import combine_balanced_ids, combined_headers, combine_balanced_num, combine_stream
 from prediction_tools import INDEXES, init_indexes
-from predict_pcc import learn_classifier
+from predict_pcc import learn_classifier, output_predictions
 from data_set import DataSet
 import os
 from numbers import Number
@@ -114,19 +114,24 @@ def pairwise_dist_matrix(pairwise_path, selector, default_val):
 class ClusterClassifier:
     SINGLE_PATH = ""
     PAIRWISE_PATH = ""
+    CLUSTERED = True
 
     def __init__(self, dist_array: np.array, index_map: IDIndexMap):
         self.dist_array = dist_array
         self.index_map = index_map
+        self.user_clusters = {}
         self.clusters = []
         self.classifiers = []
+        self.overall_classifier = None
 
     def init_clusters(self):
         labels = aggClusterBuilder.fit_predict(self.dist_array)
         self.clusters = [set() for x in range(NUM_CLUSTERS)]
+        self.classifiers = [None for x in range(NUM_CLUSTERS)]
         for i in range(len(labels)):
             cluster_idx = labels[i]
             self.clusters[cluster_idx].add(self.index_map.get_str(i))
+            self.user_clusters[self.index_map.get_str(i)] = cluster_idx
 
     def train_classifiers(self):
         header = combined_headers(self.SINGLE_PATH, self.PAIRWISE_PATH)
@@ -134,17 +139,33 @@ class ClusterClassifier:
             if len(self.clusters[i]) > 100:
                 training_set = combine_balanced_ids(self.SINGLE_PATH, self.PAIRWISE_PATH, self.clusters[i])
                 clf = learn_classifier(training_set, header, 1.0)
-                self.classifiers.append(clf)
+                print(clf.coef_)
+                self.classifiers[i] = clf
+        overall_set = combine_balanced_num(self.SINGLE_PATH, self.PAIRWISE_PATH, 200_000)
+        self.overall_classifier = learn_classifier(overall_set, header, 1.0)
+
+    def fit(self):
+        self.init_clusters()
+        self.train_classifiers()
+
+    def predict(self, user_id, lines):
+        clf_idx = self.user_clusters[user_id]
+        clf = self.classifiers[clf_idx]
+        if clf is None:
+            clf = self.overall_classifier
+
+        return clf.predict(lines)
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 4:
-        print("At least 3 arguments required: cluster.py {pcc|single} {path_to_single} {path_to_pairwise}")
+    if len(sys.argv) < 5:
+        print("At least 3 arguments required: cluster.py {pcc|single} {path_to_single} {path_to_pairwise} {output_path}")
         exit(1)
 
     cluster_type = sys.argv[1]
     single_path = sys.argv[2]
     pairwise_path = sys.argv[3]
+    output_path = sys.argv[4]
     init_indexes(single_path, pairwise_path)
     if cluster_type not in {"pcc", "single"}:
         print(f"Cluster type must be 'pcc' or 'single', not {cluster_type}")
@@ -153,6 +174,8 @@ if __name__ == '__main__':
     ClusterClassifier.SINGLE_PATH = single_path
     ClusterClassifier.PAIRWISE_PATH = pairwise_path
     clusters = pcc_cluster(pairwise_path)
-    clusters.init_clusters()
-    clusters.train_classifiers()
-    print("Done")
+    clusters.fit()
+
+    stream = combine_stream(single_path, pairwise_path)
+    output_predictions(single_path, pairwise_path, output_path, clusters)
+
