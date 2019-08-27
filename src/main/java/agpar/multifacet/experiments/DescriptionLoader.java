@@ -11,7 +11,7 @@ import java.util.List;
 
 public class DescriptionLoader {
     public static String VALID_RECOMMENDERS = "SoRec, TrustSVD, TrustMF";
-    public static String VALID_NAMES = "FriendPrediction, NoPrediction, PCCPrediction, RealFriends";
+    public static String VALID_NAMES = "FriendPrediction, NoPrediction, PCCPrediction, RealFriends, PCCCluster";
 
     public static List<ExperimentRunner> load(ExperimentDescription description) throws Exception {
         if(description.isMulti()) {
@@ -62,7 +62,10 @@ public class DescriptionLoader {
             return new PCCPredictionExperimentRunner(description, recommender, writer);
         } else if (name.equals("RealFriends")) {
             return new RealFriendsRunner(description, recommender, writer);
-        } else {
+        } else if (name.equals("PCCCluster")) {
+            return new PCCClusterPredictionExperimentRunner(description, recommender, writer);
+        }
+        else {
             throw new Exception(String.format("Unknown experiment name: %s. Valid names are: %s",
                     name, DescriptionLoader.VALID_NAMES));
         }
