@@ -7,18 +7,9 @@ from regression import learn_logit
 
 import sys
 
-if __name__ == '__main__':
-    if len(sys.argv) != 4:
-        print("Usage: predict_pcc.py {single_vectors_path} {pairwise_vectors_path} {output_path}")
-        exit(1)
 
-    single_path = sys.argv[1]
-    pairwise_path = sys.argv[2]
-    output_path = sys.argv[3]
-    header = combined_headers(single_path, pairwise_path)
-    combined = combine_balanced_num(single_path, pairwise_path, 500_000)
-
-    ds = DataSet(combined, header)
+def learn_classifier(lines, header, train_size):
+    ds = DataSet(lines, header)
     ds = ds.split(header.index('PCC'), start_col=2)
     #ds = ds.scale()
 
@@ -29,13 +20,36 @@ if __name__ == '__main__':
             X.append(x)
             Y.append(y)
 
-    X, X_test, Y, Y_test = train_test_split(X, Y, train_size=0.8, shuffle=True, random_state=42)
-    clf = learn_logit(X, Y)
-    print(clf.score(X_test, Y_test))
+    if train_size < 1.0:
+        X, X_test, Y, Y_test = train_test_split(X, Y, train_size=train_size, shuffle=True, random_state=42)
+        clf = learn_logit(X, Y)
+        print(clf.score(X_test, Y_test))
+        return clf
+    else:
+        clf = learn_logit(X, Y)
+        print(clf.score(X, Y))
+        return clf
 
+
+def output_predictions(single_path, pairwise_path, output_path, classifier):
     def pairfilter(pair):
         pair[INDEXES['PCC']] = 0
         return pair[2:]
 
     stream = combine_stream(single_path, pairwise_path)
-    write_predictions(stream, pairfilter, clf, output_path)
+    write_predictions(stream, pairfilter, classifier, output_path)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 4:
+        print("Usage: predict_pcc.py {single_vectors_path} {pairwise_vectors_path} {output_path}")
+        exit(1)
+
+    single_path = sys.argv[1]
+    pairwise_path = sys.argv[2]
+    output_path = sys.argv[3]
+    header = combined_headers(single_path, pairwise_path)
+    combined = combine_balanced_num(single_path, pairwise_path, 500_000)
+    clf = learn_classifier(combined, header, 0.8)
+    output_predictions(single_path, pairwise_path, output_path, clf)
+
