@@ -62,8 +62,8 @@ public class DescriptionLoader {
             return new PCCPredictionExperimentRunner(description, recommender, writer);
         } else if (name.equals("RealFriends")) {
             return new RealFriendsRunner(description, recommender, writer);
-        } else if (name.equals("PCCCluster")) {
-            return new PCCClusterPredictionExperimentRunner(description, recommender, writer);
+        } else if (name.equals("Cluster")) {
+            return new PreComputedPredictionRunner(description, recommender, writer);
         }
         else {
             throw new Exception(String.format("Unknown experiment name: %s. Valid names are: %s",

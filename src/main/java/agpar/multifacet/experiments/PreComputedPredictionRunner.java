@@ -6,14 +6,14 @@ import agpar.multifacet.recommend.RecommenderTester;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class PCCClusterPredictionExperimentRunner extends ExperimentRunner{
-    public PCCClusterPredictionExperimentRunner(ExperimentDescription description, RecommenderTester recommender, ResultWriter resultWriter) throws IOException {
+public class PreComputedPredictionRunner extends ExperimentRunner{
+    public PreComputedPredictionRunner(ExperimentDescription description, RecommenderTester recommender, ResultWriter resultWriter) throws IOException {
         super(description, recommender, resultWriter);
     }
 
     @Override
     protected String predictionsFilePath(int numUsers) {
-        String pairwiseVectFileName = String.format("predictions_pcc_cluster_%d.txt", numUsers);
+        String pairwiseVectFileName = this.description.getPredictionFile();
         return Path.of(this.expDir, pairwiseVectFileName).toString();
     }
 }

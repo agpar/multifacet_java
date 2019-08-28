@@ -15,6 +15,7 @@ public class ExperimentDescription {
     private int numIterations;
     private float socialReg;
     private List<Float> socialRegs;
+    private String predictionFile;
     private double  MAE;
     private double MSE;
 
@@ -25,6 +26,16 @@ public class ExperimentDescription {
         this.randomSeed = randomSeed;
         this.numIterations = numIterations;
         this.socialReg = socialReg;
+    }
+
+    public ExperimentDescription(String name, String recommenderName, int numUsers, int randomSeed, int numIterations, float socialReg, String predictionFile) {
+        this.name = name;
+        this.recommenderName = recommenderName;
+        this.numUsers = numUsers;
+        this.randomSeed = randomSeed;
+        this.numIterations = numIterations;
+        this.socialReg = socialReg;
+        this.predictionFile = predictionFile;
     }
 
     public String toString() {
@@ -51,7 +62,8 @@ public class ExperimentDescription {
                    this.numUsers,
                    this.randomSeeds.get(i),
                    this.numIterations,
-                   this.socialRegs.get(i)
+                   this.socialRegs.get(i),
+                   this.predictionFile
             ));
         }
         return descriptions;
@@ -65,6 +77,7 @@ public class ExperimentDescription {
         result.add("randomSeed", new JsonPrimitive(this.randomSeed));
         result.add("numIterations", new JsonPrimitive(this.numIterations));
         result.add("socialReg", new JsonPrimitive(this.socialReg));
+        result.add("predictionFile", new JsonPrimitive(this.predictionFile));
         result.add("MAE", new JsonPrimitive(this.MAE));
         result.add("MSE", new JsonPrimitive(this.MSE));
         return result.toString();
@@ -97,5 +110,8 @@ public class ExperimentDescription {
 
     public float getSocialReg() {
         return socialReg;
+    }
+    public String getPredictionFile() {
+        return predictionFile;
     }
 }
