@@ -26,7 +26,6 @@ def learn_classifier(lines, header, train_size):
         return clf, clf.score(X_test, Y_test)
     else:
         clf = learn_logit(X, Y)
-        print(clf.score(X, Y))
         return clf, clf.score(X, Y)
 
 

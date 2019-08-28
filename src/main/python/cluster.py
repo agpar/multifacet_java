@@ -146,7 +146,10 @@ class ClusterClassifier:
                 else:
                     print("Score to low. Using generic classifier.")
         overall_set = combine_balanced_num(self.SINGLE_PATH, self.PAIRWISE_PATH, 300_000)
-        self.overall_classifier = clf_trainer(overall_set, header, 1.0)
+        self.overall_classifier, score = clf_trainer(overall_set, header, 1.0)
+        print("Generic classifier.")
+        print(score)
+        print(self.overall_classifier.coef_)
 
     def fit(self, clf_trainer):
         self.init_clusters()
