@@ -19,7 +19,6 @@ import sys
 
 import numpy as np
 from sklearn.cluster import AgglomerativeClustering
-import IPython
 
 from combine_vectors import combine_balanced_ids, combined_headers, combine_balanced_num, combine_stream
 from prediction_tools import INDEXES, init_indexes
