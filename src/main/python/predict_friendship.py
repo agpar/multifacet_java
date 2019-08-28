@@ -23,6 +23,15 @@ def learn_classifier(lines, header, train_size):
         return clf
 
 
+def output_predictions(single_path, pairwise_path, output_path, classifier):
+    def pairfilter(pair):
+        pair[INDEXES['areFriends']] = 0
+        return pair[2:]
+
+    stream = combine_stream(single_path, pairwise_path)
+    write_predictions(stream, pairfilter, clf, output_path)
+
+
 if __name__ == '__main__':
     if len(sys.argv) != 4:
         print("Usage: predict_friendship.py {single_vectors_path} {pairwise_vectors_path} {output_path}")

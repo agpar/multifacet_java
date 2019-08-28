@@ -16,19 +16,15 @@ Clustering ideas:
 
 import csv
 import sys
-from combine_vectors import combine_balanced_ids, combined_headers, combine_balanced_num, combine_stream
-from prediction_tools import INDEXES, init_indexes
-from predict_pcc import learn_classifier, output_predictions
-from data_set import DataSet
-import os
-from numbers import Number
-
-from sklearn.cluster import AgglomerativeClustering
-#from scipy.cluster.hierarchy import
 
 import numpy as np
+from sklearn.cluster import AgglomerativeClustering
 
-from regression import learn_logit
+from combine_vectors import combine_balanced_ids, combined_headers, combine_balanced_num, combine_stream
+from prediction_tools import INDEXES, init_indexes
+import predict_pcc
+import predict_friendship
+
 
 NUM_CLUSTERS = 10
 
@@ -87,7 +83,7 @@ def social_jacc_cluster(pairwise_path):
         jacc = line[INDEXES['socialJacc']]
         return social_jacc_to_dist(float(jacc))
 
-    arr, index_map = pairwise_dist_matrix(pairwise_path, selector, 1.0)
+    arr, index_map = pairwise_dist_matrix(pairwise_path, selector, 0.0)
     return ClusterClassifier(arr, index_map)
 
 
@@ -127,26 +123,26 @@ class ClusterClassifier:
     def init_clusters(self):
         labels = aggClusterBuilder.fit_predict(self.dist_array)
         self.clusters = [set() for x in range(NUM_CLUSTERS)]
-        self.classifiers = [None for x in range(NUM_CLUSTERS)]
         for i in range(len(labels)):
             cluster_idx = labels[i]
             self.clusters[cluster_idx].add(self.index_map.get_str(i))
             self.user_clusters[self.index_map.get_str(i)] = cluster_idx
 
-    def train_classifiers(self):
+    def train_classifiers(self, clf_trainer):
         header = combined_headers(self.SINGLE_PATH, self.PAIRWISE_PATH)
+        self.classifiers = [None for x in range(NUM_CLUSTERS)]
         for i in range(NUM_CLUSTERS):
             if len(self.clusters[i]) > 100:
                 training_set = combine_balanced_ids(self.SINGLE_PATH, self.PAIRWISE_PATH, self.clusters[i])
-                clf = learn_classifier(training_set, header, 1.0)
+                clf = clf_trainer(training_set, header, 1.0)
                 print(clf.coef_)
                 self.classifiers[i] = clf
         overall_set = combine_balanced_num(self.SINGLE_PATH, self.PAIRWISE_PATH, 200_000)
-        self.overall_classifier = learn_classifier(overall_set, header, 1.0)
+        self.overall_classifier = clf_trainer(overall_set, header, 1.0)
 
-    def fit(self):
+    def fit(self, clf_trainer):
         self.init_clusters()
-        self.train_classifiers()
+        self.train_classifiers(clf_trainer)
 
     def predict(self, user_id, lines):
         clf_idx = self.user_clusters[user_id]
@@ -158,24 +154,39 @@ class ClusterClassifier:
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 5:
-        print("At least 3 arguments required: cluster.py {pcc|single} {path_to_single} {path_to_pairwise} {output_path}")
+    if len(sys.argv) < 6:
+        print("At least 5 arguments required: cluster.py {pcc|single} {pcc|friend} {path_to_single} {path_to_pairwise} {output_path}")
         exit(1)
 
     cluster_type = sys.argv[1]
-    single_path = sys.argv[2]
-    pairwise_path = sys.argv[3]
-    output_path = sys.argv[4]
+    predict_type = sys.argv[2]
+    single_path = sys.argv[3]
+    pairwise_path = sys.argv[4]
+    output_path = sys.argv[5]
     init_indexes(single_path, pairwise_path)
-    if cluster_type not in {"pcc", "single"}:
-        print(f"Cluster type must be 'pcc' or 'single', not {cluster_type}")
-        exit(1)
-
     ClusterClassifier.SINGLE_PATH = single_path
     ClusterClassifier.PAIRWISE_PATH = pairwise_path
-    clusters = pcc_cluster(pairwise_path)
-    clusters.fit()
 
-    stream = combine_stream(single_path, pairwise_path)
-    output_predictions(single_path, pairwise_path, output_path, clusters)
+    clusters = None
+    if cluster_type == "pcc":
+        print("Clustering by PCC")
+        clusters = pcc_cluster(pairwise_path)
+    elif cluster_type == "social":
+        print("Clustering by socialJacc")
+        clusters = social_jacc_cluster(pairwise_path)
+    else:
+        print(f"Cluster type must be 'pcc' or 'social', not {cluster_type}")
+        exit(1)
+
+    if predict_type == "pcc":
+        print("Predicting PCC > 0")
+        clusters.fit(predict_pcc.learn_classifier)
+        predict_pcc.output_predictions(single_path, pairwise_path, output_path, clusters)
+    elif predict_type == "friend":
+        print("Predicting friendship")
+        clusters.fit(predict_friendship.learn_classifier)
+        predict_friendship.output_predictions(single_path, pairwise_path, output_path, clusters)
+
+
+
 
