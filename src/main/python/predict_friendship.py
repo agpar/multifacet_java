@@ -29,7 +29,7 @@ def output_predictions(single_path, pairwise_path, output_path, classifier):
         return pair[2:]
 
     stream = combine_stream(single_path, pairwise_path)
-    write_predictions(stream, pairfilter, clf, output_path)
+    write_predictions(stream, pairfilter, classifier, output_path)
 
 
 if __name__ == '__main__':

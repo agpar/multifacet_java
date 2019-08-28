@@ -19,11 +19,13 @@ import sys
 
 import numpy as np
 from sklearn.cluster import AgglomerativeClustering
+import IPython
 
 from combine_vectors import combine_balanced_ids, combined_headers, combine_balanced_num, combine_stream
 from prediction_tools import INDEXES, init_indexes
 import predict_pcc
 import predict_friendship
+from iter_cluster import iter_cluster
 
 
 NUM_CLUSTERS = 10
@@ -100,7 +102,7 @@ def pairwise_dist_matrix(pairwise_path, selector, default_val):
             lines.append((user1, user2, val))
 
     num_keys = index_map._next_index
-    arr = np.full((num_keys, num_keys), default_val, dtype=np.dtype("float16"))
+    arr = np.full((num_keys, num_keys), default_val, dtype=np.dtype("float64"))
     for idx1, idx2, val in lines:
         arr[idx1][idx2] = val
         arr[idx2][idx1] = val
@@ -121,12 +123,15 @@ class ClusterClassifier:
         self.overall_classifier = None
 
     def init_clusters(self):
-        labels = aggClusterBuilder.fit_predict(self.dist_array)
+        #labels = aggClusterBuilder.fit_predict(self.dist_array)
+        labels = iter_cluster(self.dist_array, int(len(self.dist_array)/ NUM_CLUSTERS))
         self.clusters = [set() for x in range(NUM_CLUSTERS)]
         for i in range(len(labels)):
             cluster_idx = labels[i]
             self.clusters[cluster_idx].add(self.index_map.get_str(i))
             self.user_clusters[self.index_map.get_str(i)] = cluster_idx
+        cluster_lens = [len(c) for c in self.clusters]
+        print(f"Cluster lengths: {cluster_lens}")
 
     def train_classifiers(self, clf_trainer):
         header = combined_headers(self.SINGLE_PATH, self.PAIRWISE_PATH)
