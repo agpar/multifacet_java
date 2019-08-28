@@ -25,7 +25,7 @@ from combine_vectors import combine_balanced_ids, combined_headers, combine_bala
 from prediction_tools import INDEXES, init_indexes
 import predict_pcc
 import predict_friendship
-from iter_cluster import iter_cluster
+from iter_cluster import iter_cluster_avg
 
 
 NUM_CLUSTERS = 10
@@ -123,8 +123,7 @@ class ClusterClassifier:
         self.overall_classifier = None
 
     def init_clusters(self):
-        #labels = aggClusterBuilder.fit_predict(self.dist_array)
-        labels = iter_cluster(self.dist_array, int(len(self.dist_array)/ NUM_CLUSTERS))
+        labels = iter_cluster_avg(self.dist_array, int(len(self.dist_array)/ NUM_CLUSTERS))
         self.clusters = [set() for x in range(NUM_CLUSTERS)]
         for i in range(len(labels)):
             cluster_idx = labels[i]
