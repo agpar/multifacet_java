@@ -138,10 +138,14 @@ class ClusterClassifier:
         for i in range(NUM_CLUSTERS):
             if len(self.clusters[i]) > 100:
                 training_set = combine_balanced_ids(self.SINGLE_PATH, self.PAIRWISE_PATH, self.clusters[i])
-                clf = clf_trainer(training_set, header, 1.0)
+                clf, score = clf_trainer(training_set, header, 1.0)
+                print(score)
                 print(clf.coef_)
-                self.classifiers[i] = clf
-        overall_set = combine_balanced_num(self.SINGLE_PATH, self.PAIRWISE_PATH, 200_000)
+                if score > 0.6:
+                    self.classifiers[i] = clf
+                else:
+                    print("Score to low. Using generic classifier.")
+        overall_set = combine_balanced_num(self.SINGLE_PATH, self.PAIRWISE_PATH, 300_000)
         self.overall_classifier = clf_trainer(overall_set, header, 1.0)
 
     def fit(self, clf_trainer):

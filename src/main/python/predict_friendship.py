@@ -15,12 +15,10 @@ def learn_classifier(lines, header, train_size):
     if train_size < 1.0:
         X, X_test, Y, Y_test = train_test_split(ds.X, ds.Y, train_size=0.8, shuffle=True, random_state=42)
         clf = learn_logit(X, Y)
-        print(clf.score(X_test, Y_test))
-        return clf
+        return clf, clf.score(X_test, Y_test)
     else:
         clf = learn_logit(ds.X, ds.Y)
-        print(clf.score(ds.X, ds.Y))
-        return clf
+        return clf, clf.score(ds.X, ds.Y)
 
 
 def output_predictions(single_path, pairwise_path, output_path, classifier):
