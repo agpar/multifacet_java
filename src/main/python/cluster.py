@@ -67,11 +67,11 @@ def pcc_cluster(pairwise_path):
         pcc = line[INDEXES['PCC']]
         if pcc == 'null':
             # TODO: set this as average or negative?
-            return pcc_to_dist(0.0)
+            return pcc_to_dist(-1.0)
         else:
             return pcc_to_dist(float(pcc))
 
-    arr, index_map = pairwise_dist_matrix(pairwise_path, selector, 1.0)
+    arr, index_map = pairwise_dist_matrix(pairwise_path, selector, 0.0)
     return ClusterClassifier(arr, index_map)
 
 

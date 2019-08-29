@@ -40,7 +40,7 @@ if __name__ == '__main__':
     output_path = sys.argv[3]
     print("Loading data")
     header = combined_headers(single_path, pairwise_path)
-    combined = combine_balanced_num(single_path, pairwise_path, 500_000)
+    combined = combine_balanced_friends(single_path, pairwise_path, 500_000)
     clf = learn_classifier(combined, header, 0.8)
 
     def pairfilter(pair):

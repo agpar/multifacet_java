@@ -47,7 +47,7 @@ if __name__ == '__main__':
     pairwise_path = sys.argv[2]
     output_path = sys.argv[3]
     header = combined_headers(single_path, pairwise_path)
-    combined = combine_balanced_num(single_path, pairwise_path, 500_000)
+    combined = combine_balanced_pcc(single_path, pairwise_path, 500_000)
     clf = learn_classifier(combined, header, 0.8)
     output_predictions(single_path, pairwise_path, output_path, clf)
 
