@@ -20,7 +20,7 @@ import sys
 import numpy as np
 from sklearn.cluster import AgglomerativeClustering
 
-from combine_vectors import combine_balanced_ids, combined_headers, combine_balanced_num, combine_stream
+from combine_vectors import combine_balanced_friends, combined_headers, combine_balanced_pcc
 from prediction_tools import INDEXES, init_indexes
 import predict_pcc
 import predict_friendship
@@ -131,12 +131,12 @@ class ClusterClassifier:
         cluster_lens = [len(c) for c in self.clusters]
         print(f"Cluster lengths: {cluster_lens}")
 
-    def train_classifiers(self, clf_trainer):
+    def train_classifiers(self, combiner, clf_trainer):
         header = combined_headers(self.SINGLE_PATH, self.PAIRWISE_PATH)
         self.classifiers = [None for x in range(NUM_CLUSTERS)]
         for i in range(NUM_CLUSTERS):
             if len(self.clusters[i]) > 100:
-                training_set = combine_balanced_ids(self.SINGLE_PATH, self.PAIRWISE_PATH, self.clusters[i])
+                training_set = combiner(self.SINGLE_PATH, self.PAIRWISE_PATH, userIds=self.clusters[i])
                 clf, score = clf_trainer(training_set, header, 1.0)
                 print(score)
                 print(clf.coef_)
@@ -144,15 +144,15 @@ class ClusterClassifier:
                     self.classifiers[i] = clf
                 else:
                     print("Score to low. Using generic classifier.")
-        overall_set = combine_balanced_num(self.SINGLE_PATH, self.PAIRWISE_PATH, 300_000)
+        overall_set = combiner(self.SINGLE_PATH, self.PAIRWISE_PATH, numVects=300_000)
         self.overall_classifier, score = clf_trainer(overall_set, header, 1.0)
         print("Generic classifier.")
         print(score)
         print(self.overall_classifier.coef_)
 
-    def fit(self, clf_trainer):
+    def fit(self, combiner, clf_trainer):
         self.init_clusters()
-        self.train_classifiers(clf_trainer)
+        self.train_classifiers(combiner, clf_trainer)
 
     def predict(self, user_id, lines):
         clf_idx = self.user_clusters[user_id]
@@ -190,11 +190,11 @@ if __name__ == '__main__':
 
     if predict_type == "pcc":
         print("Predicting PCC > 0")
-        clusters.fit(predict_pcc.learn_classifier)
+        clusters.fit(combine_balanced_pcc, predict_pcc.learn_classifier)
         predict_pcc.output_predictions(single_path, pairwise_path, output_path, clusters)
     elif predict_type == "friend":
         print("Predicting friendship")
-        clusters.fit(predict_friendship.learn_classifier)
+        clusters.fit(combine_balanced_friends, predict_friendship.learn_classifier)
         predict_friendship.output_predictions(single_path, pairwise_path, output_path, clusters)
 
 
