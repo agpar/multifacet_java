@@ -15,7 +15,7 @@ public class ExperimentDescription {
     private int numIterations;
     private float socialReg;
     private List<Float> socialRegs;
-    private String predictionFile;
+    private String predictionFile ;
     private double  MAE;
     private double MSE;
 
@@ -77,7 +77,9 @@ public class ExperimentDescription {
         result.add("randomSeed", new JsonPrimitive(this.randomSeed));
         result.add("numIterations", new JsonPrimitive(this.numIterations));
         result.add("socialReg", new JsonPrimitive(this.socialReg));
-        result.add("predictionFile", new JsonPrimitive(this.predictionFile));
+        if (this.predictionFile != null) {
+            result.add("predictionFile", new JsonPrimitive(this.predictionFile));
+        }
         result.add("MAE", new JsonPrimitive(this.MAE));
         result.add("MSE", new JsonPrimitive(this.MSE));
         return result.toString();
