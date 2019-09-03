@@ -44,9 +44,17 @@ def refine_clusters(dists, means, clust_size, cluster_builder, old_clusters=None
     clusters = {}
     cluster_num = 0
     if old_clusters:
-        for old_cluster in random.shuffle(list(old_clusters.values())):
+        # Chose a set of new centers
+        old_clusters_shuffled = list(old_clusters.values())
+        random.shuffle(old_clusters_shuffled)
+        centers = []
+        for old_cluster in old_clusters_shuffled:
             next_center_idx = most_central_idx(means, dists, already_clustered, old_cluster)
-            cluster = cluster_builder(next_center_idx, dists, clust_size, already_clustered)
+            centers.append(next_center_idx)
+            already_clustered.add(next_center_idx)
+        # Re assign clusters
+        for center in centers:
+            cluster = cluster_builder(center, dists, clust_size, already_clustered)
             already_clustered = already_clustered.union(cluster)
             clusters[cluster_num] = cluster
             cluster_num += 1
@@ -64,7 +72,7 @@ def refine_clusters(dists, means, clust_size, cluster_builder, old_clusters=None
 
 
 def most_central_idx(sorted_means, dists, already_clustered, relative_to=None):
-    if relative_to is None:
+    if relative_to is None or len(relative_to.difference(already_clustered)) == 0:
         return next_idx_to_cluster(sorted_means, already_clustered)
 
     idx_list = sorted(list(c for c in relative_to if c not in already_clustered))
