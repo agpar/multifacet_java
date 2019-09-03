@@ -59,6 +59,9 @@ public abstract class ExperimentRunner implements Runnable {
         } catch (IOException e) {
             System.out.println("Failed to write results.");
             e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("Failed to write results.");
+            e.printStackTrace();
         }
     }
 

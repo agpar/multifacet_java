@@ -11,11 +11,15 @@ public class ExperimentDescription {
     private String recommenderName;
     private int numUsers;
     private int randomSeed;
-    private List<Integer> randomSeeds;
     private int numIterations;
     private float socialReg;
-    private List<Float> socialRegs;
     private String predictionFile ;
+
+    // For multi.
+    private List<Float> socialRegRange;
+    private Float socialRegStep;
+    private List<Integer> randomSeeds;
+
     private double  MAE;
     private double MSE;
 
@@ -44,32 +48,39 @@ public class ExperimentDescription {
     }
 
     public boolean isMulti() {
-        return randomSeeds != null || socialRegs != null;
+        return randomSeeds != null || socialRegRange != null ||  socialRegStep != null;
     }
 
     public List<ExperimentDescription> multiToList() throws Exception {
         if (!this.isMulti()) {
             throw new Exception("This descriptions is not a multi!");
         }
-        if (this.randomSeeds == null || this.socialRegs == null || (this.randomSeeds.size() != this.socialRegs.size())) {
-            throw new Exception("`randomSeeds` and `socialRegs` are not the same length!");
+        if(socialRegRange.size() > 2) {
+            throw new Exception("SocialRegRange must bet a list of exactly two floats (upper and lower bound)");
         }
+
         ArrayList<ExperimentDescription> descriptions = new ArrayList<>();
-        for(int i = 0; i < this.randomSeeds.size(); i++) {
-            descriptions.add(new ExperimentDescription(
-                   this.name,
-                   this.recommenderName,
-                   this.numUsers,
-                   this.randomSeeds.get(i),
-                   this.numIterations,
-                   this.socialRegs.get(i),
-                   this.predictionFile
-            ));
+        Float f = socialRegRange.get(0);
+        while (f <= socialRegRange.get(1)) {
+            for (int seed : this.randomSeeds) {
+                descriptions.add(new ExperimentDescription(
+                        this.name,
+                        this.recommenderName,
+                        this.numUsers,
+                        seed,
+                        this.numIterations,
+                        f,
+                        this.predictionFile));
+            }
+            f += this.socialRegStep;
         }
         return descriptions;
     }
 
-    public String toJson() {
+    public String toJson() throws Exception {
+        if (this.isMulti()) {
+            throw new Exception("Can't serialize a multi description");
+        }
         JsonObject result = new JsonObject();
         result.add("name", new JsonPrimitive(this.name));
         result.add("recommenderName", new JsonPrimitive(this.recommenderName));
