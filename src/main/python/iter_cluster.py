@@ -44,7 +44,7 @@ def refine_clusters(dists, means, clust_size, cluster_builder, old_clusters=None
     clusters = {}
     cluster_num = 0
     if old_clusters:
-        for old_cluster in random.shuffle(old_clusters.values()):
+        for old_cluster in random.shuffle(list(old_clusters.values())):
             next_center_idx = most_central_idx(means, dists, already_clustered, old_cluster)
             cluster = cluster_builder(next_center_idx, dists, clust_size, already_clustered)
             already_clustered = already_clustered.union(cluster)
