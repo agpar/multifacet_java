@@ -74,6 +74,7 @@ public class ExperimentDescription {
             }
             f += this.socialRegStep;
         }
+        System.out.printf("Expanded multi for %s to %d experiments\n", this.name, descriptions.size());
         return descriptions;
     }
 
