@@ -95,6 +95,7 @@ public class ExperimentDescription {
         }
         result.add("MAE", new JsonPrimitive(this.MAE));
         result.add("RMSE", new JsonPrimitive(this.RMSE));
+        result.add("AUC", new JsonPrimitive(this.AUC));
         return result.toString();
     }
 
