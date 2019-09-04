@@ -50,7 +50,7 @@ public abstract class ExperimentRunner implements Runnable {
         this.initRatings(this.description.getNumUsers());
         try {
             HashMap<String, Double> results = this.evaluatePredictions(this.description.getNumUsers());
-            description.addResults(results.get("MAE"), results.get("MSE"));
+            description.addResults(results.get("MAE"), results.get("RMSE"), results.get("AUC"));
             String resultString = description.toJson();
             resultWriter.writeResults(String.format("%s\n", resultString));
         } catch (LibrecException e) {

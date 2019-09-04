@@ -20,8 +20,9 @@ public class ExperimentDescription {
     private Float socialRegStep;
     private List<Integer> randomSeeds;
 
-    private double  MAE;
-    private double MSE;
+    private double MAE;
+    private double RMSE;
+    private double AUC;
 
     public ExperimentDescription(String name, String recommenderName, int numUsers, int randomSeed, int numIterations, float socialReg) {
         this.name = name;
@@ -93,13 +94,14 @@ public class ExperimentDescription {
             result.add("predictionFile", new JsonPrimitive(this.predictionFile));
         }
         result.add("MAE", new JsonPrimitive(this.MAE));
-        result.add("MSE", new JsonPrimitive(this.MSE));
+        result.add("RMSE", new JsonPrimitive(this.RMSE));
         return result.toString();
     }
 
-    public void addResults(double MAE, double MSE) {
+    public void addResults(double MAE, double MSE, double AUC) {
         this.MAE = MAE;
-        this.MSE = MSE;
+        this.RMSE = MSE;
+        this.AUC = AUC;
     }
 
     public String getName() {

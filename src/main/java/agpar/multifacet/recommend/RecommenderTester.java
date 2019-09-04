@@ -4,10 +4,13 @@ import agpar.multifacet.experiments.ExperimentDescription;
 import net.librec.common.LibrecException;
 import net.librec.conf.Configuration;
 import net.librec.eval.RecommenderEvaluator;
+import net.librec.eval.ranking.AUCEvaluator;
 import net.librec.eval.rating.MAEEvaluator;
 import net.librec.eval.rating.MSEEvaluator;
+import net.librec.eval.rating.RMSEEvaluator;
 import net.librec.math.algorithm.Randoms;
 import net.librec.recommender.Recommender;
+import net.librec.similarity.RecommenderSimilarity;
 
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -35,12 +38,16 @@ public abstract class RecommenderTester {
     protected HashMap<String, Double> evaluate(Recommender recommender) throws LibrecException{
         RecommenderEvaluator evaluator = new MAEEvaluator();
         Double MAE = recommender.evaluate(evaluator);
-        RecommenderEvaluator evaluator2 = new MSEEvaluator();
-        Double MSE = recommender.evaluate(evaluator2);
+        RecommenderEvaluator evaluator2 = new RMSEEvaluator();
+        Double RMSE = recommender.evaluate(evaluator2);
+        RecommenderEvaluator evaluator3 = new AUCEvaluator();
+        Double AUC = recommender.evaluate(evaluator3);
+
 
         HashMap<String, Double> results = new HashMap<>();
         results.put("MAE", MAE);
-        results.put("MSE", MSE);
+        results.put("RMSE", RMSE);
+        results.put("AUC", AUC);
         return results;
 
     }
