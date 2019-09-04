@@ -36,20 +36,12 @@ public abstract class RecommenderTester {
     };
 
     protected HashMap<String, Double> evaluate(Recommender recommender) throws LibrecException{
-        RecommenderEvaluator evaluator = new MAEEvaluator();
-        Double MAE = recommender.evaluate(evaluator);
-        RecommenderEvaluator evaluator2 = new RMSEEvaluator();
-        Double RMSE = recommender.evaluate(evaluator2);
-        RecommenderEvaluator evaluator3 = new AUCEvaluator();
-        Double AUC = recommender.evaluate(evaluator3);
-
-
         HashMap<String, Double> results = new HashMap<>();
-        results.put("MAE", MAE);
-        results.put("RMSE", RMSE);
-        results.put("AUC", AUC);
-        return results;
+        results.put("MAE", recommender.evaluate(new MAEEvaluator()));
+        results.put("RMSE", recommender.evaluate(new RMSEEvaluator()));
+        results.put("AUC", recommender.evaluate(new AUCEvaluator()));
 
+        return results;
     }
 
     public void loadDescription(ExperimentDescription description) {
