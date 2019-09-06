@@ -15,6 +15,8 @@ TIP_FILE = path.join(settings.DATA_DIR, 'tip.json')
 
 def read_all():
     def business_filter(business):
+        if not business.get('categories'):
+            return None
         categories = set(business['categories'].split(', '))
         if 'Food' in categories or 'Restaurants' in categories:
             return business
@@ -25,7 +27,8 @@ def read_all():
     def review_filter(review):
         business_id = review['business_id']
         if business_id in businesses:
-            del review['text']
+            if 'text' in review:
+                del review['text']
             return review
         else:
             return None

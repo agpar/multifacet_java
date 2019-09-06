@@ -209,5 +209,5 @@ def read_businesses(business_file, filter=lambda x: x):
             filtered_business = filter(business)
             if filtered_business:
                 businesses[business['business_id']] = filtered_business
-    return business
+    return businesses
 
