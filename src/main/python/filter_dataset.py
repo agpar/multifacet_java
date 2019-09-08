@@ -67,17 +67,15 @@ def write_filtered(users_by_id, reviews_by_userid, tips_by_userid, businesses):
 
     with open(review_filtered, 'w') as f:
         for user_id, review in reviews_by_userid.items():
-            if user_id in users_by_id:
-                f.write(f"{json.dumps(review)}\n")
+            f.write(f"{json.dumps(review)}\n")
 
     with open(tip_filtered, 'w') as f:
         for user_id, tip in tips_by_userid.items():
-            if user_id in users_by_id:
-                f.write(f"{json.dumps(tip)}\n")
+            f.write(f"{json.dumps(tip)}\n")
 
     with open(business_filtered, 'w') as f:
         for business in businesses:
-            f.write(f"{json.dumps(business)}")
+            f.write(f"{json.dumps(business)}\n")
 
 
 if __name__ == '__main__':
