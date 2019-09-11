@@ -4,14 +4,21 @@
 Clustering ideas:
     * By PCC as distance
         -> Problem: what to do with null PCCs
+        -> Problem: Non euclidean.
         -> Advantage: already calculated.
     * By vector dist between single user factors:
         -> Problem: Not yet computed, however, easy to compute.
         -> Problem: Does not include comparison of review evidence.
         -> Advantage: Defined for every user.
+        -> Advantage: Euclidean.
+    * By review score vectors in dimension reduced space.
+        -> Advantage: Captures groups of users with similar interests
+        -> Advantage: Can use euclidean distance measure.
+        -> A pain to compute.
     * By item/category jaccard.
         -> Advantage: Already computed.
         -> Advantage: Defined for every user.
+        -> Problem: Non euclidean.
 """
 
 import csv

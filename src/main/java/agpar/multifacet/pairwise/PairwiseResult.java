@@ -38,7 +38,10 @@ public class PairwiseResult {
 
     private static String doubleFmt(Double d) {
         final double threshold = 0.00000000000001;
-        if (Math.abs(d) < threshold) {
+        if (d == null) {
+           return "null";
+        }
+        else if (Math.abs(d) < threshold) {
             return "0";
         } else {
             return String.format("%f", d);
