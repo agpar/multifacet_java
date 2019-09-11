@@ -1,7 +1,7 @@
 import numpy as np
 
 from clustering.iter_cluster import iter_cluster_avg
-from clustering.id_index_map import IDIndexMap
+from tools.id_index_map import IDIndexMap
 from prediction_tools import combined_headers
 from settings import NUM_CLUSTERS
 

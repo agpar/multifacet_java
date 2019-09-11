@@ -26,7 +26,7 @@ import predict_pcc
 import predict_friendship
 from settings import NUM_CLUSTERS
 from clustering.cluster_classifier import ClusterClassifier
-from clustering.id_index_map import IDIndexMap
+from tools.id_index_map import IDIndexMap
 
 
 aggClusterBuilder = AgglomerativeClustering(n_clusters=NUM_CLUSTERS, affinity='precomputed', linkage='average')
