@@ -19,10 +19,16 @@ Clustering ideas:
         -> Advantage: Already computed.
         -> Advantage: Defined for every user.
         -> Problem: Non euclidean.
+
+
+    Clustering in non-euclidean formulation:
+        * Chose as next "center" the point in the current cluster with the lowest squared
+          distance to all other points in the cluster.
 """
 
 import csv
 import sys
+from sys import exit
 
 import numpy as np
 from sklearn.cluster import AgglomerativeClustering
