@@ -31,9 +31,18 @@ public class PairwiseResult {
     public String toString() {
         int areFriends = this.areFriends ? 1 : 0;
         int areFriendsOfFriends = this.friendsOfFriends ? 1 : 0;
-        return String.format("%s,%s,%f,%f,%d,%d,%f,%f",
-                this.user1Id, this.user2Id, this.pcc, this.socialJaccard,
-                areFriends, areFriendsOfFriends, this.itemJaccard, this.categoryJaccard);
+        return String.format("%s,%s,%s,%s,%d,%d,%s,%s",
+                this.user1Id, this.user2Id, doubleFmt(this.pcc), doubleFmt(this.socialJaccard),
+                areFriends, areFriendsOfFriends, doubleFmt(this.itemJaccard), doubleFmt(this.categoryJaccard));
+    }
+
+    private static String doubleFmt(Double d) {
+        final double threshold = 0.00000000000001;
+        if (Math.abs(d) < threshold) {
+            return "0";
+        } else {
+            return String.format("%f", d);
+        }
     }
 
     public static PairwiseResult fromString(String commaSeparated) {
