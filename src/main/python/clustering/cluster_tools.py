@@ -7,6 +7,16 @@ def eval(dists, cluster_labels):
     return silhouette_score(dists, cluster_labels, metric='precomputed')
 
 
+def average_clust_distance(dists, clusters):
+    avg_dist = 0
+    for cluster in clusters.values():
+        cluster_list = list(cluster)
+        intra_dists = np.array([d[cluster_list] for d in dists[cluster_list]])
+        avg = np.mean(intra_dists)
+        avg_dist += avg
+    return avg_dist / len(clusters)
+
+
 def clusters_to_labels(dists, clusters):
     """Transform a dict of cluster assignments to an array of labels"""
     labels = np.full(len(dists), -1)
@@ -59,6 +69,12 @@ def nearest_clusteroid(dist_array, clusteroid_idxs):
     # In case of ties, assign randomly
     possible_clusteroids = [i for i, x in enumerate(clusteroid_dists) if x == min_dist]
     return sorted_clusteroids[np.random.choice(possible_clusteroids, 1)[0]]
+
+
+def nearest_cluster(avg_clusters_dists, index):
+    cluster_dists = avg_clusters_dists[:,index]
+    min_dist = np.min(cluster_dists)
+    return np.nonzero(min_dist == cluster_dists)
 
 
 def next_idx_to_cluster(sorted_means_with_idx, already_clustered):

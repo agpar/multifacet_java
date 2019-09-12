@@ -16,6 +16,7 @@ def cluster(dists: np.array, k, iters):
         #    print("Converged.")
         #    break
         clusters = assign_clusters(dists, new_clusteroids)
+        print(f"Cluster score: {average_clust_distance(dists, clusters)}")
         print(f"Cluster score: {eval(dists, clusters_to_labels(dists, clusters))}")
 
     return clusters_to_labels(dists, clusters)

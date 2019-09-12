@@ -1,6 +1,6 @@
 import numpy as np
 
-from clustering.iter_cluster import iter_cluster_avg
+from clustering.greedy_one_shot import cluster_avg
 from tools.id_index_map import IDIndexMap
 from prediction_tools import combined_headers
 from settings import NUM_CLUSTERS
@@ -20,7 +20,7 @@ class ClusterClassifier:
         self.overall_classifier = None
 
     def init_clusters(self):
-        labels = iter_cluster_avg(self.dist_array, int(len(self.dist_array)/ NUM_CLUSTERS))
+        labels = cluster_avg(self.dist_array, int(len(self.dist_array)/ NUM_CLUSTERS))
         self.clusters = [set() for x in range(NUM_CLUSTERS)]
         for i in range(len(labels)):
             cluster_idx = labels[i]

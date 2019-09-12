@@ -54,7 +54,7 @@ def pcc_cluster(pairwise_path, single_path):
         pcc = line[INDEXES['PCC']]
         if pcc == 'null':
             # TODO: set this as average or negative?
-            return pcc_to_dist(-1.0)
+            return pcc_to_dist(0.0)
         else:
             return pcc_to_dist(float(pcc))
 
