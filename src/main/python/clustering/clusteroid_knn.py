@@ -1,10 +1,7 @@
-import numpy as np
 from clustering.cluster_tools import *
 
 
 def cluster(dists: np.array, k, iters):
-    import pdb
-    pdb.set_trace()
     old_clusteroids = initial_clusteroids(dists, k, strategy='central')
     clusters = assign_clusters(dists, old_clusteroids)
     print(f"Cluster score: {eval(dists, clusters_to_labels(dists, clusters))}")
@@ -16,7 +13,7 @@ def cluster(dists: np.array, k, iters):
         #    print("Converged.")
         #    break
         clusters = assign_clusters(dists, new_clusteroids)
-        print(f"Cluster score: {average_clust_distance(dists, clusters)}")
+        print(f"Cluster score: {average_intra_clust_distance(dists, clusters)}")
         print(f"Cluster score: {eval(dists, clusters_to_labels(dists, clusters))}")
 
     return clusters_to_labels(dists, clusters)
@@ -25,7 +22,7 @@ def cluster(dists: np.array, k, iters):
 def assign_clusters(dists, clusteroids):
     clusters = {i: set() for i in range(len(clusteroids))}
     for i, point_dists in enumerate(dists):
-        clusters[clusteroids.index(nearest_clusteroid(point_dists, clusteroids))].add(i)
+        clusters[clusteroids.index(nearest_clusteroid(i, clusteroids))].add(i)
     return clusters
 
 
@@ -38,14 +35,14 @@ def initial_clusteroids(dists, k, strategy='central'):
     :return: The indexes of k clusteroids.
     """
     if strategy == 'random':
-        return list(np.random.choice(np.array(list(range(len(dists)))), k))
+        return dists[list(np.random.choice(np.array(list(range(len(dists)))), k))]
     elif strategy == 'central':
         means = sorted_with_idx(mean_dists(dists))
         clusteroids = []
         for i in range(k):
             clusteroid = next_idx_to_cluster(means, clusteroids)
             clusteroids.append(clusteroid)
-        return clusteroids
+        return dists[clusteroids]
 
 
 

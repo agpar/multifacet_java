@@ -1,4 +1,3 @@
-import numpy as np
 from clustering.cluster_tools import *
 
 
@@ -58,9 +57,3 @@ def closest_points_average(center_idx, dists, n, already_clustered):
         local_already_clustered.add(next_item)
         cluster.add(next_item)
     return cluster
-
-
-
-
-
-
