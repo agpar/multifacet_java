@@ -44,43 +44,6 @@ def labels_to_clusters(labels):
     return clusters
 
 
-def next_clusteroid(dist_matrix, cluster_idxs, strategy="sum"):
-    """Return the distance array of the next clusteroid.
-
-    :param dist_matrix: A N * N symmetric distance matrix
-    :param cluster_idxs: The row indexes of the cluster to find a clusteroid for.
-    :param strategy: One of "sum", "avg" or "mse".
-    :return: The length N distance array of the next clusteroid.
-    """
-    idx_list = sorted(list(cluster_idxs))
-    intra_cluster_dists = np.array([d[idx_list] for d in dist_matrix[idx_list]])
-    if strategy == "sum":
-        aggregated_dists = np.sum(intra_cluster_dists, axis=0)
-    elif strategy == "avg":
-        aggregated_dists = np.mean(intra_cluster_dists, axis=0)
-    elif strategy == "mse":
-        aggregated_dists = np.mean(np.square(intra_cluster_dists), axis=0)
-    else:
-        raise ValueError("strategy must be in ('sum', 'avg', 'mse')")
-
-    min_dist = np.min(aggregated_dists)
-    return dist_matrix[np.nonzero(aggregated_dists == min_dist)[0][0]]
-
-
-def nearest_clusteroid(idx, clusteroid_arrs):
-    """Return the index of the clusteroid closest to idx
-
-    :param dist_array: A 1D array of distances.
-    :param clusteroid_idxs: A collection of clusteroid indexes
-    :return: The index of the nearest clusteroid.
-    """
-    clusteroid_dists = clusteroid_arrs[:, idx]
-    min_dist = np.min(clusteroid_dists)
-    # In case of ties, assign randomly
-    possible_clusteroids = [i for i, x in enumerate(clusteroid_dists) if x == min_dist]
-    return np.random.choice(possible_clusteroids, 1)[0]
-
-
 def next_idx_to_cluster(sorted_means_with_idx, already_clustered):
     for idx, mean in sorted_means_with_idx:
         if idx not in already_clustered:
@@ -121,6 +84,9 @@ class AvgClusterDistCalculator:
 
     def avg_dist(self, idx, cluster_key):
         return self.cluster_dists[cluster_key][idx]
+
+    def sim_clusteroid(self, cluster_key):
+        return self.cluster_dists[cluster_key]
 
     def nearest_cluster(self, idx):
         min_val = math.inf
