@@ -2,17 +2,17 @@ from clustering.cluster_tools import *
 
 
 def cluster(dists: np.array, k, iters):
-    old_clusteroids = initial_clusteroids(dists, k, strategy='central')
-    clusters = assign_clusters(dists, old_clusteroids)
-    print(f"Cluster score: {eval(dists, clusters_to_labels(dists, clusters))}")
-    new_clusteroids = choose_next_clusteroids(dists, k, clusters, "cluster-avg")
+    init_clusteroids = initial_clusteroids(dists, k, strategy='central')
+    clusters = assign_clusters(dists, init_clusteroids)
     for i in range(iters - 1):
+        new_clusteroids = choose_next_clusteroids(dists, k, clusters, "cluster-avg")
         #if sorted(old_clusteroids) == sorted(new_clusteroids):
         #    print("Converged.")
         #    break
         clusters = assign_clusters(dists, new_clusteroids)
-        print(f"Cluster score: {average_intra_clust_distance(dists, clusters)}")
-        print(f"Cluster score: {eval(dists, clusters_to_labels(dists, clusters))}")
+        print(f"{i}: Average intra cluster dist: {average_intra_clust_distance(dists, clusters)}")
+        print(f"{i}: Median intra cluster dist: {median_intra_clust_distance(dists, clusters)}")
+        print(f"{i}: Silo score: {eval(dists, clusters_to_labels(dists, clusters))}")
 
     return clusters_to_labels(dists, clusters)
 
@@ -20,7 +20,7 @@ def cluster(dists: np.array, k, iters):
 def assign_clusters(dists, clusteroids):
     clusters = {i: set() for i in range(len(clusteroids))}
     for i, point_dists in enumerate(dists):
-        clusters[clusteroids.index(nearest_clusteroid(i, clusteroids))].add(i)
+        clusters[nearest_clusteroid_index(i, clusteroids)].add(i)
     return clusters
 
 
@@ -33,7 +33,7 @@ def initial_clusteroids(dists, k, strategy='central'):
     :return: A K*N dist matrix, where each row is the clusteroid dist array.
     """
     if strategy == 'random':
-        return dists[list(np.random.choice(dists.shape()[0], k))]
+        return dists[list(np.random.choice(dists.shape[0], k))]
     elif strategy == 'central':
         means = sorted_with_idx(mean_dists(dists))
         clusteroids = []
@@ -52,15 +52,15 @@ def choose_next_clusteroids(dists, k, clusters, strategy="sum"):
     :param strategy: A string in "sum", "avg", "mse", "cluster-avg"
     :return: A list of new clusteroid distances to use.
     """
-    new_clusteroids = [0 for i in range(k)]
+    new_clusteroids = np.empty((k, dists.shape[0]))
     if strategy == "cluster-avg":
         calculator = AvgClusterDistCalculator(dists, clusters)
         for i in range(k):
-            new_clusteroids[i] = calculator.sim_clusteroid(i)
+            new_clusteroids[i] = np.array(calculator.sim_clusteroid(i))
     else:
         for i in range(k):
-            new_clusteroids[i] = _next_clusteroid(dists, clusters[i], strategy="mse")
-    return np.array(new_clusteroids)
+            new_clusteroids[i] = np.array(_next_clusteroid(dists, clusters[i], strategy="mse"))
+    return new_clusteroids
 
 
 def _next_clusteroid(dist_matrix, cluster_idxs, strategy="sum"):
@@ -86,7 +86,7 @@ def _next_clusteroid(dist_matrix, cluster_idxs, strategy="sum"):
     return dist_matrix[np.nonzero(aggregated_dists == min_dist)[0][0]]
 
 
-def nearest_clusteroid(idx, clusteroid_arrs):
+def nearest_clusteroid_index(idx, clusteroid_arrs):
     """Return the index of the clusteroid closest to idx
 
     :param dist_array: A 1D array of distances.
@@ -94,7 +94,6 @@ def nearest_clusteroid(idx, clusteroid_arrs):
     :return: The index of the nearest clusteroid.
     """
     clusteroid_dists = clusteroid_arrs[:, idx]
-    min_dist = np.min(clusteroid_dists)
-    # In case of ties, assign randomly
-    possible_clusteroids = [i for i, x in enumerate(clusteroid_dists) if x == min_dist]
-    return np.random.choice(possible_clusteroids, 1)[0]
+    min_dist_val = np.min(clusteroid_dists)
+    min_dist_idxs = np.nonzero(clusteroid_dists == min_dist_val)[0]
+    return np.random.choice(min_dist_idxs, 1)[0]

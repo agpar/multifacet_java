@@ -75,12 +75,13 @@ class AvgClusterDistCalculator:
         self.__init_clusters()
 
     def __init_clusters(self):
+        self.cluster_dists = np.empty((len(self.clusters), self.dist_matrix.shape[0]))
         for key, cluster in self.clusters.items():
             cluster_dists = self.dist_matrix[list(cluster)]
             self.cluster_dists[key] = self.__aggregate_dists(cluster_dists)
 
     def __aggregate_dists(self, cluster_dists):
-        return np.mean(cluster_dists, axis=1)
+        return np.mean(cluster_dists, axis=0)
 
     def avg_dist(self, idx, cluster_key):
         return self.cluster_dists[cluster_key][idx]
