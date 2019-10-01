@@ -3,3 +3,4 @@ out
 target
 *.iml
 __pycache__
+/src/main/python/settings.py
