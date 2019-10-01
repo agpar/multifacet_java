@@ -1,7 +1,6 @@
 import numpy as np
 
 from clustering.greedy_one_shot import cluster_avg
-from tools.id_index_map import IDIndexMap
 from prediction_tools import combined_headers
 from settings import NUM_CLUSTERS
 
@@ -11,21 +10,20 @@ class ClusterClassifier:
     PAIRWISE_PATH = ""
     CLUSTERED = True
 
-    def __init__(self, dist_array: np.array, index_map: IDIndexMap):
+    def __init__(self, dist_array: np.array):
         self.dist_array = dist_array
-        self.index_map = index_map
         self.user_clusters = {}
         self.clusters = []
         self.classifiers = []
         self.overall_classifier = None
 
     def init_clusters(self):
-        labels = cluster_avg(self.dist_array, int(len(self.dist_array)/ NUM_CLUSTERS))
+        labels = cluster_avg(self.dist_array, int(len(self.dist_array) / NUM_CLUSTERS))
         self.clusters = [set() for x in range(NUM_CLUSTERS)]
         for i in range(len(labels)):
             cluster_idx = labels[i]
-            self.clusters[cluster_idx].add(self.index_map.get_str(i))
-            self.user_clusters[self.index_map.get_str(i)] = cluster_idx
+            self.clusters[cluster_idx].add(i)
+            self.user_clusters[i] = cluster_idx
         cluster_lens = [len(c) for c in self.clusters]
         print(f"Cluster lengths: {cluster_lens}")
 
