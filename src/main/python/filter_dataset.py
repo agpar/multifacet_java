@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from yelp_interface.data_interface import read_reviews, read_businesses, read_users, read_tips
 from os import path
 import settings
