@@ -4,8 +4,13 @@ import settings
 import json
 from tools.id_index_map import IDIndexMap
 
-"""Filter files, only retaining users who have reviewed at least 20 restaurant
-of food things"""
+"""
+Filter files, only retaining users who have reviewed at least 20 restaurant
+or food related reviews.
+
+Maps each user id to a integer, which is also used as the index to refer to that
+user in any matrix in later processing.
+"""
 
 MIN_REVIEWS = 20
 BUSINESS_FILE = path.join(settings.DATA_DIR, 'business.json')
@@ -70,6 +75,7 @@ def write_filtered(users_by_id, reviews_by_userid, tips_by_userid, businesses):
 
     with open(user_filtered, 'w') as f:
         for user in users_by_id.values():
+            user['true_user_id'] = user['user_id']
             user['user_id'] = userIdMap.get_int(user['user_id'])
             user['friends'] = filter_friend_list(user, userIdMap)
             f.write(f"{json.dumps(user)}\n")
@@ -77,8 +83,9 @@ def write_filtered(users_by_id, reviews_by_userid, tips_by_userid, businesses):
     with open(review_filtered, 'w') as f:
         for user_id, reviews in reviews_by_userid.items():
             for review in reviews:
-                review['business_id'] = businessIdMap.get_int(review['business_id'])
+                review['true_review_id'] = review['review_id']
                 review['review_id'] = reviewIdMap.get_int(review['review_id'])
+                review['business_id'] = businessIdMap.get_int(review['business_id'])
                 review['user_id'] = userIdMap.get_int(review['user_id'])
                 f.write(f"{json.dumps(review)}\n")
 
@@ -91,6 +98,7 @@ def write_filtered(users_by_id, reviews_by_userid, tips_by_userid, businesses):
 
     with open(business_filtered, 'w') as f:
         for business in businesses.values():
+            business['true_business_id'] = business['business_id']
             business['business_id'] = businessIdMap.get_int(business['business_id'])
             f.write(f"{json.dumps(business)}\n")
 
