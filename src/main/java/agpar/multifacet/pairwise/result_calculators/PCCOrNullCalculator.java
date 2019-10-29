@@ -20,8 +20,8 @@ public class PCCOrNullCalculator extends ResultCalculator {
         }
         boolean areFriends = PairwiseMetrics.areFriends(user1, user2);
         return new PairwiseResult(
-                user1.getUserId(),
-                user2.getUserId(),
+                user1.getUserIdInt(),
+                user2.getUserIdInt(),
                 pcc,
                 0,
                 areFriends,

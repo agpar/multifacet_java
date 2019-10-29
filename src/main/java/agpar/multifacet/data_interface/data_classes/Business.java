@@ -15,8 +15,8 @@ public class Business {
         this.categories = categories;
     }
 
-    public static Business fromJson(JsonObject obj, IdStringToIntMap itemMap, IdStringToIntMap categoryIdMap) {
-        Integer itemId = itemMap.getInt(obj.get("business_id").getAsString());
+    public static Business fromJson(JsonObject obj, IdStringToIntMap categoryIdMap) {
+        Integer itemId = obj.get("business_id").getAsInt();
         HashSet<Integer> categories = new HashSet<>();
         JsonElement jsonCategories = obj.get("categories");
         if (!jsonCategories.isJsonNull()) {

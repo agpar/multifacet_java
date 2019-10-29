@@ -20,20 +20,14 @@ public class DataReader {
     private Path userFile;
     private Path reviewFile;
     private Path businessFile;
-    private IdStringToIntMap userIdMap;
-    private IdStringToIntMap reviewIdMap;
-    private IdStringToIntMap itemIdMap;
     private IdStringToIntMap categoryIdMap;
 
 
     public DataReader(String dataDir) {
         this.dataDir = dataDir;
         this.userFile = Paths.get(dataDir, "user.json");
-        this.reviewFile = Paths.get(dataDir, "review_no_text.json");
+        this.reviewFile = Paths.get(dataDir, "review.json");
         this.businessFile = Paths.get(dataDir, "business.json");
-        this.userIdMap = new IdStringToIntMap();
-        this.reviewIdMap = new IdStringToIntMap();
-        this.itemIdMap = new IdStringToIntMap();
         this.categoryIdMap = new IdStringToIntMap();
     }
 
@@ -48,7 +42,7 @@ public class DataReader {
             while (line != null) {
                 if (lineno >= start) {
                     JsonObject obj =  parser.parse(line).getAsJsonObject();
-                    User user = User.fromJson(obj, this.userIdMap);
+                    User user = User.fromJson(obj);
                     users.put(user);
                 }
                 line = reader.readLine();
@@ -73,7 +67,7 @@ public class DataReader {
             JsonParser parser = new JsonParser();
             while (line != null) {
                 JsonObject obj = parser.parse(line).getAsJsonObject();
-                Review review = Review.fromJson(obj, this.itemIdMap, this.userIdMap);
+                Review review = Review.fromJson(obj);
                 reviews.put(review.getItemIdInt(), review);
                 line = reader.readLine();
             }
@@ -93,7 +87,7 @@ public class DataReader {
             JsonParser parser = new JsonParser();
             while (line != null) {
                 JsonObject obj = parser.parse(line).getAsJsonObject();
-                Business business = Business.fromJson(obj, this.itemIdMap, this.categoryIdMap);
+                Business business = Business.fromJson(obj, categoryIdMap);
                 businesses.put(business.itemId, business);
                 line = reader.readLine();
             }

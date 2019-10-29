@@ -1,8 +1,8 @@
 package agpar.multifacet.pairwise;
 
 public class PairwiseResult {
-    public String user1Id;
-    public String user2Id;
+    public int user1Id;
+    public int user2Id;
     public Double pcc;
     public Double socialJaccard;
     public boolean areFriends;
@@ -10,8 +10,8 @@ public class PairwiseResult {
     public Double itemJaccard;
     public Double categoryJaccard;
 
-    public PairwiseResult(String user1Id,
-                          String user2Id,
+    public PairwiseResult(int user1Id,
+                          int user2Id,
                           Double pcc,
                           double socialJaccard,
                           boolean areFriends,
@@ -31,7 +31,7 @@ public class PairwiseResult {
     public String toString() {
         int areFriends = this.areFriends ? 1 : 0;
         int areFriendsOfFriends = this.friendsOfFriends ? 1 : 0;
-        return String.format("%s,%s,%s,%s,%d,%d,%s,%s",
+        return String.format("%d,%d,%s,%s,%d,%d,%s,%s",
                 this.user1Id, this.user2Id, doubleFmt(this.pcc), doubleFmt(this.socialJaccard),
                 areFriends, areFriendsOfFriends, doubleFmt(this.itemJaccard), doubleFmt(this.categoryJaccard));
     }
@@ -51,8 +51,8 @@ public class PairwiseResult {
     public static PairwiseResult fromString(String commaSeparated) {
         String[] splitString = commaSeparated.split(",");
         return new PairwiseResult(
-            splitString[0],
-            splitString[1],
+            Integer.parseInt(splitString[0]),
+            Integer.parseInt(splitString[1]),
             Double.parseDouble(splitString[2]),
             Double.parseDouble(splitString[3]),
             Integer.parseInt(splitString[4]) == 1,

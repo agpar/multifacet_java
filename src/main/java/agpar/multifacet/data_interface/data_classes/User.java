@@ -19,14 +19,14 @@ public class User {
         this.friendsInt = friendsInt;
     }
 
-    public static User fromJson(JsonObject obj, IdStringToIntMap userIdMap) {
-        String userId = obj.get("user_id").getAsString();
-        int userIdInt = userIdMap.getInt(userId);
+    public static User fromJson(JsonObject obj) {
+        String userId = obj.get("true_user_id").getAsString();
+        int userIdInt = obj.get("user_id").getAsInt();
         String friendStr = obj.get("friends").getAsString();
         Collection<String> friendSplit = Arrays.asList(friendStr.split(", "));
         HashSet<Integer> friendsInt = new HashSet<>();
         for(String friendId : friendSplit) {
-            friendsInt.add(userIdMap.getInt(friendId));
+            friendsInt.add(Integer.valueOf(friendId));
         }
         return new User(userId, userIdInt, friendsInt);
     }

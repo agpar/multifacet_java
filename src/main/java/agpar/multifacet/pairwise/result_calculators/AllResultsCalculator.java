@@ -21,8 +21,8 @@ public class AllResultsCalculator extends ResultCalculator{
         double categoryJacc = PairwiseMetrics.categoryJaccard(user1, user2);
 
         PairwiseResult result =  new PairwiseResult(
-                user1.getUserId(),
-                user2.getUserId(),
+                user1.getUserIdInt(),
+                user2.getUserIdInt(),
                 pcc,
                 socialJacc,
                 areFriends,
