@@ -27,7 +27,7 @@ def combine_balanced_pcc(singlePath, pairPath, numVects=None, userIds=None):
 
 
 def combine_balanced_friends(singlePath, pairPath, numVects=None, userIds=None):
-    return _combine_multiplex(singlePath, pairPath, numVects, userIds, pair_are_friends)
+    return _combine_multiplex(singlePath, pairPath, numVects=numVects, userIds=userIds, test=pair_are_friends)
 
 
 def _combine_multiplex(singlePath, pairPath, numVects=None, userIds=None, test=None):
@@ -85,7 +85,7 @@ def _combine_balanced_ids(singlePath, pairPath, userIds, test=None):
         fin.readline()
         reader = csv.reader(fin)
         for pair in reader:
-            if not (test(pair) or negCount < posCount):
+            if (not test(pair)) and not(negCount < posCount):
                 continue
             if not (pair[0] in userIds or pair[1] in userIds):
                 continue
@@ -113,4 +113,4 @@ def combine_stream(singlePath, pairPath):
 
 if __name__ == '__main__':
     singlePath, pairPath, outputPath = sys.argv[1:]
-    combined = combine_balanced_num(singlePath, pairPath, 100_000)
+    combined = _combine_balanced_num(singlePath, pairPath, 100_000)

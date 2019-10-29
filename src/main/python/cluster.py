@@ -132,4 +132,4 @@ if __name__ == '__main__':
 
     clusters = kmeans.cluster(dist_arr, k, iters)
     with open(output_path, 'w') as f:
-        f.write(json.dumps(clusters))
+        f.write(json.dumps(clusters.tolist()))

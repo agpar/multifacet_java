@@ -20,6 +20,13 @@ def read_csv(path):
         return list(reader)
 
 
+def stream_csv(path):
+    with open(path, 'r') as f:
+        header = f.readline()
+        reader = csv.reader(f)
+        return reader
+
+
 def read_csv_header(path):
     with open(path, 'r') as f:
         header = f.readline().replace("\n", "")

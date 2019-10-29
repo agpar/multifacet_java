@@ -1,8 +1,6 @@
-import numpy as np
-
-from clustering.greedy_one_shot import cluster_avg
+from prediction.classifier_trainer import ClassifierTrainer
 from prediction_tools import combined_headers
-from settings import NUM_CLUSTERS
+from typing import List
 
 
 class ClusterClassifier:
@@ -10,38 +8,35 @@ class ClusterClassifier:
     PAIRWISE_PATH = ""
     CLUSTERED = True
 
-    def __init__(self, dist_array: np.array):
-        self.dist_array = dist_array
-        self.user_clusters = {}
+    def __init__(self, cluster_labels: List[int]):
+        self.cluster_labels = cluster_labels
+        self.NUM_CLUSTERS = len(set(self.cluster_labels))
         self.clusters = []
+        self.user_clusters = {}
         self.classifiers = []
         self.overall_classifier = None
 
     def init_clusters(self):
-        labels = cluster_avg(self.dist_array, int(len(self.dist_array) / NUM_CLUSTERS))
-        self.clusters = [set() for x in range(NUM_CLUSTERS)]
-        for i in range(len(labels)):
-            cluster_idx = labels[i]
-            self.clusters[cluster_idx].add(i)
-            self.user_clusters[i] = cluster_idx
-        cluster_lens = [len(c) for c in self.clusters]
-        print(f"Cluster lengths: {cluster_lens}")
+        self.clusters = [set() for x in range(self.NUM_CLUSTERS)]
+        for i, clust in enumerate(self.cluster_labels):
+            self.clusters[clust].add(i)
+            self.user_clusters[i] = clust
 
-    def train_classifiers(self, combiner, clf_trainer):
+    def train_classifiers(self, combiner, clf_trainer: ClassifierTrainer):
         header = combined_headers(self.SINGLE_PATH, self.PAIRWISE_PATH)
-        self.classifiers = [None for x in range(NUM_CLUSTERS)]
-        for i in range(NUM_CLUSTERS):
+        self.classifiers = [None for i in range(self.NUM_CLUSTERS)]
+        for i in range(self.NUM_CLUSTERS):
             if len(self.clusters[i]) > 100:
                 training_set = combiner(self.SINGLE_PATH, self.PAIRWISE_PATH, userIds=self.clusters[i])
-                clf, score = clf_trainer(training_set, header, 1.0)
+                clf, score = clf_trainer.learn_classifier(training_set, header, 1.0)
                 print(score)
                 print(clf.coef_)
                 if score > 0.6:
                     self.classifiers[i] = clf
                 else:
-                    print("Score to low. Using generic classifier.")
-        overall_set = combiner(self.SINGLE_PATH, self.PAIRWISE_PATH, numVects=300_000)
-        self.overall_classifier, score = clf_trainer(overall_set, header, 1.0)
+                    print("Score too low. Using generic classifier.")
+        overall_set = combiner(self.SINGLE_PATH, self.PAIRWISE_PATH, numVects=500_000)
+        self.overall_classifier, score = clf_trainer.learn_classifier(overall_set, header, 1.0)
         print("Generic classifier.")
         print(score)
         print(self.overall_classifier.coef_)

@@ -131,7 +131,7 @@ def read_data(user_range=(0, settings.DATA_NUM_USERS), read_sample=settings.DATA
     if not read_sample:
         USERS_FILE = path.join(settings.DATA_DIR, 'user.json')
         BUSINESS_FILE = path.join(settings.DATA_DIR, 'business.json')
-        REVIEW_FILE = path.join(settings.DATA_DIR, 'review_no_text.json')
+        REVIEW_FILE = path.join(settings.DATA_DIR, 'review.json')
         TIP_FILE = path.join(settings.DATA_DIR, 'tip.json')
     else:
         USERS_FILE = path.join(settings.DATA_DIR, 'user_sample.json')
