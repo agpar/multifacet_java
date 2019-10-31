@@ -1,33 +1,18 @@
 import argparse
 import json
 
+from prediction.actual_friendship import RealFriendTrainer
 from prediction.cluster_classifier import ClusterClassifier
-from prediction.predict_friendship import FriendshipTrainer, combine_balanced_friends
+from prediction.predict_friendship import FriendshipTrainer
+from combine_vectors import combine_balanced_friends, combine_balanced_pcc, combine_stream
+from prediction.predict_pcc import PCCTrainer
 from prediction_tools import init_indexes, stream_csv
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Generate trust link predictions.')
-    parser.add_argument('single',  type=str,
-                        help='Path to single-agent feature csv.')
-    parser.add_argument('pairwise', type=str,
-                        help='Path to pairwise-agent feature csv.')
-    parser.add_argument('output',  type=str,
-                        help="Path to a file where output clusters are written.")
-    parser.add_argument('target', type=str, choices={'pcc', 'friend', 'realfriend'},
-                        help="The target of prediction.")
-    parser.add_argument('--clusters', dest='clusters', type=str, nargs=1,
-                        help="Path to cluster assignments. If empty, assume one global cluster.")
-    args = parser.parse_args()
 
-    single_path = args.single
-    pairwise_path = args.pairwise
-    output_path = args.output
-    cluster_path = args.clusters
-
+def run(single_path, pairwise_path, output_path, cluster_path, target):
     init_indexes(single_path, pairwise_path)
 
     # Assign all users to a single cluster if no clusters are specified
-def run():
     if cluster_path is not None:
         with open(cluster_path) as f:
             clusters = json.load(f)
@@ -39,7 +24,26 @@ def run():
     classifier = ClusterClassifier(clusters)
     classifier.SINGLE_PATH = single_path
     classifier.PAIRWISE_PATH = pairwise_path
-    classifier.fit(combine_balanced_friends, FriendshipTrainer())
+
+    if target == 'pcc':
+        classifier.fit(combine_balanced_pcc, PCCTrainer())
+    elif target == 'friend':
+        classifier.fit(combine_balanced_friends, FriendshipTrainer())
+    elif target == 'realfriend':
+        classifier.fit(combine_stream, RealFriendTrainer())
 
 
-
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Generate trust link predictions.')
+    parser.add_argument('single_path',  type=str,
+                        help='Path to single-agent feature csv.')
+    parser.add_argument('pairwise_path', type=str,
+                        help='Path to pairwise-agent feature csv.')
+    parser.add_argument('output_path',  type=str,
+                        help="Path to a file where output clusters are written.")
+    parser.add_argument('target', type=str, choices={'pcc', 'friend', 'realfriend'},
+                        help="The target of prediction.")
+    parser.add_argument('--clusters', dest='cluster_path', type=str, nargs=1, default=None,
+                        help="Path to cluster assignments. If empty, assume one global cluster.")
+    args = parser.parse_args()
+    run(**vars(args))
