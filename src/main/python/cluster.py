@@ -89,7 +89,7 @@ def pairwise_dist_matrix(single_path, pairwise_path, selector, default_val):
 def run(single_path, pairwise_path, cluster_type, output_path, dists_in, dists_out, k, iters):
     init_indexes(single_path, pairwise_path)
     dist_arr = None
-    if dists_in is not None:
+    if dists_in:
         dist_arr = np.load(dists_in[0])
     else:
         if cluster_type == "pcc":
@@ -99,7 +99,7 @@ def run(single_path, pairwise_path, cluster_type, output_path, dists_in, dists_o
         else:
             print(f"Cluster type must be 'pcc' or 'social', not {cluster_type}")
             exit(1)
-    if dists_out is not None:
+    if dists_out:
         np.save(dists_out[0], dist_arr)
 
     clusters = kmeans.cluster(dist_arr, k, iters)

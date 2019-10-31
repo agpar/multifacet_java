@@ -6,7 +6,7 @@ from prediction.cluster_classifier import ClusterClassifier
 from prediction.predict_friendship import FriendshipTrainer
 from combine_vectors import combine_balanced_friends, combine_balanced_pcc, combine_stream
 from prediction.predict_pcc import PCCTrainer
-from prediction_tools import init_indexes, stream_csv
+from prediction_tools import init_indexes, stream_csv, write_predictions
 
 
 def run(single_path, pairwise_path, output_path, cluster_path, target):
@@ -14,23 +14,28 @@ def run(single_path, pairwise_path, output_path, cluster_path, target):
 
     # Assign all users to a single cluster if no clusters are specified
     if cluster_path is not None:
-        with open(cluster_path) as f:
+        with open(cluster_path[0]) as f:
             clusters = json.load(f)
     else:
         clusters = []
         for line in stream_csv(single_path):
             clusters.append(0)
 
-    classifier = ClusterClassifier(clusters)
+    if target == 'pcc':
+        classifier = ClusterClassifier(clusters, combine_balanced_pcc, PCCTrainer())
+    elif target == 'friend':
+        classifier = ClusterClassifier(clusters, combine_balanced_friends, FriendshipTrainer())
+    elif target == 'realfriend':
+        classifier = ClusterClassifier(clusters, combine_stream, RealFriendTrainer())
+    else:
+        print(f"Unknown target of prediction: {target}")
+        exit(1)
+
     classifier.SINGLE_PATH = single_path
     classifier.PAIRWISE_PATH = pairwise_path
+    classifier.fit()
 
-    if target == 'pcc':
-        classifier.fit(combine_balanced_pcc, PCCTrainer())
-    elif target == 'friend':
-        classifier.fit(combine_balanced_friends, FriendshipTrainer())
-    elif target == 'realfriend':
-        classifier.fit(combine_stream, RealFriendTrainer())
+    write_predictions(combine_stream, classifier, output_path)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import sys
-from tqdm import tqdm
 from prediction_tools import *
 
 
@@ -53,7 +52,6 @@ def _combine_balanced_num(singlePath, pairPath, num_vects, test=None):
 
     negCount, posCount = 0, 0
     vects = []
-    t = tqdm(total=num_vects)
     with open(pairPath, 'r') as fin:
         fin.readline()
         reader = csv.reader(fin)
@@ -61,14 +59,11 @@ def _combine_balanced_num(singlePath, pairPath, num_vects, test=None):
             if test(pair):
                 vects.append(build_vect(pair, singleById))
                 posCount += 1
-                t.update()
             elif negCount < posCount:
                 vects.append(build_vect(pair, singleById))
                 negCount += 1
-                t.update()
             if len(vects) >= num_vects:
                 break
-    t.close()
     return vects
 
 

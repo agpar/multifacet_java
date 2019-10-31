@@ -48,24 +48,14 @@ def init_indexes(single_path, pairwise_path):
     INDEXES['socialJacc'] = full_header.index("socialJacc") - len(full_header)
 
 
-def write_predictions(stream, pair_filter, clf, path):
+def write_predictions(stream, clf, path):
     with open(path, 'w') as f:
-        if hasattr(clf, "CLUSTERED"):
-            for pair in stream:
-                user1_id = pair[0]
-                user2_id = pair[1]
-                pred1 = int(clf.predict(user1_id, [pair_filter(pair)])[0])
-                pred2 = int(clf.predict(user2_id, [pair_filter(pair)])[0])
-                if pred1:
-                    f.write(f"{user1_id} {user2_id} {pred1}\n")
-                if pred2:
-                    f.write(f"{user2_id} {user1_id} {pred2}\n")
-        else:
-            for pair in stream:
-                prediction = int(clf.predict([pair_filter(pair)])[0])
-                if prediction == 1:
-                    user1_id = pair[0]
-                    user2_id = pair[1]
-                    f.write(f"{user1_id} {user2_id} {prediction}\n")
-                    f.write(f"{user2_id} {user1_id} {prediction}\n")
-
+        for pair in stream:
+            user1_id = pair[0]
+            user2_id = pair[1]
+            pred1 = int(clf.predict(user1_id, [clf.trainer.filter_target(pair)])[0])
+            pred2 = int(clf.predict(user2_id, [clf.trainer.filter_target(pair)])[0])
+            if pred1:
+                f.write(f"{user1_id} {user2_id} {pred1}\n")
+            if pred2:
+                f.write(f"{user2_id} {user1_id} {pred2}\n")
