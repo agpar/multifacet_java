@@ -49,8 +49,7 @@ def pcc_dists(single_path, pairwise_path):
         else:
             return pcc_to_dist(float(pcc))
 
-    dists, index_map = pairwise_dist_matrix(single_path, pairwise_path, selector, 0.0)
-    return dists
+    return pairwise_dist_matrix(single_path, pairwise_path, selector, 0.0)
 
 
 def social_jacc_dists(single_path, pairwise_path):
@@ -62,14 +61,15 @@ def social_jacc_dists(single_path, pairwise_path):
         jacc = line[INDEXES['socialJacc']]
         return social_jacc_to_dist(float(jacc))
 
-    dists, index_map = pairwise_dist_matrix(single_path, pairwise_path, selector, 0.0)
-    return dists
+    return pairwise_dist_matrix(single_path, pairwise_path, selector, 0.0)
 
 
 def pairwise_dist_matrix(single_path, pairwise_path, selector, default_val):
     count = 0
     # iterate through once to count the number of users
     with open(single_path, 'r') as f:
+        # throw away header
+        _ = f.readline()
         for line in f:
             count += 1
 
@@ -78,8 +78,8 @@ def pairwise_dist_matrix(single_path, pairwise_path, selector, default_val):
         header = [x.strip() for x in f.readline().split(',')]
         reader = csv.reader(f)
         for line in reader:
-            user1_idx = line[0]
-            user2_idx = line[1]
+            user1_idx = int(line[0])
+            user2_idx = int(line[1])
             val = selector(line)
             arr[user1_idx][user2_idx] = val
             arr[user2_idx][user1_idx] = val
