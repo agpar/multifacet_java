@@ -35,7 +35,7 @@ def run(single_path, pairwise_path, output_path, cluster_path, target):
     classifier.PAIRWISE_PATH = pairwise_path
     classifier.fit()
 
-    write_predictions(combine_stream, classifier, output_path)
+    write_predictions(combine_stream(single_path, pairwise_path), classifier, output_path)
 
 
 if __name__ == '__main__':
