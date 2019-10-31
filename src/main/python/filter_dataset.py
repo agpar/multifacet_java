@@ -75,10 +75,13 @@ def write_filtered(users_by_id, reviews_by_userid, tips_by_userid, businesses):
     reviewIdMap = IDIndexMap()
     userIdMap = IDIndexMap()
 
+    # Assign sequential IDs to primary users
+    for user in users_by_id.values():
+        user['true_user_id'] = user['user_id']
+        user['user_id'] = userIdMap.get_int(user['user_id'])
+
     with open(user_filtered, 'w') as f:
         for user in users_by_id.values():
-            user['true_user_id'] = user['user_id']
-            user['user_id'] = userIdMap.get_int(user['user_id'])
             user['friends'] = filter_friend_list(user, userIdMap)
             f.write(f"{json.dumps(user)}\n")
 
