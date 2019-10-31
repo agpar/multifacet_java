@@ -8,11 +8,10 @@ from typing import List
 def _train_classifier(class_name, single_path, pairwise_path, header, combiner, clf_trainer, userIds=None, numVects=None):
     training_set = combiner(single_path, pairwise_path, userIds=userIds, numVects=numVects)
     clf, score = clf_trainer.learn_classifier(training_set, header, 1.0)
-    print(f"{class_name} score: {score}")
     if score > 0.6:
-        return clf
+        return clf, score, class_name
     else:
-        return None
+        return None, score, class_name
 
 
 class ClusterClassifier:
@@ -46,14 +45,18 @@ class ClusterClassifier:
         for i in range(self.NUM_CLUSTERS):
             if len(self.clusters[i]) > 100:
                 def callback(x):
-                    self.classifiers[i] = x
+                    clf, score, class_name = x
+                    print(f"{class_name} score: {score}")
+                    self.classifiers[i] = clf
                 args = (f'Cluster {i} classifier',) + args_base
                 kwds = {'userIds': self.clusters[i]}
                 pool.apply_async(_train_classifier, args=args, kwds=kwds, callback=callback)
 
         # Compute the "general" classifier at the same time
         def callback(x):
-            self.overall_classifier = x
+            clf, score, class_name = x
+            print(f"{class_name} score: {score}")
+            self.overall_classifier = clf
         args = ('General classifier',) + args_base
         kwds = {'numVects': 500_000}
         pool.apply_async(_train_classifier, args=args, kwds=kwds, callback=callback)
