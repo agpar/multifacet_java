@@ -1,17 +1,17 @@
-from multiprocessing import Pool
+from multiprocessing import Pool, Queue
 
 from prediction.classifier_trainer import ClassifierTrainer
 from prediction_tools import combined_headers
 from typing import List
 
 
-def _train_classifier(class_name, single_path, pairwise_path, header, combiner, clf_trainer, userIds=None, numVects=None):
+def _train_classifier(i, single_path, pairwise_path, header, combiner, clf_trainer, userIds=None, numVects=None):
     training_set = combiner(single_path, pairwise_path, userIds=userIds, numVects=numVects)
     clf, score = clf_trainer.learn_classifier(training_set, header, 1.0)
     if score > 0.6:
-        return clf, score, class_name
+        return clf, score, i
     else:
-        return None, score, class_name
+        return None, score, i
 
 
 class ClusterClassifier:
@@ -41,26 +41,27 @@ class ClusterClassifier:
 
         # Start a process pool of workers
         pool = Pool(self.NUM_CLUSTERS + 1)
+        results = []
         args_base = (self.SINGLE_PATH, self.PAIRWISE_PATH, header, self.combiner, self.trainer)
         for i in range(self.NUM_CLUSTERS):
             if len(self.clusters[i]) > 100:
-                def callback(x):
-                    clf, score, class_name = x
-                    print(f"{class_name} score: {score}")
-                    self.classifiers[i] = clf
-                args = (f'Cluster {i} classifier',) + args_base
+                args = (i, ) + args_base
                 kwds = {'userIds': self.clusters[i]}
-                pool.apply_async(_train_classifier, args=args, kwds=kwds, callback=callback)
+                results.append(pool.apply_async(_train_classifier, args=args, kwds=kwds))
 
         # Compute the "general" classifier at the same time
-        def callback(x):
-            clf, score, class_name = x
-            print(f"{class_name} score: {score}")
-            self.overall_classifier = clf
-        args = ('General classifier',) + args_base
+        args = (-1, ) + args_base
         kwds = {'numVects': 500_000}
-        pool.apply_async(_train_classifier, args=args, kwds=kwds, callback=callback)
+        results.append(pool.apply_async(_train_classifier, args=args, kwds=kwds))
         pool.close()
+        for res in results:
+            clf, score, i = res.get()
+            if i == -1:
+                self.overall_classifier = clf
+                print(f"Overall classifier score: {score}")
+            else:
+                self.classifiers[i] = clf
+                print(f"Classifier {i} score: {score}")
         pool.join()
 
     def fit(self):
