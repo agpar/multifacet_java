@@ -6,10 +6,8 @@ import agpar.multifacet.pairwise.io.ResultWriter;
 import agpar.multifacet.recommend.RatingTupleGenerator;
 import agpar.multifacet.recommend.RecommenderTester;
 import net.librec.common.LibrecException;
-import net.librec.math.algorithm.Randoms;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -44,9 +42,12 @@ public abstract class ExperimentRunner implements Runnable {
 
     public void run() {
         System.out.printf("Running %s with %d users.\n", this.name, this.description.getNumUsers());
-        this.initSingleVects(this.description.getNumUsers());
-        this.initPairwiseVects(this.description.getNumUsers());
-        this.initPredictions(this.description.getNumUsers());
+        if(!this.predictionsFileExists(this.description.getNumUsers()))
+        {
+            this.initSingleVects(this.description.getNumUsers());
+            this.initPairwiseVects(this.description.getNumUsers());
+            this.initPredictions(this.description.getNumUsers());
+        }
         this.initRatings(this.description.getNumUsers());
         try {
             HashMap<String, Double> results = this.evaluatePredictions(this.description.getNumUsers());
