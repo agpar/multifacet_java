@@ -129,22 +129,22 @@ public abstract class ExperimentRunner implements Runnable {
 
     protected String singleVectFilePath(int numUsers) {
         String singleVectFileName = String.format("single_%d.csv", numUsers);
-        return Path.of(this.expDir, singleVectFileName).toString();
+        return Path.of(Settings.EXPERIMENT_DIR, singleVectFileName).toString();
     }
 
     protected String pairwiseVectFilePath(int numUsers) {
         String pairwiseVectFileName = String.format("pairwise_%d.csv", numUsers);
-        return Path.of(this.expDir, pairwiseVectFileName).toString();
+        return Path.of(Settings.EXPERIMENT_DIR, pairwiseVectFileName).toString();
     }
 
     protected String predictionsFilePath(int numUsers) {
         String pairwiseVectFileName = String.format("predictions_%d.txt", numUsers);
-        return Path.of(this.expDir, pairwiseVectFileName).toString();
+        return Path.of(Settings.EXPERIMENT_DIR, pairwiseVectFileName).toString();
     }
 
     protected String ratingFilePath(int numUsers) {
         String pairwiseVectFileName = String.format("ratings_%d.txt", numUsers);
-        return Path.of(this.expDir, pairwiseVectFileName).toString();
+        return Path.of(Settings.EXPERIMENT_DIR, pairwiseVectFileName).toString();
     }
 
     protected void generateSingleVects(int numUsers) {
