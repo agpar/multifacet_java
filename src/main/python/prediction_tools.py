@@ -51,8 +51,8 @@ def init_indexes(single_path, pairwise_path):
 def write_predictions(stream, clf, path):
     with open(path, 'w') as f:
         for pair in stream:
-            user1_id = pair[0]
-            user2_id = pair[1]
+            user1_id = int(pair[0])
+            user2_id = int(pair[1])
             pred1 = int(clf.predict(user1_id, [clf.trainer.filter_target(pair)])[0])
             pred2 = int(clf.predict(user2_id, [clf.trainer.filter_target(pair)])[0])
             if pred1:
