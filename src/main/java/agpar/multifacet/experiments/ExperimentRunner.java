@@ -32,7 +32,7 @@ public abstract class ExperimentRunner implements Runnable {
         this.description = description;
         this.resultWriter = resultWriter;
         if(!Files.exists(Path.of(this.expDir))) {
-            throw new IOException(String.format("%s does not exist. Create it and copy any files you want to re use.", this.expDir));
+            Files.createDirectory(Path.of(this.expDir));
         }
     }
 
