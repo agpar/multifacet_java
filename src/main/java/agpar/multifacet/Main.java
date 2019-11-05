@@ -1,5 +1,6 @@
 package agpar.multifacet;
 
+import agpar.multifacet.data_generators.GenerateAllPairwise;
 import agpar.multifacet.experiments.DescriptionLoader;
 import agpar.multifacet.experiments.ExperimentDescription;
 import agpar.multifacet.experiments.ExperimentRunner;
@@ -22,10 +23,11 @@ import static java.lang.System.exit;
 public class Main {
 
     private static int NUM_EXPERIMENTS = Runtime.getRuntime().availableProcessors();
+    private static boolean GENERATE_PAIRS = false;
 
     public static void main(String[] args) throws Exception {
         if(args.length == 0) {
-            throw new Exception("At least one experiment description file is required.");
+            throw new Exception("At least one experiment description file or flag is required.");
         }
 
         ArrayList<String> flags = new ArrayList<>();
@@ -41,8 +43,22 @@ public class Main {
 
         try {
             setFlags(flags);
-            List<ExperimentRunner> experiments = loadExperiments(files);
-            runAllExperiments(experiments);
+            if (GENERATE_PAIRS) {
+                if(files.size() == 0) {
+                    System.out.println("An output path for --genPairs is needed.");
+                    System.exit(1);
+                }
+                System.out.printf("Generating pairs and outputting to %s\n", files.get(0));
+                GenerateAllPairwise.generateData(files.get(0), 500_000_000, false);
+                System.exit(0);
+            }
+
+            if (files.size() > 0) {
+                List<ExperimentRunner> experiments = loadExperiments(files);
+                runAllExperiments(experiments);
+            } else {
+
+            }
         } finally {
             SynchronizedAppendResultWriter.closeAllSingletons();
         }
@@ -52,7 +68,11 @@ public class Main {
         for(String flag : flags) {
             if (flag.startsWith("--numthreads")) {
                 NUM_EXPERIMENTS = Integer.parseInt(flag.split("=")[1]);
-            } else {
+            }
+            else if (flag.startsWith("--genPairs")) {
+                GENERATE_PAIRS = true;
+            }
+            else {
                 System.out.printf("Unknown flag %s\n", flag);
                 exit(1);
             }
