@@ -24,7 +24,7 @@ public class PCCPredictionExperimentRunner extends ExperimentRunner {
 
     @Override
     protected void generatePredictions(int numUsers) {
-        String scriptPath = Path.of(Settings.PYTHON_PROJECT_DIR, "predict_pcc.py").toString();
+        String scriptPath = Path.of(Settings.PYTHON_PROJECT_DIR(), "predict_pcc.py").toString();
         try {
            Process p = new ProcessBuilder(
                     scriptPath,

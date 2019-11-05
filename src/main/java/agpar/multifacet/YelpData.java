@@ -19,7 +19,7 @@ public class YelpData {
     private static YelpData instance;
 
     private YelpData() {
-        this.reader = new DataReader(Settings.RAM_DATA_DIR);
+        this.reader = new DataReader(Settings.RAM_DATA_DIR());
     }
 
     public static YelpData getInstance() {

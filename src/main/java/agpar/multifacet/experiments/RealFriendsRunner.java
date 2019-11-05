@@ -16,7 +16,7 @@ public class RealFriendsRunner extends ExperimentRunner{
     }
 
     protected void generatePredictions(int numUsers) {
-        String scriptPath = Path.of(Settings.PYTHON_PROJECT_DIR, "actual_friendship.py").toString();
+        String scriptPath = Path.of(Settings.PYTHON_PROJECT_DIR(), "actual_friendship.py").toString();
         try {
             Process p = new ProcessBuilder(
                     scriptPath,

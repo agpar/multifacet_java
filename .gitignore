@@ -2,5 +2,5 @@
 out
 target
 *.iml
+settings_local.properties
 __pycache__
-/src/main/python/settings.py

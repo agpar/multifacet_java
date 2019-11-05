@@ -27,7 +27,7 @@ public abstract class ExperimentRunner implements Runnable {
 
     public ExperimentRunner(ExperimentDescription description, RecommenderTester recommender, ResultWriter resultWriter) throws IOException{
         this.name = description.getName();
-        this.expDir = Path.of(Settings.EXPERIMENT_DIR, name).toString();
+        this.expDir = Path.of(Settings.EXPERIMENT_DIR(), name).toString();
         this.recommender = recommender;
         this.description = description;
         this.resultWriter = resultWriter;
@@ -69,7 +69,7 @@ public abstract class ExperimentRunner implements Runnable {
     protected HashMap<String, Double> evaluatePredictions(int numUsers) throws LibrecException {
         this.recommender.loadDescription(this.description);
         return this.recommender.learn(
-                Settings.EXPERIMENT_DIR,
+                Settings.EXPERIMENT_DIR(),
                 this.name,
                 Path.of(this.ratingFilePath(numUsers)).getFileName().toString(),
                 Path.of(this.predictionsFilePath(numUsers)).getFileName().toString()
@@ -130,26 +130,26 @@ public abstract class ExperimentRunner implements Runnable {
 
     protected String singleVectFilePath(int numUsers) {
         String singleVectFileName = String.format("single_%d.csv", numUsers);
-        return Path.of(Settings.EXPERIMENT_DIR, singleVectFileName).toString();
+        return Path.of(Settings.EXPERIMENT_DIR(), singleVectFileName).toString();
     }
 
     protected String pairwiseVectFilePath(int numUsers) {
         String pairwiseVectFileName = String.format("pairwise_%d.csv", numUsers);
-        return Path.of(Settings.EXPERIMENT_DIR, pairwiseVectFileName).toString();
+        return Path.of(Settings.EXPERIMENT_DIR(), pairwiseVectFileName).toString();
     }
 
     protected String predictionsFilePath(int numUsers) {
         String pairwiseVectFileName = String.format("predictions_%d.txt", numUsers);
-        return Path.of(Settings.EXPERIMENT_DIR, pairwiseVectFileName).toString();
+        return Path.of(Settings.EXPERIMENT_DIR(), pairwiseVectFileName).toString();
     }
 
     protected String ratingFilePath(int numUsers) {
         String pairwiseVectFileName = String.format("ratings_%d.txt", numUsers);
-        return Path.of(Settings.EXPERIMENT_DIR, pairwiseVectFileName).toString();
+        return Path.of(Settings.EXPERIMENT_DIR(), pairwiseVectFileName).toString();
     }
 
     protected void generateSingleVects(int numUsers) {
-        String scriptPath = Path.of(Settings.PYTHON_PROJECT_DIR, "generate_single_vects.py").toString();
+        String scriptPath = Path.of(Settings.PYTHON_PROJECT_DIR(), "generate_single_vects.py").toString();
         try {
             Process p = new ProcessBuilder(
                     scriptPath,
@@ -174,7 +174,7 @@ public abstract class ExperimentRunner implements Runnable {
     }
 
     protected void generatePredictions(int numUsers) {
-        String scriptPath = Path.of(Settings.PYTHON_PROJECT_DIR, "predict_friendship.py").toString();
+        String scriptPath = Path.of(Settings.PYTHON_PROJECT_DIR(), "predict_friendship.py").toString();
         try {
             Process p = new ProcessBuilder(
                     scriptPath,
