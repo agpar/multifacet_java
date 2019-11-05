@@ -1,5 +1,6 @@
 package agpar.multifacet.experiments;
 
+import agpar.multifacet.Settings;
 import agpar.multifacet.pairwise.io.ResultWriter;
 import agpar.multifacet.recommend.RecommenderTester;
 
@@ -14,6 +15,6 @@ public class PreComputedPredictionRunner extends ExperimentRunner{
     @Override
     protected String predictionsFilePath(int numUsers) {
         String pairwiseVectFileName = this.description.getPredictionFile();
-        return Path.of(this.expDir, pairwiseVectFileName).toString();
+        return Path.of(Settings.EXPERIMENT_DIR(), pairwiseVectFileName).toString();
     }
 }

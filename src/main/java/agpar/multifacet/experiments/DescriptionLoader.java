@@ -53,21 +53,7 @@ public class DescriptionLoader {
             ExperimentDescription description,
             RecommenderTester recommender,
             ResultWriter writer) throws Exception {
-        String name  = description.getName();
-        if (name.equals("FriendPrediction")) {
-            return new FriendPredictionExperimentRunner(description, recommender, writer);
-        } else if (name.equals("NoPrediction")) {
-            return new NoSocialInfoRunner(description, recommender, writer);
-        } else if (name.equals("PCCPrediction")) {
-            return new PCCPredictionExperimentRunner(description, recommender, writer);
-        } else if (name.equals("RealFriends")) {
-            return new RealFriendsRunner(description, recommender, writer);
-        } else if (name.equals("Cluster")) {
+            String name  = description.getName();
             return new PreComputedPredictionRunner(description, recommender, writer);
-        }
-        else {
-            throw new Exception(String.format("Unknown experiment name: %s. Valid names are: %s",
-                    name, DescriptionLoader.VALID_NAMES));
-        }
     }
 }

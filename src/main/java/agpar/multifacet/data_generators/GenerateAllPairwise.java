@@ -3,6 +3,7 @@ package agpar.multifacet.data_generators;
 
 import agpar.multifacet.YelpData;
 import agpar.multifacet.data_interface.data_classes.User;
+import agpar.multifacet.pairwise.review_avg_calculators.UserReviewAvgCalculator;
 import agpar.multifacet.pairwise.runners.PairwiseCalculator;
 import agpar.multifacet.pairwise.io.SynchronizedAppendResultWriter;
 import agpar.multifacet.pairwise.result_calculators.AllResultsCalculator;
@@ -19,7 +20,7 @@ public class GenerateAllPairwise {
         yd.load(0, userCount);
         System.out.println("Done loading.");
 
-        ReviewAvgCalculator avgCalculator = new ItemReviewAvgCalculator(yd.getReviewsByItemId());
+        ReviewAvgCalculator avgCalculator = new UserReviewAvgCalculator(yd.getReviewsByItemId());
         ResultCalculator resultCalculator = new AllResultsCalculator(avgCalculator, 3);
         SynchronizedAppendResultWriter writer = new SynchronizedAppendResultWriter(path);
         List<User> users = new ArrayList<User>(yd.getUsers());

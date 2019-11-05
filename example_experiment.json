@@ -2,9 +2,10 @@
   {
     "name": "NoPrediction",
     "recommenderName": "TrustMF",
-    "numUsers": 2000,
+    "numUsers": 40000,
     "randomSeed": 2,
     "numIterations": 500,
-    "socialReg": 0.5
+    "socialReg": 0.5,
+    "predictionFile": "empty.txt"
   }
 ]
