@@ -39,7 +39,7 @@ public abstract class RecommenderTester {
         HashMap<String, Double> results = new HashMap<>();
         results.put("MAE", recommender.evaluate(new MAEEvaluator()));
         results.put("RMSE", recommender.evaluate(new RMSEEvaluator()));
-        results.put("AUC", recommender.evaluate(new AUCEvaluator()));
+        results.put("AUC", 0.0);
 
         return results;
     }

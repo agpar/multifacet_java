@@ -14,8 +14,8 @@ public class TrustMFTester extends RecommenderTester {
     public void loadDescription(ExperimentDescription description) {
         super.loadDescription(description);
         conf.setFloat("rec.social.regularization", description.getSocialReg());
-        conf.setBoolean("rec.recommender.isranking", true);
-        conf.setInt("rec.recommender.ranking.topn", 10);
+        //conf.setBoolean("rec.recommender.isranking", true);
+        //conf.setInt("rec.recommender.ranking.topn", 10);
     }
 
     @Override
@@ -24,8 +24,6 @@ public class TrustMFTester extends RecommenderTester {
     The important hyper parameter here is rec.rate.social.regularization as this controls the level
     of impact the social graph has on the optimization.
     Social graph should have entries in (0, 1], where a 0 indicates an unknown.
-
-    I'm pretty sure 'rec.social.regularization' is not actually used by this recommender.
      */
 
         // build data model
