@@ -12,22 +12,27 @@ import net.librec.math.algorithm.Randoms;
 import net.librec.recommender.Recommender;
 import net.librec.similarity.RecommenderSimilarity;
 
+import java.nio.file.Path;
 import java.util.Dictionary;
 import java.util.HashMap;
 
 public abstract class RecommenderTester {
+    protected String baseExperimentDir;
+    protected String experimentName;
     protected String experimentDir;
     protected String ratingFile;
     protected String socialFile;
     public Configuration conf = new Configuration();
 
-    public  HashMap<String, Double> learn(String experimentDir, String ratingFile, String socialFile) throws LibrecException {
-        this.experimentDir = experimentDir;
+    public  HashMap<String, Double> learn(String experimentDir, String experimentName, String ratingFile, String socialFile) throws LibrecException {
+        this.baseExperimentDir = experimentDir;
+        this.experimentName = experimentName;
+        this.experimentDir = Path.of(experimentDir, experimentName).toString();
         this.ratingFile = ratingFile;
         this.socialFile = socialFile;
 
         conf.set("data.input.path", this.ratingFile);
-        conf.set("dfs.data.dir", this.experimentDir);
+        conf.set("dfs.data.dir", this.baseExperimentDir);
         conf.set("data.appender.path", this.socialFile);
         conf.set("data.appender.class", "net.librec.data.convertor.appender.SocialDataAppender");
 

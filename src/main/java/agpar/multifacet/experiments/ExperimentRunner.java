@@ -69,7 +69,8 @@ public abstract class ExperimentRunner implements Runnable {
     protected HashMap<String, Double> evaluatePredictions(int numUsers) throws LibrecException {
         this.recommender.loadDescription(this.description);
         return this.recommender.learn(
-                this.expDir,
+                Settings.EXPERIMENT_DIR,
+                this.name,
                 Path.of(this.ratingFilePath(numUsers)).getFileName().toString(),
                 Path.of(this.predictionsFilePath(numUsers)).getFileName().toString()
         );
