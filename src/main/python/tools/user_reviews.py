@@ -81,7 +81,7 @@ class UserReviews:
     def _item_review_avg(self, review_list):
         for review in review_list:
             item_id = review['business_id']
-            avg = avg_item_score(item_id, self._reviews_by_items[item_id])
+            avg = avg_item_score(item_id, self.reviews_by_items[item_id])
             yield avg
 
     def _user_review_avg(self, review_list):
@@ -100,14 +100,15 @@ class UserReviews:
         if not self._has_dupes(reviews, reviewed_items):
             return reviews
         else:
-            deduped_reviews = self._linear_dupe_removal(reviews)
+            deduped_reviews = self.linear_dupe_removal(reviews)
             assert(len(deduped_reviews) == len(reviewed_items))
             return deduped_reviews
 
     def _has_dupes(self, reviews, reviewed_items):
         return len(reviews) != len(reviewed_items)
 
-    def _linear_dupe_removal(self, reviews):
+    @staticmethod
+    def linear_dupe_removal(reviews):
         """Return only the latest review for each item
 
         I tried to make this fast, but in retrospect it probably

@@ -8,17 +8,18 @@ from tools.id_index_map import IDIndexMap
 
 """
 Filter files, only retaining users who have reviewed at least 20 restaurant
-or food related reviews.
+or food related reviews. Also dedupes reviews (retaining only the latest
+review a user left for an item.
 
 Maps each user id to a integer, which is also used as the index to refer to that
 user in any matrix in later processing.
 """
 
 MIN_REVIEWS = 20
-BUSINESS_FILE = path.join(settings.DATA_DIR, 'business.json')
-REVIEW_FILE = path.join(settings.DATA_DIR, 'review.json')
-USER_FILE = path.join(settings.DATA_DIR, 'user.json')
-TIP_FILE = path.join(settings.DATA_DIR, 'tip.json')
+BUSINESS_FILE = path.join(settings.YELP_DATA_DIR, 'business.json')
+REVIEW_FILE = path.join(settings.YELP_DATA_DIR, 'review.json')
+USER_FILE = path.join(settings.YELP_DATA_DIR, 'user.json')
+TIP_FILE = path.join(settings.YELP_DATA_DIR, 'tip.json')
 
 
 def read_all():
@@ -66,10 +67,10 @@ def filter_friend_list(user, userIdMap):
 
 
 def write_filtered(users_by_id, reviews_by_userid, tips_by_userid, businesses):
-    business_filtered = path.join(settings.DATA_DIR, 'business_filtered.json')
-    review_filtered = path.join(settings.DATA_DIR, 'review_filtered.json')
-    user_filtered = path.join(settings.DATA_DIR, 'user_filtered.json')
-    tip_filtered = path.join(settings.DATA_DIR, 'tip_filtered.json')
+    business_filtered = path.join(settings.YELP_DATA_DIR, 'business_filtered.json')
+    review_filtered = path.join(settings.YELP_DATA_DIR, 'review_filtered.json')
+    user_filtered = path.join(settings.YELP_DATA_DIR, 'user_filtered.json')
+    tip_filtered = path.join(settings.YELP_DATA_DIR, 'tip_filtered.json')
 
     businessIdMap = IDIndexMap()
     reviewIdMap = IDIndexMap()
