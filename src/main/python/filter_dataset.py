@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+from tools.user_reviews import UserReviews
 from yelp_interface.data_interface import read_reviews, read_businesses, read_users, read_tips
 from os import path
 import settings
@@ -87,6 +87,8 @@ def write_filtered(users_by_id, reviews_by_userid, tips_by_userid, businesses):
 
     with open(review_filtered, 'w') as f:
         for user_id, reviews in reviews_by_userid.items():
+            reviews.sort(lambda x: x['business_id'])
+            reviews = UserReviews.linear_dupe_removal(reviews)
             for review in reviews:
                 review['true_review_id'] = review['review_id']
                 review['review_id'] = reviewIdMap.get_int(review['review_id'])
