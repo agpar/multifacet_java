@@ -91,7 +91,7 @@ def _combine_balanced_ids(singlePath, pairPath, userIds, test=None):
         return vects
 
 
-def combine_stream(singlePath, pairPath):
+def combine_stream(singlePath, pairPath, **kwargs):
     with open(singlePath, 'r') as f:
         f.readline()
         reader = csv.reader(f)
