@@ -6,7 +6,7 @@ in a multi facet framework.
 
 1. Set $MULTIFACET_ROOT to point to the project root directory (where this file is.)
 2. Follow the directions in ./settings.properties to override local settings.
-2. Download the Yelp data set and filter it's contents using src/python/filter_dataset. This
+2. Download the Yelp data set and filter it's contents using src/python/filter_yelp.py This
 has the effect of filtering out sparse users and assigning each entity a unique, consecutive integer
 ID. Rename the filtered files to overshadow the names of the original files and use the filtered 
 versions going forward.

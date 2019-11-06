@@ -23,6 +23,7 @@ with open(settings_path) as f:
             key, val = line.split('=')
             settings[key] = val
 
-YELP_DATA_DIR = settings['data_dir']
+YELP_DATA_DIR = settings['yelp_data_dir']
+EPINIONS_DATA_DIR = settings['epinions_data_dir']
 DATA_NUM_USERS = math.inf  # legacy, used to control the max number of users read from data files.
 DATA_READ_SAMPLE = False  # legacy, used when checking to see if a sample of users should be taken

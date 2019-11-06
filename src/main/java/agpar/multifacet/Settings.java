@@ -22,7 +22,7 @@ public class Settings {
         try {
             prop.load(new FileReader(settings_path));
             this.EXPERIMENT_DIR = prop.getProperty("experiment_dir");
-            this.RAM_DATA_DIR = prop.getProperty("ram_data_dir");
+            this.RAM_DATA_DIR = prop.getProperty("yelp_ram_data_dir");
             this.PYTHON_PROJECT_DIR = Path.of(multifacet_root, "src/main/python").toString();
         } catch (FileNotFoundException e) {
             System.out.printf("ERROR: Could not find settings file at %s\n", settings_path);
