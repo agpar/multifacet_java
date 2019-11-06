@@ -43,11 +43,12 @@ class ClusterClassifier:
         pool = Pool(self.NUM_CLUSTERS + 1)
         results = []
         args_base = (self.SINGLE_PATH, self.PAIRWISE_PATH, header, self.combiner, self.trainer)
-        for i in range(self.NUM_CLUSTERS):
-            if len(self.clusters[i]) > 100:
-                args = (i, ) + args_base
-                kwds = {'userIds': self.clusters[i]}
-                results.append(pool.apply_async(_train_classifier, args=args, kwds=kwds))
+        if self.NUM_CLUSTERS > 1:
+            for i in range(self.NUM_CLUSTERS):
+                if len(self.clusters[i]) > 100:
+                    args = (i, ) + args_base
+                    kwds = {'userIds': self.clusters[i]}
+                    results.append(pool.apply_async(_train_classifier, args=args, kwds=kwds))
 
         # Compute the "general" classifier at the same time
         args = (-1, ) + args_base
