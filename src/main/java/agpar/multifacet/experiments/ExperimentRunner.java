@@ -41,7 +41,7 @@ public abstract class ExperimentRunner implements Runnable {
     }
 
     public void run() {
-        System.out.printf("Running %s with %d users.\n", this.name, this.description.getNumUsers());
+        System.out.printf("Running %s with %d users. Seed: %d.\n", this.name, this.description.getNumUsers(), this.description.getRandomSeed());
         if (!this.predictionsFileExists(this.description.getNumUsers()))
         {
             System.out.println("Prediction file not found. See readme.md on how to generate a prediction file.");
