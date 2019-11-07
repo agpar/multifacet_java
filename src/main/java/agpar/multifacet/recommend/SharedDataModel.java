@@ -4,10 +4,12 @@ import com.google.common.collect.BiMap;
 import net.librec.common.LibrecException;
 import net.librec.conf.Configuration;
 import net.librec.conf.Configured;
+import net.librec.data.DataAppender;
 import net.librec.data.DataConvertor;
 import net.librec.data.DataModel;
 import net.librec.data.convertor.AbstractDataConvertor;
 import net.librec.data.convertor.TextDataConvertor;
+import net.librec.data.convertor.appender.SocialDataAppender;
 import net.librec.data.model.AbstractDataModel;
 import net.librec.math.structure.DataSet;
 import net.librec.math.structure.SparseMatrix;
@@ -27,6 +29,11 @@ public class SharedDataModel extends AbstractDataModel implements DataModel {
         this.conf = conf;
     }
 
+    public static synchronized void reset() {
+        SharedSocialDataAppender.reset();
+        SharedDataConverter.reset();
+    }
+
     @Override
     protected void buildConvert() throws LibrecException {
         String[] inputDataPath = conf.get(Configured.CONF_DATA_INPUT_PATH).trim().split(" ");
@@ -39,6 +46,20 @@ public class SharedDataModel extends AbstractDataModel implements DataModel {
             dataConvertor.processData();
         } catch (IOException e) {
             throw new LibrecException(e);
+        }
+    }
+
+    protected void buildFeature() throws LibrecException {
+        String feature = conf.get("data.appender.class");
+        if (StringUtils.isNotBlank(feature)) {
+            try {
+                dataAppender = SharedSocialDataAppender.getInstance(conf);
+                dataAppender.setUserMappingData(getUserMappingData());
+                dataAppender.setItemMappingData(getItemMappingData());
+                dataAppender.processData();
+            } catch (IOException e) {
+                throw new LibrecException(e);
+            }
         }
     }
 
@@ -75,6 +96,10 @@ class SharedDataConverter extends AbstractDataConvertor {
         return instances.get(key);
     }
 
+    public static synchronized void reset() {
+        instances = null;
+    }
+
     public synchronized void processData() throws IOException {
         if (tdc.getPreferenceMatrix() == null) {
             tdc.processData();
@@ -96,5 +121,48 @@ class SharedDataConverter extends AbstractDataConvertor {
 
     public BiMap<String, Integer> getItemIds() {
         return tdc.getItemIds();
+    }
+}
+
+class SharedSocialDataAppender extends Configured implements DataAppender {
+    private static HashMap<String, SharedSocialDataAppender> instances;
+    private SocialDataAppender sda;
+
+    private SharedSocialDataAppender(Configuration conf) {
+        this.sda = new SocialDataAppender(conf);
+    }
+
+    public static synchronized SharedSocialDataAppender getInstance(Configuration conf) {
+        String key = conf.get("data.appender.path");
+        if(!instances.containsKey(key)) {
+            instances.put(key, new SharedSocialDataAppender(conf));
+        }
+        return instances.get(key);
+    }
+
+    public static synchronized void reset() {
+        instances = null;
+    }
+
+    @Override
+    public synchronized void processData() throws IOException {
+        if (sda.getUserAppender() == null) {
+            sda.processData();
+        }
+    }
+
+    public SparseMatrix getUserAppender() {
+        return sda.getUserAppender();
+    }
+
+    @Override
+    public void setUserMappingData(BiMap<String, Integer> userMappingData) {
+        sda.setUserMappingData(userMappingData);
+
+    }
+
+    @Override
+    public void setItemMappingData(BiMap<String, Integer> itemMappingData) {
+        sda.setItemMappingData(itemMappingData);
     }
 }
