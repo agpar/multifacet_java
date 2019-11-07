@@ -97,7 +97,7 @@ class SharedDataConverter extends AbstractDataConvertor {
     }
 
     public static synchronized void reset() {
-        instances = null;
+        instances.clear();
     }
 
     public synchronized void processData() throws IOException {
@@ -125,7 +125,7 @@ class SharedDataConverter extends AbstractDataConvertor {
 }
 
 class SharedSocialDataAppender extends Configured implements DataAppender {
-    private static HashMap<String, SharedSocialDataAppender> instances;
+    private static HashMap<String, SharedSocialDataAppender> instances = new HashMap<>();
     private SocialDataAppender sda;
 
     private SharedSocialDataAppender(Configuration conf) {
@@ -141,7 +141,7 @@ class SharedSocialDataAppender extends Configured implements DataAppender {
     }
 
     public static synchronized void reset() {
-        instances = null;
+        instances.clear();
     }
 
     @Override
