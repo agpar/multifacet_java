@@ -135,6 +135,7 @@ public class Main {
                     SharedDataModel.resetSocial();
                 }
             }
+            SharedDataModel.resetSplit();
         }
     }
 }

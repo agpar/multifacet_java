@@ -40,6 +40,7 @@ public class SharedDataModel extends AbstractDataModel implements DataModel {
     }
 
     public static synchronized void resetSplit() {
+        SharedRatioDataSplitter.reset();
 
     }
 
@@ -197,6 +198,10 @@ class SharedRatioDataSplitter implements DataSplitter {
             instance = new SharedRatioDataSplitter(dataConvertor, conf);
         }
         return instance;
+    }
+
+    public static synchronized void reset() {
+        instance = null;
     }
 
     @Override
