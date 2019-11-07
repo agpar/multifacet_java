@@ -43,18 +43,18 @@ public class SharedDataModel extends AbstractDataModel implements DataModel {
     }
 
     @Override
-    public DataSet getDatetimeDataSet() {
-        return null;
-    }
-
-    @Override
     public BiMap<String, Integer> getUserMappingData() {
-        return null;
+        return ((SharedDataConverter) dataConvertor).getUserIds();
     }
 
     @Override
     public BiMap<String, Integer> getItemMappingData() {
-        return null;
+        return ((SharedDataConverter) dataConvertor).getItemIds();
+    }
+
+   @Override
+    public DataSet getDatetimeDataSet() {
+        return ((SharedDataConverter) dataConvertor).getDatetimeMatrix();
     }
 }
 
@@ -88,5 +88,13 @@ class SharedDataConverter extends AbstractDataConvertor {
     @Override
     public void progress() {
         tdc.progress();
+    }
+
+    public BiMap<String, Integer> getUserIds() {
+        return tdc.getUserIds();
+    }
+
+    public BiMap<String, Integer> getItemIds() {
+        return tdc.getItemIds();
     }
 }
