@@ -5,15 +5,14 @@ import agpar.multifacet.experiments.DescriptionLoader;
 import agpar.multifacet.experiments.ExperimentDescription;
 import agpar.multifacet.experiments.ExperimentRunner;
 import agpar.multifacet.pairwise.io.SynchronizedAppendResultWriter;
+import agpar.multifacet.recommend.SharedDataModel;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 
 import java.io.FileReader;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -92,32 +91,49 @@ public class Main {
     }
 
     public static void runAllExperiments(List<ExperimentRunner> experiments) {
-        // Experiments must be groups by seed, as the seed is a global static.
+        // Experiments must be grouped by seed, as the seed is a global static.
         HashMap<Integer, List<ExperimentRunner>> experimentsBySeed = new HashMap<>();
-        for(ExperimentRunner exp : experiments) {
-            if(!experimentsBySeed.containsKey(exp.getDescription().getRandomSeed())) {
+        for (ExperimentRunner exp : experiments) {
+            if (!experimentsBySeed.containsKey(exp.getDescription().getRandomSeed())) {
                 experimentsBySeed.put(exp.getDescription().getRandomSeed(), new ArrayList<ExperimentRunner>());
             }
             experimentsBySeed.get(exp.getDescription().getRandomSeed()).add(exp);
         }
 
-        // Run all experiments with the same seed in parallel
-        for(Integer key : experimentsBySeed.keySet()) {
-            List<ExperimentRunner> experimentsWithSeed = experimentsBySeed.get(key);
-            ExecutorService executor = Executors.newFixedThreadPool(NUM_EXPERIMENTS);
-            for (ExperimentRunner exp : experimentsWithSeed) {
-               executor.execute(exp);
+        // It's more efficient to run multiple experiments with the same social matrix at the same time.
+        HashMap<String, List<ExperimentRunner>> experimentsBySocial = new HashMap<>();
+        for (ExperimentRunner exp : experiments) {
+            if (!experimentsBySocial.containsKey(exp.getDescription().getPredictionFile())) {
+                experimentsBySocial.put(exp.getDescription().getPredictionFile(), new ArrayList<ExperimentRunner>());
             }
-            boolean exited;
-            try {
-                executor.shutdown();
-                exited = executor.awaitTermination(1, TimeUnit.DAYS);
-                if (!exited) {
-                    throw new Exception("Executor did not terminate.");
+            experimentsBySocial.get(exp.getDescription().getPredictionFile()).add(exp);
+        }
+
+        // Run all experiments with the same seed and social data set in parallel
+        for (Integer seed : experimentsBySeed.keySet()) {
+            for (String socialFile : experimentsBySocial.keySet()) {
+                List<ExperimentRunner> experimentsInSet = experimentsBySeed.get(seed);
+                experimentsInSet.retainAll(experimentsBySocial.get(socialFile));
+
+                ExecutorService executor = Executors.newFixedThreadPool(NUM_EXPERIMENTS);
+                for (ExperimentRunner exp : experimentsInSet) {
+                    executor.execute(exp);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                exit(1);
+
+                boolean exited;
+                try {
+                    executor.shutdown();
+                    exited = executor.awaitTermination(7, TimeUnit.DAYS);
+                    if (!exited) {
+                        throw new Exception("Executor did not terminate.");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    exit(1);
+                } finally {
+                    // Flush memory before next set of experiments.
+                    SharedDataModel.reset();
+                }
             }
         }
     }
