@@ -7,14 +7,20 @@ import net.librec.conf.Configured;
 import net.librec.data.DataAppender;
 import net.librec.data.DataConvertor;
 import net.librec.data.DataModel;
+import net.librec.data.DataSplitter;
 import net.librec.data.convertor.AbstractDataConvertor;
 import net.librec.data.convertor.TextDataConvertor;
 import net.librec.data.convertor.appender.SocialDataAppender;
 import net.librec.data.model.AbstractDataModel;
+import net.librec.data.splitter.KCVDataSplitter;
+import net.librec.data.splitter.RatioDataSplitter;
 import net.librec.math.structure.DataSet;
 import net.librec.math.structure.SparseMatrix;
+import net.librec.util.DriverClassUtil;
+import net.librec.util.ReflectionUtil;
 import org.apache.commons.lang.StringUtils;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -29,9 +35,12 @@ public class SharedDataModel extends AbstractDataModel implements DataModel {
         this.conf = conf;
     }
 
-    public static synchronized void reset() {
+    public static synchronized void resetSocial() {
         SharedSocialDataAppender.reset();
-        SharedDataConverter.reset();
+    }
+
+    public static synchronized void resetSplit() {
+
     }
 
     @Override
@@ -47,6 +56,13 @@ public class SharedDataModel extends AbstractDataModel implements DataModel {
         } catch (IOException e) {
             throw new LibrecException(e);
         }
+    }
+
+    protected void buildSplitter() throws LibrecException {
+        dataSplitter = SharedRatioDataSplitter.getInstance(dataConvertor, conf);
+        dataSplitter.splitData();
+        trainDataSet = dataSplitter.getTrainData();
+        testDataSet = dataSplitter.getTestData();
     }
 
     protected void buildFeature() throws LibrecException {
@@ -167,6 +183,46 @@ class SharedSocialDataAppender extends SocialDataAppender implements DataAppende
     }
 }
 
-class SharedDataSplitter {
+class SharedRatioDataSplitter implements DataSplitter {
 
+    private static DataSplitter rdt;
+    private static SharedRatioDataSplitter instance;
+
+    private SharedRatioDataSplitter(DataConvertor dataConvertor, Configuration conf) {
+        rdt = new RatioDataSplitter(dataConvertor, conf);
+    }
+
+    public synchronized static SharedRatioDataSplitter getInstance(DataConvertor dataConvertor, Configuration conf) {
+        if (instance == null) {
+            instance = new SharedRatioDataSplitter(dataConvertor, conf);
+        }
+        return instance;
+    }
+
+    @Override
+    public synchronized void splitData() throws LibrecException {
+        if (rdt.getTrainData() == null) {
+            rdt.splitData();
+        }
+    }
+
+    @Override
+    public void setDataConvertor(DataConvertor dataConvertor) {
+        rdt.setDataConvertor(dataConvertor);
+    }
+
+    @Override
+    public SparseMatrix getTrainData() {
+        return rdt.getTrainData();
+    }
+
+    @Override
+    public SparseMatrix getTestData() {
+        return rdt.getTestData();
+    }
+
+    @Override
+    public SparseMatrix getValidData() {
+        return rdt.getValidData();
+    }
 }

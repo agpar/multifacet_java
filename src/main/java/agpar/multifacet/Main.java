@@ -132,7 +132,7 @@ public class Main {
                     exit(1);
                 } finally {
                     // Flush memory before next set of experiments.
-                    SharedDataModel.reset();
+                    SharedDataModel.resetSocial();
                 }
             }
         }
