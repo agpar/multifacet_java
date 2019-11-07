@@ -27,7 +27,7 @@ public class TrustMFTester extends RecommenderTester {
      */
 
         // build data model
-        DataModel dataModel = new TextDataModel(conf);
+        DataModel dataModel = new SharedDataModel(conf);
         dataModel.buildDataModel();
 
         // set recommendation context
