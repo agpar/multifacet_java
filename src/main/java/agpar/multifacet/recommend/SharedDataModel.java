@@ -124,7 +124,7 @@ class SharedDataConverter extends AbstractDataConvertor {
     }
 }
 
-class SharedSocialDataAppender extends Configured implements DataAppender {
+class SharedSocialDataAppender extends SocialDataAppender implements DataAppender {
     private static HashMap<String, SharedSocialDataAppender> instances = new HashMap<>();
     private SocialDataAppender sda;
 
@@ -165,4 +165,8 @@ class SharedSocialDataAppender extends Configured implements DataAppender {
     public void setItemMappingData(BiMap<String, Integer> itemMappingData) {
         sda.setItemMappingData(itemMappingData);
     }
+}
+
+class SharedDataSplitter {
+
 }
