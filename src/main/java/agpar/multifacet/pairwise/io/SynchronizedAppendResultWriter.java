@@ -58,7 +58,8 @@ public class SynchronizedAppendResultWriter implements ResultWriter{
     }
 
     public synchronized void flush() throws IOException {
-        this.writer.flush();
+        if (this.writer != null)
+            this.writer.flush();
     }
 
     public static void flushAll() throws IOException{
