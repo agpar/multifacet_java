@@ -127,15 +127,16 @@ public class Main {
                     if (!exited) {
                         throw new Exception("Executor did not terminate.");
                     }
+                    SynchronizedAppendResultWriter.flushAll();
                 } catch (Exception e) {
                     e.printStackTrace();
                     exit(1);
                 } finally {
-                    // Flush data split before next random seed assignment.
+                    // clear data split before next random seed assignment.
                     SharedDataModel.resetSplit();
                 }
             }
-            // Flush social data matrix before moving to next set of experiments
+            // clear social data matrix before moving to next set of experiments
             SharedDataModel.resetSocial();
         }
     }
