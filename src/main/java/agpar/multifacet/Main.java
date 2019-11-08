@@ -110,9 +110,9 @@ public class Main {
         }
 
         // Run all experiments with the same seed and social data set in parallel
-        for (Integer seed : experimentsBySeed.keySet()) {
-            for (String socialFile : experimentsBySocial.keySet()) {
-                List<ExperimentRunner> experimentsInSet = experimentsBySeed.get(seed);
+        for (String socialFile : experimentsBySocial.keySet()) {
+            for (Integer seed : experimentsBySeed.keySet()) {
+                List<ExperimentRunner> experimentsInSet = new ArrayList<>(experimentsBySeed.get(seed));
                 experimentsInSet.retainAll(experimentsBySocial.get(socialFile));
 
                 ExecutorService executor = Executors.newFixedThreadPool(NUM_EXPERIMENTS);
@@ -131,11 +131,12 @@ public class Main {
                     e.printStackTrace();
                     exit(1);
                 } finally {
-                    // Flush memory before next set of experiments.
-                    SharedDataModel.resetSocial();
+                    // Flush data split before next random seed assignment.
+                    SharedDataModel.resetSplit();
                 }
             }
-            SharedDataModel.resetSplit();
+            // Flush social data matrix before moving to next set of experiments
+            SharedDataModel.resetSocial();
         }
     }
 }

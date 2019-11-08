@@ -12,18 +12,18 @@ import net.librec.data.convertor.AbstractDataConvertor;
 import net.librec.data.convertor.TextDataConvertor;
 import net.librec.data.convertor.appender.SocialDataAppender;
 import net.librec.data.model.AbstractDataModel;
-import net.librec.data.splitter.KCVDataSplitter;
 import net.librec.data.splitter.RatioDataSplitter;
 import net.librec.math.structure.DataSet;
 import net.librec.math.structure.SparseMatrix;
-import net.librec.util.DriverClassUtil;
-import net.librec.util.ReflectionUtil;
 import org.apache.commons.lang.StringUtils;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.util.HashMap;
 
+/*
+A bunch of decorators around internal librec classes which allow  multiple threads running
+experiments which should operate on the same set of data to share a single set of in memory data.
+ */
 public class SharedDataModel extends AbstractDataModel implements DataModel {
 
     static DataConvertor convertor;
