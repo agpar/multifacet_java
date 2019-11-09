@@ -13,6 +13,8 @@ public class TrustSVDTester extends RecommenderTester {
     public void loadDescription(ExperimentDescription description) {
         super.loadDescription(description);
         conf.setFloat("rec.social.regularization", description.getSocialReg());
+        // Try to increase the cache size.
+        conf.setStrings("guava.cache.spec", "maximumSize=2000,expireAfterAccess=20m");
     }
 
     @Override
