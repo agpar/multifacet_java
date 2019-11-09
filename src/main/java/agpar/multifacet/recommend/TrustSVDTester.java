@@ -18,7 +18,7 @@ public class TrustSVDTester extends RecommenderTester {
     @Override
     protected Recommender learnImplementation() throws LibrecException {
         // build data model
-        DataModel dataModel = new TextDataModel(conf);
+        DataModel dataModel = new SharedDataModel(conf);
         dataModel.buildDataModel();
 
         // set recommendation context
