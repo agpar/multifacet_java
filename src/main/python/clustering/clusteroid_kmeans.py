@@ -2,13 +2,10 @@ from clustering.cluster_tools import *
 
 
 def cluster(dists: np.array, k, iters):
-    init_clusteroids = initial_clusteroids(dists, k, strategy='central')
+    init_clusteroids = initial_clusteroids(dists, k, strategy='k++')
     clusters = assign_clusters(dists, init_clusteroids)
     for i in range(iters - 1):
         new_clusteroids = choose_next_clusteroids(dists, k, clusters, "cluster-avg")
-        #if sorted(old_clusteroids) == sorted(new_clusteroids):
-        #    print("Converged.")
-        #    break
         clusters = assign_clusters(dists, new_clusteroids)
         print(f"{i}: Average intra cluster dist: {average_intra_clust_distance(dists, clusters)}")
         print(f"{i}: Silo score: {eval(dists, clusters_to_labels(dists, clusters))}")
@@ -40,6 +37,27 @@ def initial_clusteroids(dists, k, strategy='central'):
             clusteroid = next_idx_to_cluster(means, clusteroids)
             clusteroids.append(clusteroid)
         return dists[clusteroids]
+    elif strategy == 'k++':
+        clusteroids = []
+        choices = set()
+
+        choice = np.random.choice(dists.shape[0], 1)[0]
+        choices.add(k)
+        clusteroids.append(dists[choice])
+        while len(clusteroids) < k:
+            clusteroid_dists = np.array(clusteroids)
+            clusteroid_mins = np.min(clusteroid_dists, axis=0)
+            print(sum(clusteroid_mins))
+
+            normalized = clusteroid_mins / np.sum(clusteroid_mins)
+            # Chose a point not yet seen.
+            choice = np.random.choice(dists.shape[0], 1, p=normalized)[0]
+            while choice in choices:
+                choice = np.random.choice(dists.shape[0], 1, p=normalized)[0]
+
+            choices.add(choice)
+            clusteroids.append(dists[choice])
+        return np.array(clusteroids)
 
 
 def choose_next_clusteroids(dists, k, clusters, strategy="sum"):
