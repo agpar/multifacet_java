@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ExperimentDescription {
@@ -20,9 +21,7 @@ public class ExperimentDescription {
     private Float socialRegStep;
     private List<Integer> randomSeeds;
 
-    private double MAE;
-    private double RMSE;
-    private double AUC;
+    private HashMap<String, Double> results;
 
     public ExperimentDescription(String name, String recommenderName, int numUsers, int randomSeed, int numIterations, float socialReg) {
         this.name = name;
@@ -93,16 +92,14 @@ public class ExperimentDescription {
         if (this.predictionFile != null) {
             result.add("predictionFile", new JsonPrimitive(this.predictionFile));
         }
-        result.add("MAE", new JsonPrimitive(this.MAE));
-        result.add("RMSE", new JsonPrimitive(this.RMSE));
-        result.add("AUC", new JsonPrimitive(this.AUC));
+        for (String key : this.results.keySet()) {
+            result.add(key, new JsonPrimitive(this.results.get(key)));
+        }
         return result.toString();
     }
 
-    public void addResults(double MAE, double MSE, double AUC) {
-        this.MAE = MAE;
-        this.RMSE = MSE;
-        this.AUC = AUC;
+    public void addResults(HashMap<String, Double> results) {
+        this.results = results;
     }
 
     public String getName() {

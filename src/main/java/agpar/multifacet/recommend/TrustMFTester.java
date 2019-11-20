@@ -14,8 +14,7 @@ public class TrustMFTester extends RecommenderTester {
     public void loadDescription(ExperimentDescription description) {
         super.loadDescription(description);
         conf.setFloat("rec.social.regularization", description.getSocialReg());
-        //conf.setBoolean("rec.recommender.isranking", true);
-        //conf.setInt("rec.recommender.ranking.topn", 10);
+
     }
 
     @Override

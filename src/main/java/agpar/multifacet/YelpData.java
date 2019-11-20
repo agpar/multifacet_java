@@ -33,7 +33,7 @@ public class YelpData {
         System.out.println("Loading Users");
         this.usersById = reader.loadUsers(start, stop);
         System.out.println("Loading Reviews");
-        this.reviewsByItemId = reader.loadReviews();
+        this.reviewsByItemId = reader.loadTrainReviews();
         System.out.println("Loading Businesses");
         this.businesses = reader.loadBusinesses();
 

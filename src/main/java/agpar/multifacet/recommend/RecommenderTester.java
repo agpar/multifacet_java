@@ -20,21 +20,25 @@ public abstract class RecommenderTester {
     protected String baseExperimentDir;
     protected String experimentName;
     protected String experimentDir;
-    protected String ratingFile;
+    protected String ratingTrainFile;
+    protected String ratingTestFile;
     protected String socialFile;
     public Configuration conf = new Configuration();
 
-    public  HashMap<String, Double> learn(String experimentDir, String experimentName, String ratingFile, String socialFile) throws LibrecException {
+    public  HashMap<String, Double> learn(String experimentDir, String experimentName, String ratingTrainFile, String ratingTestFile, String socialFile) throws LibrecException {
         this.baseExperimentDir = experimentDir;
         this.experimentName = experimentName;
         this.experimentDir = Path.of(experimentDir, experimentName).toString();
-        this.ratingFile = ratingFile;
+        this.ratingTrainFile = ratingTrainFile;
+        this.ratingTestFile = ratingTestFile;
         this.socialFile = socialFile;
 
-        conf.set("data.input.path", this.ratingFile);
+        conf.set("data.input.path", this.ratingTrainFile);
+        conf.set("data.testset.path", this.ratingTestFile);
         conf.set("dfs.data.dir", this.baseExperimentDir);
         conf.set("data.appender.path", this.socialFile);
         conf.set("data.appender.class", "net.librec.data.convertor.appender.SocialDataAppender");
+        conf.set("data.model.splitter", "net.librec.data.splitter.GivenTestSetDataSplitter");
 
         Recommender recommender = this.learnImplementation();
         return this.evaluate(recommender);
@@ -44,7 +48,7 @@ public abstract class RecommenderTester {
         HashMap<String, Double> results = new HashMap<>();
         results.put("MAE", recommender.evaluate(new MAEEvaluator()));
         results.put("RMSE", recommender.evaluate(new RMSEEvaluator()));
-        results.put("AUC", 0.0);
+        results.put("MSE", recommender.evaluate(new MSEEvaluator()));
 
         return results;
     }

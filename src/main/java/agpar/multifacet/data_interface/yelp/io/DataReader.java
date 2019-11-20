@@ -18,7 +18,8 @@ import java.util.HashMap;
 public class DataReader {
     private String dataDir;
     private Path userFile;
-    private Path reviewFile;
+    private Path reviewTrainFile;
+    private Path reviewTestFile;
     private Path businessFile;
     private IdStringToIntMap categoryIdMap;
 
@@ -26,7 +27,8 @@ public class DataReader {
     public DataReader(String dataDir) {
         this.dataDir = dataDir;
         this.userFile = Paths.get(dataDir, "user.json");
-        this.reviewFile = Paths.get(dataDir, "review.json");
+        this.reviewTrainFile = Paths.get(dataDir, "review_train.json");
+        this.reviewTestFile = Paths.get(dataDir, "review_test.json");
         this.businessFile = Paths.get(dataDir, "business.json");
         this.categoryIdMap = new IdStringToIntMap();
     }
@@ -58,11 +60,19 @@ public class DataReader {
         return users;
     }
 
-    public ReviewsById loadReviews() {
+    public ReviewsById loadTrainReviews() {
+        return loadReviews(this.reviewTrainFile.toString());
+    }
+
+    public ReviewsById loadTestReviews() {
+        return loadReviews(this.reviewTestFile.toString());
+    }
+
+    private ReviewsById loadReviews(String path) {
         BufferedReader reader;
         ReviewsById reviews = new ReviewsById();
         try{
-            reader = new BufferedReader(new FileReader(this.reviewFile.toString()));
+            reader = new BufferedReader(new FileReader(path));
             String line = reader.readLine();
             JsonParser parser = new JsonParser();
             while (line != null) {
