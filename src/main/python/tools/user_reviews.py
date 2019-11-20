@@ -117,6 +117,7 @@ class UserReviews:
         """
         i = 0
         deduped_reviews = []
+        reviews.sort(key=lambda x: x['business_id'])
         current_item = reviews[0]['business_id']
         latest_review_for_item = reviews[0]
         while i < len(reviews) - 1:
