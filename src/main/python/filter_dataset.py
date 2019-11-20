@@ -5,23 +5,31 @@ from os import path
 import settings
 import json
 from tools.id_index_map import IDIndexMap
+import numpy as np
+import math
+from collections import defaultdict, Counter
+import matplotlib.pyplot as plt
 
 """
-Filter files, only retaining users who have reviewed at least 20 restaurant
-or food related reviews.
+Filter users. Only look at users who have rated at least MIN_REVIEWS restaurants. Pick
+NUM_USERS randomly from the set.
 
+Splits into train/test set.
+ 
 Maps each user id to a integer, which is also used as the index to refer to that
 user in any matrix in later processing.
 """
 
-MIN_REVIEWS = 20
+MIN_REVIEWS = 5
+LEAVE_OUT = 2
+NUM_USERS = 30_000
 BUSINESS_FILE = path.join(settings.DATA_DIR, 'business.json')
 REVIEW_FILE = path.join(settings.DATA_DIR, 'review.json')
 USER_FILE = path.join(settings.DATA_DIR, 'user.json')
 TIP_FILE = path.join(settings.DATA_DIR, 'tip.json')
 
 
-def read_all():
+def read_all(min_reviews=MIN_REVIEWS):
     def business_filter(business):
         if not business.get('categories'):
             return None
@@ -50,24 +58,70 @@ def read_all():
     tips_by_userid = read_tips(TIP_FILE, filter=tip_filter)
 
     def user_filter(user):
-        if len(reviews_by_userid.get(user['user_id'], [])) >= MIN_REVIEWS:
+        if len(reviews_by_userid.get(user['user_id'], [])) >= min_reviews:
             return user
         else:
             return None
     users_by_id = read_users(USER_FILE, filter=user_filter)
 
-    print(len(users_by_id))
-
     return users_by_id, reviews_by_userid, tips_by_userid, businesses
+
+
+def choose_sample(users_by_id, reviews_by_userid):
+    # Choose a random subset of users, with dist based on log number of reviews.
+    keys = list(users_by_id.keys())
+    probs = np.array([math.log(len(reviews_by_userid[key])) for key in keys])
+    probs = probs / np.sum(probs)
+    random_ids = np.random.choice(keys, size=NUM_USERS, replace=False, p=probs)
+    random_users_by_id = dict()
+    for random_id in random_ids:
+        random_users_by_id[random_id] = users_by_id[random_id]
+
+    return random_users_by_id
+
+
+def write_stats(nat_users, sampled_users, reviews):
+    stats_file = path.join(settings.DATA_DIR, 'sample_stat.json')
+    nat_review_lens = [len(reviews[user]) for user in nat_users]
+    sam_review_lens = [len(reviews[user]) for user in sampled_users]
+    #nat_review_scores = [[r['stars'] for r in user_reviews] for user in nat_users for user_reviews in reviews_by_userid[user]]
+    #sam_review_scores = [[r['stars'] for r in user_reviews] for user in sampled_users for user_reviews in reviews_by_userid[user]]
+    stats = {}
+    stats['nat_mean_review_len'] = float(np.mean(nat_review_lens))
+    stats['nat_median_review_len'] = float(np.median(nat_review_lens))
+    stats['nat_min_review_len'] = float(np.min(nat_review_lens))
+    stats['nat_max_review_len'] = float(np.max(nat_review_lens))
+    stats['sam_mean_review_len'] = float(np.mean(sam_review_lens))
+    stats['sam_median_review_len'] = float(np.median(sam_review_lens))
+    stats['sam_min_review_len'] = float(np.min(sam_review_lens))
+    stats['sam_max_review_len'] = float(np.max(sam_review_lens))
+
+    #stats['sam_review_scores'] = sam_review_scores
+    #stats['nat_review_scores'] = nat_review_scores
+
+    with open(stats_file, 'w') as f:
+        json.dump(stats, f)
 
 
 def filter_friend_list(user, userIdMap):
     return ", ".join([str(userIdMap.get_int(u)) for u in user['friends'].split(", ")])
 
 
-def write_filtered(users_by_id, reviews_by_userid, tips_by_userid, businesses):
+def split_reviews(selected_users, reviews_by_user_id):
+    test_set = defaultdict(list)
+    for user_id in selected_users:
+        user_reviews = reviews_by_user_id[user_id]
+        for i in range(LEAVE_OUT):
+            selected_idx = np.random.choice(len(user_reviews))
+            selected_review = user_reviews.pop(selected_idx)
+            test_set[user_id].append(selected_review)
+    return reviews_by_userid, test_set
+
+
+def write_filtered(users_by_id, review_train, review_test, tips_by_userid, businesses):
     business_filtered = path.join(settings.DATA_DIR, 'business_filtered.json')
-    review_filtered = path.join(settings.DATA_DIR, 'review_filtered.json')
+    review_train_filtered = path.join(settings.DATA_DIR, 'review_train_filtered.json')
+    review_test_filtered = path.join(settings.DATA_DIR, 'review_test_filtered.json')
     user_filtered = path.join(settings.DATA_DIR, 'user_filtered.json')
     tip_filtered = path.join(settings.DATA_DIR, 'tip_filtered.json')
 
@@ -85,14 +139,15 @@ def write_filtered(users_by_id, reviews_by_userid, tips_by_userid, businesses):
             user['friends'] = filter_friend_list(user, userIdMap)
             f.write(f"{json.dumps(user)}\n")
 
-    with open(review_filtered, 'w') as f:
-        for user_id, reviews in reviews_by_userid.items():
-            for review in reviews:
-                review['true_review_id'] = review['review_id']
-                review['review_id'] = reviewIdMap.get_int(review['review_id'])
-                review['business_id'] = businessIdMap.get_int(review['business_id'])
-                review['user_id'] = userIdMap.get_int(review['user_id'])
-                f.write(f"{json.dumps(review)}\n")
+    for fname, data in [(review_train_filtered, review_train), (review_test_filtered, review_test)]:
+        with open(fname, 'w') as f:
+            for user_id, reviews in data.items():
+                for review in reviews:
+                    review['true_review_id'] = review['review_id']
+                    review['review_id'] = reviewIdMap.get_int(review['review_id'])
+                    review['business_id'] = businessIdMap.get_int(review['business_id'])
+                    review['user_id'] = userIdMap.get_int(review['user_id'])
+                    f.write(f"{json.dumps(review)}\n")
 
     with open(tip_filtered, 'w') as f:
         for user_id, tips in tips_by_userid.items():
@@ -108,8 +163,21 @@ def write_filtered(users_by_id, reviews_by_userid, tips_by_userid, businesses):
             f.write(f"{json.dumps(business)}\n")
 
 
+def plot_review_counts(user_ids, reviews_by_userid):
+    lens = [len(reviews_by_userid[user]) for user in user_ids]
+    lens.sort()
+    counts = Counter(lens)
+    plt.plot(list(counts.keys()), list(counts.values()))
+    plt.yscale('log')
+    plt.xlabel("Review #")
+    plt.ylabel("User #")
+
+
 if __name__ == '__main__':
     users_by_id, reviews_by_userid, tips_by_userid, businesses = read_all()
-    write_filtered(users_by_id, reviews_by_userid, tips_by_userid, businesses)
+    random_users = choose_sample(users_by_id, reviews_by_userid)
+    write_stats(users_by_id, random_users, reviews_by_userid)
+    review_train, review_test = split_reviews(list(random_users.keys()), reviews_by_userid)
+    write_filtered(random_users, review_train, review_test, tips_by_userid, businesses)
 
 
