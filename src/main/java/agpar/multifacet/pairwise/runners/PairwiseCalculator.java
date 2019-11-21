@@ -1,6 +1,6 @@
 package agpar.multifacet.pairwise.runners;
 
-import agpar.multifacet.data_interface.data_classes.User;
+import agpar.multifacet.data_interface.yelp.data_classes.User;
 import agpar.multifacet.pairwise.io.ResultWriter;
 import agpar.multifacet.pairwise.result_calculators.ResultCalculator;
 

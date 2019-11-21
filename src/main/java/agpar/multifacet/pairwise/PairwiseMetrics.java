@@ -1,9 +1,9 @@
 package agpar.multifacet.pairwise;
 
-import agpar.multifacet.data_interface.data_classes.Review;
+import agpar.multifacet.data_interface.yelp.data_classes.Review;
 import agpar.multifacet.pairwise.review_avg_calculators.ReviewAvgCalculator;
-import agpar.multifacet.data_interface.collections.ReviewList;
-import agpar.multifacet.data_interface.data_classes.User;
+import agpar.multifacet.data_interface.yelp.collections.ReviewList;
+import agpar.multifacet.data_interface.yelp.data_classes.User;
 
 import java.util.HashSet;
 import java.util.Set;

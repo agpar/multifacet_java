@@ -1,8 +1,8 @@
 package agpar.multifacet.pairwise.runners;
 
 import agpar.multifacet.YelpData;
-import agpar.multifacet.data_interface.collections.UsersById;
-import agpar.multifacet.data_interface.data_classes.User;
+import agpar.multifacet.data_interface.yelp.collections.UsersById;
+import agpar.multifacet.data_interface.yelp.data_classes.User;
 import agpar.multifacet.pairwise.PairwiseResult;
 import agpar.multifacet.pairwise.io.ResultWriter;
 import agpar.multifacet.pairwise.result_calculators.ResultCalculator;

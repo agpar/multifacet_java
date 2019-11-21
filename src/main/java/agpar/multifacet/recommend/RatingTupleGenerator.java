@@ -1,8 +1,8 @@
 package agpar.multifacet.recommend;
 
 import agpar.multifacet.YelpData;
-import agpar.multifacet.data_interface.data_classes.Review;
-import agpar.multifacet.data_interface.data_classes.User;
+import agpar.multifacet.data_interface.yelp.data_classes.Review;
+import agpar.multifacet.data_interface.yelp.data_classes.User;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

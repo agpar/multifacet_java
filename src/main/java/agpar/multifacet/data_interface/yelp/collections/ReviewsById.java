@@ -1,6 +1,6 @@
-package agpar.multifacet.data_interface.collections;
+package agpar.multifacet.data_interface.yelp.collections;
 
-import agpar.multifacet.data_interface.data_classes.Review;
+import agpar.multifacet.data_interface.yelp.data_classes.Review;
 
 import java.util.ArrayList;
 import java.util.Collection;

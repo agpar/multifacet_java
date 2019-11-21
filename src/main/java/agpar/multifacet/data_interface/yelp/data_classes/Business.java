@@ -1,6 +1,6 @@
-package agpar.multifacet.data_interface.data_classes;
+package agpar.multifacet.data_interface.yelp.data_classes;
 
-import agpar.multifacet.data_interface.io.IdStringToIntMap;
+import agpar.multifacet.data_interface.yelp.io.IdStringToIntMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
