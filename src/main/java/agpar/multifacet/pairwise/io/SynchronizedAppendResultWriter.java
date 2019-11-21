@@ -9,6 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 
 
+/*
+After writing this thing I realized it was probably  unnecessary, as a file opened in append  mode should
+have atomic writes ANYWAY. Oh well.
+ */
 public class SynchronizedAppendResultWriter implements ResultWriter{
     private String filePath;
     private BufferedWriter writer;
@@ -50,6 +54,17 @@ public class SynchronizedAppendResultWriter implements ResultWriter{
     public synchronized void close() throws IOException{
         if (this.writer != null) {
             this.writer.close();
+        }
+    }
+
+    public synchronized void flush() throws IOException {
+        if (this.writer != null)
+            this.writer.flush();
+    }
+
+    public static void flushAll() throws IOException{
+        for (SynchronizedAppendResultWriter staticWriter: staticWriters.values()) {
+            staticWriter.flush();
         }
     }
 

@@ -29,6 +29,31 @@ public class PairwiseMetrics {
         return ReviewSimilarity.pcc(reviews1, avgs1, reviews2, avgs2);
     }
 
+    public static Double predictability(User user1, User user2, double threshold, int minOverlap) {
+        HashSet<Integer> mutuallyReviewed = new HashSet<>(user1.getItemsReviewed());
+        mutuallyReviewed.retainAll(user2.getItemsReviewed());
+        if (mutuallyReviewed.size() < minOverlap) {
+            return null;
+        }
+        Review[] reviews1 = PairwiseMetrics.filterReviews(user1.getReviews(), mutuallyReviewed);
+        Review[] reviews2 = PairwiseMetrics.filterReviews(user2.getReviews(), mutuallyReviewed);
+
+        int nu, nn, np;
+        Review r1, r2;
+        nu = np = nn = 0;
+        for (int i = 0; i < reviews1.length; i++) {
+           r1 = reviews1[i]; r2 = reviews2[i];
+           if (Math.abs(r1.getStars() - r2.getStars()) <= threshold) {
+               nu++;
+           } else if (r1.getStars() - r2.getStars() > threshold) {
+               nn++;
+           } else {
+               np++;
+           }
+        }
+        return ((double) (Math.max(nu, Math.max(nn, np)) - Math.min(nu, Math.min(nn, np)))) / reviews1.length;
+    }
+
     protected static <T> double jaccard(Set<T> set1, Set<T> set2) {
         Set<T> intersection = new HashSet<T>(set1);
         intersection.retainAll(set2);

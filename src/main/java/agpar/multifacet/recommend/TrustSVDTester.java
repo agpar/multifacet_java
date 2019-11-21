@@ -13,12 +13,14 @@ public class TrustSVDTester extends RecommenderTester {
     public void loadDescription(ExperimentDescription description) {
         super.loadDescription(description);
         conf.setFloat("rec.social.regularization", description.getSocialReg());
+        // Try to increase the cache size.
+        conf.setStrings("guava.cache.spec", "maximumSize=2000,expireAfterAccess=20m");
     }
 
     @Override
     protected Recommender learnImplementation() throws LibrecException {
         // build data model
-        DataModel dataModel = new TextDataModel(conf);
+        DataModel dataModel = new SharedDataModel(conf);
         dataModel.buildDataModel();
 
         // set recommendation context

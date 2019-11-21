@@ -4,6 +4,11 @@ import agpar.multifacet.data_interface.data_classes.Review;
 
 import java.util.*;
 
+/* Holds the list of reviews for a user.
+
+    Guaranteed to be sorted in item order.
+    Guaranteed to be duplicate free.
+ */
 public class ReviewList implements Iterable<Review>{
     private Review[] reviews;
     private HashSet<Integer> itemsReviewed;
