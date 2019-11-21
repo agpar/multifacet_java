@@ -107,6 +107,13 @@ def plot_mse(grouped):
     plt.title("Mean Squared Error")
 
 
+def plot_rmse(grouped):
+    graph(grouped, "RMSE")
+    plt.xlabel("Social Regulation")
+    plt.ylabel("RMSE")
+    plt.title("Root Mean Squared Error")
+
+
 def graph(grouped, key):
     fig = plt.figure()
     data_points = combine_regs(grouped, key)
