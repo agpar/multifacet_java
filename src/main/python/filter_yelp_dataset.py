@@ -21,8 +21,8 @@ Maps each user id to a integer, which is also used as the index to refer to that
 user in any matrix in later processing.
 """
 
-MIN_USER_REVIEWS = 5
-MIN_ITEM_REVIEWS = 5
+MIN_USER_REVIEWS = 10
+MIN_ITEM_REVIEWS = 10
 LEAVE_OUT = 2
 NUM_USERS = 30_000
 BUSINESS_FILE = path.join(settings.DATA_DIR, 'business.json')

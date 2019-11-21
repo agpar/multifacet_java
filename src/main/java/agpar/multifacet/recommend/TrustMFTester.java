@@ -14,7 +14,6 @@ public class TrustMFTester extends RecommenderTester {
     public void loadDescription(ExperimentDescription description) {
         super.loadDescription(description);
         conf.setFloat("rec.social.regularization", description.getSocialReg());
-
     }
 
     @Override

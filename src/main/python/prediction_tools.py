@@ -24,7 +24,8 @@ def stream_csv(path):
     with open(path, 'r') as f:
         header = f.readline()
         reader = csv.reader(f)
-        return reader
+        for line in reader:
+            yield line
 
 
 def read_csv_header(path):

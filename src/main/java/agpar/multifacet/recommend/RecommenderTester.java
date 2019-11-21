@@ -33,13 +33,13 @@ public abstract class RecommenderTester {
         this.ratingTestFile = ratingTestFile;
         this.socialFile = socialFile;
 
-        conf.set("data.input.path", this.ratingTrainFile);
-        conf.set("data.testset.path", this.ratingTestFile);
         conf.set("dfs.data.dir", this.baseExperimentDir);
+        conf.set("data.input.path", this.ratingTrainFile + " " + this.ratingTestFile);
+        conf.set("data.testset.path", this.ratingTestFile);
         conf.set("data.appender.path", this.socialFile);
         conf.set("data.appender.class", "net.librec.data.convertor.appender.SocialDataAppender");
         conf.set("data.model.splitter", "net.librec.data.splitter.GivenTestSetDataSplitter");
-
+        conf.setFloat("rec.iterator.learnrate.maximum", 10f);
         Recommender recommender = this.learnImplementation();
         return this.evaluate(recommender);
     };
@@ -55,6 +55,7 @@ public abstract class RecommenderTester {
 
     public void loadDescription(ExperimentDescription description) {
         conf.set("rec.iterator.maximum", String.valueOf(description.getNumIterations()));
+        conf.setInt("rec.factor.number", description.getLatentDim());
         Randoms.seed(description.getRandomSeed());
     };
 
