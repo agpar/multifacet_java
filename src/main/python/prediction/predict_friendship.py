@@ -1,6 +1,6 @@
 from data_set import DataSet
 from prediction.classifier_trainer import ClassifierTrainer
-from combine_vectors import *
+from prediction_tools import *
 
 
 class FriendshipTrainer(ClassifierTrainer):
@@ -14,4 +14,4 @@ class FriendshipTrainer(ClassifierTrainer):
     @staticmethod
     def filter_target(line):
         line[INDEXES['areFriends']] = 0
-        return line[2:]
+        return line
