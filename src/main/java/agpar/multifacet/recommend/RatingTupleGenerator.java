@@ -31,7 +31,7 @@ public class RatingTupleGenerator {
         writeOut(reviewsToWrite, outputPath);
     }
     public static void GenerateTestReviewTuples(int userCount, String outputFile) {
-        DataReader reader = new DataReader(Settings.RAM_DATA_DIR());
+        DataReader reader = new DataReader(Settings.YELP_DATA_DIR());
         ReviewsById reviews = reader.loadTestReviews();
         ArrayList<Review> reviewsToWrite = new ArrayList<>();
         for (Collection<Review> reviewList : reviews.values()) {
