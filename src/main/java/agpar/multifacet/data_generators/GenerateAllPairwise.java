@@ -3,7 +3,7 @@ package agpar.multifacet.data_generators;
 
 import agpar.multifacet.YelpData;
 import agpar.multifacet.data_interface.yelp.data_classes.User;
-import agpar.multifacet.pairwise.review_avg_calculators.UserReviewAvgCalculator;
+import agpar.multifacet.pairwise.review_avg_calculators.ItemReviewAvgCalculator;
 import agpar.multifacet.pairwise.runners.PairwiseCalculator;
 import agpar.multifacet.pairwise.io.SynchronizedAppendResultWriter;
 import agpar.multifacet.pairwise.result_calculators.AllResultsCalculator;

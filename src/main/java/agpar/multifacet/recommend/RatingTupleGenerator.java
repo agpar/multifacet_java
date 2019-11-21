@@ -2,13 +2,10 @@ package agpar.multifacet.recommend;
 
 import agpar.multifacet.Settings;
 import agpar.multifacet.YelpData;
+import agpar.multifacet.data_interface.yelp.collections.ReviewsById;
 import agpar.multifacet.data_interface.yelp.data_classes.Review;
 import agpar.multifacet.data_interface.yelp.data_classes.User;
-import agpar.multifacet.data_interface.collections.ReviewsById;
-import agpar.multifacet.data_interface.data_classes.Review;
-import agpar.multifacet.data_interface.data_classes.User;
-import agpar.multifacet.data_interface.io.DataReader;
->>>>>>> Fixed: Data is expected to be split.
+import agpar.multifacet.data_interface.yelp.io.DataReader;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -41,7 +38,6 @@ public class RatingTupleGenerator {
             reviewsToWrite.addAll(reviewList);
         }
         writeOut(reviewsToWrite, outputFile);
-
     }
 
     private static void writeOut(List<Review> reviewsToWrite, String outputPath) {
