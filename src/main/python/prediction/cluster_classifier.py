@@ -76,3 +76,12 @@ class ClusterClassifier:
             clf = self.overall_classifier
 
         return clf.predict(lines)
+
+    def get_clf(self, i):
+        if self.classifiers[i] is not None:
+            return self.classifiers[i]
+        else:
+            return self.overall_classifier
+
+    def get_cluster(self, i):
+        return self.clusters[i]

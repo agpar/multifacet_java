@@ -1,6 +1,6 @@
 from regression import learn_logit
 from sklearn.model_selection import train_test_split
-from combine_vectors import *
+from prediction_tools import *
 
 
 class ClassifierTrainer:
@@ -27,5 +27,5 @@ class ClassifierTrainer:
 
     @staticmethod
     def filter_target(line):
-        """Remove the target variable and identifiers from a line."""
+        """Remove the target variable from a line."""
         raise NotImplemented

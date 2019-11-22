@@ -1,5 +1,5 @@
 from data_set import *
-from combine_vectors import *
+from prediction_tools import *
 
 from prediction.classifier_trainer import ClassifierTrainer
 
@@ -22,4 +22,4 @@ class PCCTrainer(ClassifierTrainer):
     @staticmethod
     def filter_target(line):
         line[INDEXES['PCC']] = 0
-        return line[2:]
+        return line

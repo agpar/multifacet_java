@@ -51,7 +51,7 @@ public abstract class ExperimentRunner implements Runnable {
         this.initRatings(this.description.getNumUsers());
         try {
             HashMap<String, Double> results = this.evaluatePredictions(this.description.getNumUsers());
-            description.addResults(results.get("MAE"), results.get("RMSE"), results.get("AUC"));
+            description.addResults(results);
             String resultString = description.toJson();
             resultWriter.writeResults(String.format("%s\n", resultString));
         } catch (LibrecException e) {
@@ -71,18 +71,25 @@ public abstract class ExperimentRunner implements Runnable {
         return this.recommender.learn(
                 Settings.EXPERIMENT_DIR(),
                 this.name,
-                Path.of(this.ratingFilePath(numUsers)).getFileName().toString(),
+                Path.of(this.trainRatingFilePath(numUsers)).getFileName().toString(),
+                Path.of(this.testRatingFilePath(numUsers)).getFileName().toString(),
                 Path.of(this.predictionsFilePath(numUsers)).getFileName().toString()
         );
     };
 
 
     protected void initRatings(int numUsers) {
-        if(!this.ratingFileExists(numUsers)) {
-            System.out.println("Rating tuples not generated. Generating...");
-            this.generateRating(numUsers);
+        if(!this.trainRatingFileExists(numUsers)) {
+            System.out.println("Train rating tuples not generated. Generating...");
+            this.generateTrainRating(numUsers);
         } else {
-            System.out.println("Found predictions file.");
+            System.out.println("Found train ratings file.");
+        }
+        if(!this.testRatingFileExists(numUsers)) {
+            System.out.println("Test rating tuples not generated. Generating...");
+            this.generateTestRating(numUsers);
+        } else {
+            System.out.println("Found test ratings file.");
         }
     }
 
@@ -91,19 +98,31 @@ public abstract class ExperimentRunner implements Runnable {
         return Files.exists(Path.of(this.predictionsFilePath(numUsers)));
     }
 
-    protected boolean ratingFileExists(int numUsers) {
-        return Files.exists(Path.of(this.ratingFilePath(numUsers)));
+    protected boolean trainRatingFileExists(int numUsers) {
+        return Files.exists(Path.of(this.trainRatingFilePath(numUsers)));
     }
 
+    protected boolean testRatingFileExists(int numUsers) {
+        return Files.exists(Path.of(this.testRatingFilePath(numUsers)));
+    }
 
     protected abstract  String predictionsFilePath(int numUsers);
 
-    protected String ratingFilePath(int numUsers) {
-        String pairwiseVectFileName = String.format("ratings_%d.txt", numUsers);
+    protected String trainRatingFilePath(int numUsers) {
+        String pairwiseVectFileName = String.format("ratings_train_%d.txt", numUsers);
         return Path.of(Settings.EXPERIMENT_DIR(), pairwiseVectFileName).toString();
     }
 
-    protected void generateRating(int numUsers) {
-        RatingTupleGenerator.GenerateReviewTuples(numUsers, this.ratingFilePath(numUsers));
+    protected String testRatingFilePath(int numUsers) {
+        String pairwiseVectFileName = String.format("ratings_test_%d.txt", numUsers);
+        return Path.of(Settings.EXPERIMENT_DIR(), pairwiseVectFileName).toString();
+    }
+
+    protected void generateTrainRating(int numUsers) {
+        RatingTupleGenerator.GenerateTrainReviewTuples(numUsers, this.trainRatingFilePath(numUsers));
+    }
+
+    protected void generateTestRating(int numUsers) {
+        RatingTupleGenerator.GenerateTestReviewTuples(numUsers, this.testRatingFilePath(numUsers));
     }
 }

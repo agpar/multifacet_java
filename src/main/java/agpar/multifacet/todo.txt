@@ -1,0 +1,2 @@
+* Experiment with all avaliable social recommenders in librec.
+* Try REMOVING links, like in fang and zang.

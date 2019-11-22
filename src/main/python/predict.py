@@ -4,9 +4,10 @@ import json
 from prediction.actual_friendship import RealFriendTrainer
 from prediction.cluster_classifier import ClusterClassifier
 from prediction.predict_friendship import FriendshipTrainer
-from combine_vectors import combine_balanced_friends, combine_balanced_pcc, combine_stream
+from prediction_tools import combine_balanced_friends, combine_balanced_pcc, combine_stream
 from prediction.predict_pcc import PCCTrainer
 from prediction_tools import init_indexes, stream_csv, write_predictions
+import IPython
 
 
 def run(single_path, pairwise_path, output_path, cluster_path, target):
@@ -35,7 +36,7 @@ def run(single_path, pairwise_path, output_path, cluster_path, target):
     classifier.PAIRWISE_PATH = pairwise_path
     classifier.fit()
 
-    write_predictions(combine_stream(single_path, pairwise_path), classifier, output_path)
+    write_predictions(combine_stream(single_path, pairwise_path, filter=classifier.trainer.filter_target), classifier, output_path)
 
 
 if __name__ == '__main__':

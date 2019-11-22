@@ -1,6 +1,6 @@
 from prediction.classifier_trainer import ClassifierTrainer
 from prediction_tools import INDEXES
-from combine_vectors import combine_stream, write_predictions
+from prediction_tools import combine_stream, write_predictions
 
 
 class FriendPredictor:
@@ -21,4 +21,4 @@ class RealFriendTrainer(ClassifierTrainer):
 
     @staticmethod
     def filter_target(line):
-        return line[2:]
+        return line

@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ExperimentDescription {
@@ -13,25 +14,15 @@ public class ExperimentDescription {
     private int randomSeed;
     private int numIterations;
     private float socialReg;
-    private String predictionFile ;
+    private String predictionFile;
+    private int latentDim = 10;
 
     // For multi.
     private List<Float> socialRegRange;
     private Float socialRegStep;
     private List<Integer> randomSeeds;
 
-    private double MAE;
-    private double RMSE;
-    private double AUC;
-
-    public ExperimentDescription(String name, String recommenderName, int numUsers, int randomSeed, int numIterations, float socialReg) {
-        this.name = name;
-        this.recommenderName = recommenderName;
-        this.numUsers = numUsers;
-        this.randomSeed = randomSeed;
-        this.numIterations = numIterations;
-        this.socialReg = socialReg;
-    }
+    private HashMap<String, Double> results;
 
     public ExperimentDescription(String name, String recommenderName, int numUsers, int randomSeed, int numIterations, float socialReg, String predictionFile) {
         this.name = name;
@@ -57,7 +48,7 @@ public class ExperimentDescription {
             throw new Exception("This descriptions is not a multi!");
         }
         if(socialRegRange.size() > 2) {
-            throw new Exception("SocialRegRange must bet a list of exactly two floats (upper and lower bound)");
+            throw new Exception("SocialRegRange must be a list of exactly two floats (upper and lower bound)");
         }
 
         ArrayList<ExperimentDescription> descriptions = new ArrayList<>();
@@ -90,19 +81,18 @@ public class ExperimentDescription {
         result.add("randomSeed", new JsonPrimitive(this.randomSeed));
         result.add("numIterations", new JsonPrimitive(this.numIterations));
         result.add("socialReg", new JsonPrimitive(this.socialReg));
+        result.add("latentDim", new JsonPrimitive(this.latentDim));
         if (this.predictionFile != null) {
             result.add("predictionFile", new JsonPrimitive(this.predictionFile));
         }
-        result.add("MAE", new JsonPrimitive(this.MAE));
-        result.add("RMSE", new JsonPrimitive(this.RMSE));
-        result.add("AUC", new JsonPrimitive(this.AUC));
+        for (String key : this.results.keySet()) {
+            result.add(key, new JsonPrimitive(this.results.get(key)));
+        }
         return result.toString();
     }
 
-    public void addResults(double MAE, double MSE, double AUC) {
-        this.MAE = MAE;
-        this.RMSE = MSE;
-        this.AUC = AUC;
+    public void addResults(HashMap<String, Double> results) {
+        this.results = results;
     }
 
     public String getName() {
@@ -130,5 +120,14 @@ public class ExperimentDescription {
     }
     public String getPredictionFile() {
         return predictionFile;
+    }
+
+    public int getLatentDim() {
+        if (latentDim == 0) {
+            return 10;
+        }
+        else {
+            return latentDim;
+        }
     }
 }

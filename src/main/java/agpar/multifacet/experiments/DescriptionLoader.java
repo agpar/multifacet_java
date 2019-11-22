@@ -11,7 +11,6 @@ import java.util.List;
 
 public class DescriptionLoader {
     public static String VALID_RECOMMENDERS = "SoRec, TrustSVD, TrustMF";
-    public static String VALID_NAMES = "FriendPrediction, NoPrediction, PCCPrediction, RealFriends, PCCCluster";
 
     public static List<ExperimentRunner> load(ExperimentDescription description) throws Exception {
         if(description.isMulti()) {
