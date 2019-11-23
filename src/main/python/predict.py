@@ -7,7 +7,6 @@ from prediction.predict_friendship import FriendshipTrainer
 from prediction_tools import combine_balanced_friends, combine_balanced_pcc, combine_stream
 from prediction.predict_pcc import PCCTrainer
 from prediction_tools import init_indexes, stream_csv, write_predictions
-import IPython
 
 
 def run(single_path, pairwise_path, output_path, cluster_path, target):

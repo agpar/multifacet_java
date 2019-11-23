@@ -1,5 +1,7 @@
 import csv
 import numpy as np
+from multiprocessing import Queue, Process
+import json
 
 INDEXES = {
     'PCC': None,
@@ -11,7 +13,7 @@ def parse_pairwise_line(line):
     pcc_ind = INDEXES['PCC']
     if line[pcc_ind] == 'null':
         line[pcc_ind] = 0.0
-    return np.array(float(x) for x in line)
+    return [float(x) for x in line]
 
 
 def stream_csv(path):
@@ -41,6 +43,7 @@ def init_indexes(single_path, pairwise_path):
     INDEXES['PCC'] = full_header.index("PCC") - len(full_header) 
     INDEXES['areFriends'] = full_header.index("areFriends") - len(full_header)
     INDEXES['socialJacc'] = full_header.index("socialJacc") - len(full_header)
+
 
 def build_vect(pair, singleById):
     user1_vect = singleById[pair[0]]
@@ -154,3 +157,105 @@ def write_predictions(stream, clf, path):
                 f.write(f"{user1_id} {user2_id} {pred1}\n")
             if pred2:
                 f.write(f"{user2_id} {user1_id} {pred2}\n")
+
+
+def multiprocess_predict(single_path, pairwise_path, output_path, cluster_classifier):
+    actual_classifiers = sum([1 for i in cluster_classifier.classifiers if i is not None]) + 1
+    queues = [Queue() for i in range(min(max(actual_classifiers, 16), 16))]
+    procs = []
+    i = 0
+    line_filter = cluster_classifier.trainer.filter_target
+    if actual_classifiers > 1:
+        for clf in cluster_classifier.classifiers:
+            if clf is None:
+                continue
+            args = (queues[i], (single_path, pairwise_path, output_path), line_filter, clf)
+            p = Process(target=runner, args=args)
+            procs.append(p)
+            p.start()
+            i += 1
+    else:
+        for i in range(15):
+            args = (queues[i], (single_path, pairwise_path, output_path), line_filter, cluster_classifier.overall_classifier)
+            p = Process(target=runner, args=args)
+            procs.append(p)
+            p.start()
+
+    args = (queues[-1], (single_path, pairwise_path, output_path), line_filter, cluster_classifier.overall_classifier)
+    p = Process(target=runner, args=args)
+    procs.append(p)
+    p.start()
+
+    tot = 0
+    for line in combine_stream(single_path, pairwise_path):
+        user1_id = int(line[0])
+        user2_id = int(line[1])
+        user1_cluster_idx = cluster_classifier.user_clusters[user1_id]
+        if cluster_classifier.classifiers[user1_cluster_idx] is None:
+            user1_cluster_idx = len(queues) - 1
+        user2_cluster_idx = cluster_classifier.user_clusters[user2_id]
+        if cluster_classifier.classifiers[user2_cluster_idx] is None:
+            user2_cluster_idx = len(queues) - 1
+        if actual_classifiers > 1:
+            queues[user1_cluster_idx].put((user1_id, user2_id, np.array(line[2:])), block=False)
+            queues[user2_cluster_idx].put((user2_id, user1_id, np.array(line[2:])), block=False)
+        else:
+            queues[int(tot/2) % 15].put((user1_id, user2_id, np.array(line[2:])), block=False)
+            queues[int(tot/2) % 15].put((user2_id, user1_id, np.array(line[2:])), block=False)
+        tot += 2
+        if tot % 100 == 0:
+            print(tot)
+
+    for queue in queues:
+        # This needs to be fixed for the case when multiple workers are reading from same queue.
+        queue.put(None)
+
+    for p in procs:
+        p.join()
+
+
+def write_buffer(line_buffer, clf, target_filter, output_path):
+    predictions = clf.predict(np.array([target_filter(pair[2]) for pair in line_buffer]))
+    lines = []
+    for buf_line, prediction in zip(line_buffer, predictions):
+        if prediction:
+            truster, trustee, _ = buf_line
+            lines.append(f"{truster} {trustee} {prediction}\n")
+    with open(output_path, 'a') as f:
+        f.writelines(lines)
+
+
+def runner(queue: Queue, paths, target_filter, clf):
+    single_path, pairwise_path, output_path = paths
+    init_indexes(single_path, pairwise_path)
+    BUFFER_LEN = 10_000
+    line_buffer = []
+    val = queue.get()
+    while val is not None:
+        line_buffer.append(val)
+        if len(line_buffer) > BUFFER_LEN:
+            write_buffer(line_buffer, clf, target_filter, output_path)
+            line_buffer = []
+        val = queue.get()
+    write_buffer(line_buffer, clf, target_filter, output_path)
+
+
+def run_predict_proc(single_path, pairwise_path, output_path, target_filter, clf, cluster):
+    BUFFER_LEN = 10_000
+    line_buffer = []
+    with open(output_path, 'a') as f:
+        for line in combine_stream(single_path, pairwise_path):
+            user1_id = int(line[0])
+            user2_id = int(line[1])
+            if user1_id in cluster:
+                line_buffer.append((user1_id, user2_id, line))
+            if user2_id in cluster:
+                line_buffer.append((user2_id, user1_id, line))
+
+            if len(line_buffer) > BUFFER_LEN:
+                # do predictions and write out the buffer
+                predictions = clf.predict(np.array([target_filter(pair[2]) for pair in line_buffer]))
+                for buf_line, prediction in zip(line_buffer, predictions):
+                    truster, trustee, _ = buf_line
+                    f.write(f"{truster} {trustee} {prediction}\n")
+                line_buffer = []

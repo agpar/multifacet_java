@@ -41,6 +41,9 @@ def read_all():
             relevant_users.add(key)
             relevant_reviews.extend(reviews_by_user[key])
 
+    print(f"{len(relevant_users)} relevant users")
+    print(f"{len(relevant_reviews)} relevant reviews")
+
     # Load the user-to-user trust links for relevant users.
     trust_links = []
     with open(USER_REVIEW_FILE, 'r') as f:
