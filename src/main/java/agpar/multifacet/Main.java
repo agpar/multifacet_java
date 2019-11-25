@@ -19,10 +19,13 @@ import java.util.concurrent.TimeUnit;
 
 import static java.lang.System.exit;
 
+enum DATA_SOURCE {YELP, EPINIONS}
+
 public class Main {
 
     private static int NUM_EXPERIMENTS = Runtime.getRuntime().availableProcessors();
     private static boolean GENERATE_PAIRS = false;
+    private static DATA_SOURCE SOURCE = DATA_SOURCE.YELP;
 
     public static void main(String[] args) throws Exception {
         if(args.length == 0) {
@@ -48,7 +51,11 @@ public class Main {
                     System.exit(1);
                 }
                 System.out.printf("Generating pairs and outputting to %s\n", files.get(0));
-                GenerateAllPairwise.generateData(files.get(0), 500_000_000, false);
+                if (SOURCE == DATA_SOURCE.YELP) {
+                    GenerateAllPairwise.generateYelpData(files.get(0), 500_000_000, false);
+                } else if (SOURCE == DATA_SOURCE.EPINIONS) {
+                    GenerateAllPairwise.generateEpinionsData(files.get(0), false);
+                }
                 System.exit(0);
             }
 
@@ -70,6 +77,9 @@ public class Main {
             }
             else if (flag.startsWith("--genPairs")) {
                 GENERATE_PAIRS = true;
+            }
+            else if (flag.startsWith("--epinions")) {
+                SOURCE = DATA_SOURCE.EPINIONS;
             }
             else {
                 System.out.printf("Unknown flag %s\n", flag);

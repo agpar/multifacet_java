@@ -92,7 +92,6 @@ public class DataReader {
         return users;
     }
 
-
     private HashMap<Integer, HashSet<Integer>> loadTrustLinks() {
         BufferedReader reader;
         HashMap<Integer, HashSet<Integer>> friends = new HashMap<>();
