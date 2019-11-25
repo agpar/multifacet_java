@@ -23,10 +23,10 @@ public class EpinionsDataReader {
         this.dataDir = dataDir;
         this.contentFile = Paths.get(dataDir, "mc.txt");
         this.trustFile = Paths.get(dataDir, "user_rating.txt");
-        this.reviewFile = Paths.get(dataDir, "rating.txt");
+        this.reviewFile = Paths.get(dataDir, "rating_train.txt");
     }
 
-    public ReviewsById loadReviews() {
+    public ReviewsById loadTrainReviews() {
         BufferedReader reader;
         ReviewsById reviews = new ReviewsById();
         int reviewId = 0;
@@ -107,8 +107,7 @@ public class EpinionsDataReader {
                 if (trustPolarity > 0) {
                     int trusterId = Integer.parseInt(splitLine[0]);
                     int trusteeId = Integer.parseInt(splitLine[1]);
-                    if (friends.get(trusterId) == null)
-                        friends.put(trusteeId, new HashSet<>());
+                    friends.computeIfAbsent(trusterId, k -> new HashSet<>());
                     friends.get(trusterId).add(trusteeId);
                 }
                 line = reader.readLine();
@@ -127,4 +126,6 @@ public class EpinionsDataReader {
         assert(splitHeader[2].equals("rating"));
         assert(splitHeader[3].equals("date"));
     }
+
+
 }

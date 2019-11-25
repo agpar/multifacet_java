@@ -12,6 +12,10 @@ public class EpinionsData extends DataSet {
 
     @Override
     public void load(int start, int stop) {
-
+        System.out.println("Loading Users");
+        this.usersById = reader.loadUsers();
+        System.out.println("Loading Reviews");
+        this.reviewsByItemId = reader.loadTrainReviews();
+        System.out.println("Loading Businesses");
     }
 }

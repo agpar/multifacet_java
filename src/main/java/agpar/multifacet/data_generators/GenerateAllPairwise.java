@@ -31,6 +31,9 @@ public class GenerateAllPairwise {
     }
 
     public static void generateEpinionsData(String path, boolean printProgress) {
+        DataSet ed = DataSet.getInstance();
+        ed.load(0, 1000000000);
+
 
     }
 }

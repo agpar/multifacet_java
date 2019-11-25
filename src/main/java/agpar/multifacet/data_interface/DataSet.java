@@ -6,6 +6,7 @@ import agpar.multifacet.data_interface.collections.ReviewsById;
 import agpar.multifacet.data_interface.collections.UsersById;
 import agpar.multifacet.data_interface.data_classes.Business;
 import agpar.multifacet.data_interface.data_classes.User;
+import agpar.multifacet.data_interface.epinions.EpinionsData;
 import agpar.multifacet.data_interface.yelp.YelpDataReader;
 import agpar.multifacet.data_interface.yelp.YelpData;
 
@@ -31,7 +32,7 @@ public abstract class DataSet {
                 instance = new YelpData();
                 break;
             case EPINIONS:
-                instance = null;
+                instance = new EpinionsData();
                 break;
             default:
                 System.out.println("Data set not yet implemented");
