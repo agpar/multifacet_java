@@ -1,9 +1,9 @@
 package agpar.multifacet.data_interface.epinions;
 
-import agpar.multifacet.data_interface.yelp.collections.ReviewsById;
-import agpar.multifacet.data_interface.yelp.data_classes.Review;
-import agpar.multifacet.data_interface.yelp.collections.UsersById;
-import agpar.multifacet.data_interface.yelp.data_classes.User;
+import agpar.multifacet.data_interface.collections.ReviewsById;
+import agpar.multifacet.data_interface.data_classes.Review;
+import agpar.multifacet.data_interface.collections.UsersById;
+import agpar.multifacet.data_interface.data_classes.User;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

@@ -1,6 +1,6 @@
-package agpar.multifacet.data_interface.yelp.data_classes;
+package agpar.multifacet.data_interface.data_classes;
 
-import agpar.multifacet.data_interface.yelp.collections.ReviewList;
+import agpar.multifacet.data_interface.collections.ReviewList;
 import com.google.gson.JsonObject;
 
 import java.util.*;

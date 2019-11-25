@@ -1,6 +1,6 @@
 package agpar.multifacet.pairwise.result_calculators;
 
-import agpar.multifacet.data_interface.yelp.data_classes.User;
+import agpar.multifacet.data_interface.data_classes.User;
 import agpar.multifacet.pairwise.PairwiseMetrics;
 import agpar.multifacet.pairwise.PairwiseResult;
 import agpar.multifacet.pairwise.review_avg_calculators.ReviewAvgCalculator;

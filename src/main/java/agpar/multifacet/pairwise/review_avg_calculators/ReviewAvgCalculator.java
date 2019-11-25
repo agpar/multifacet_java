@@ -1,8 +1,8 @@
 package agpar.multifacet.pairwise.review_avg_calculators;
 
-import agpar.multifacet.data_interface.yelp.data_classes.Review;
-import agpar.multifacet.data_interface.yelp.collections.ReviewsById;
-import agpar.multifacet.data_interface.yelp.data_classes.User;
+import agpar.multifacet.data_interface.data_classes.Review;
+import agpar.multifacet.data_interface.collections.ReviewsById;
+import agpar.multifacet.data_interface.data_classes.User;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;

@@ -2,10 +2,10 @@ package agpar.multifacet.recommend;
 
 import agpar.multifacet.Settings;
 import agpar.multifacet.data_interface.yelp.YelpData;
-import agpar.multifacet.data_interface.yelp.collections.ReviewsById;
-import agpar.multifacet.data_interface.yelp.data_classes.Review;
-import agpar.multifacet.data_interface.yelp.data_classes.User;
-import agpar.multifacet.data_interface.yelp.io.DataReader;
+import agpar.multifacet.data_interface.collections.ReviewsById;
+import agpar.multifacet.data_interface.data_classes.Review;
+import agpar.multifacet.data_interface.data_classes.User;
+import agpar.multifacet.data_interface.yelp.DataReader;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

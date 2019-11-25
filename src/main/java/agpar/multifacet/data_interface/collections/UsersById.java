@@ -1,6 +1,6 @@
-package agpar.multifacet.data_interface.yelp.collections;
+package agpar.multifacet.data_interface.collections;
 
-import agpar.multifacet.data_interface.yelp.data_classes.User;
+import agpar.multifacet.data_interface.data_classes.User;
 
 import java.util.Collection;
 import java.util.HashMap;

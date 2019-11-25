@@ -1,4 +1,4 @@
-package agpar.multifacet.data_interface.yelp.io;
+package agpar.multifacet.data_interface.yelp;
 
 import java.util.HashMap;
 

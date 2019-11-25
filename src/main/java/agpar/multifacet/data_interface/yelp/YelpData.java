@@ -1,12 +1,11 @@
 package agpar.multifacet.data_interface.yelp;
 
 import agpar.multifacet.Settings;
-import agpar.multifacet.data_interface.yelp.data_classes.Business;
-import agpar.multifacet.data_interface.yelp.io.DataReader;
-import agpar.multifacet.data_interface.yelp.collections.ReviewsById;
-import agpar.multifacet.data_interface.yelp.collections.UsersById;
-import agpar.multifacet.data_interface.yelp.data_classes.Review;
-import agpar.multifacet.data_interface.yelp.data_classes.User;
+import agpar.multifacet.data_interface.data_classes.Business;
+import agpar.multifacet.data_interface.collections.ReviewsById;
+import agpar.multifacet.data_interface.collections.UsersById;
+import agpar.multifacet.data_interface.data_classes.Review;
+import agpar.multifacet.data_interface.data_classes.User;
 
 import java.util.Collection;
 import java.util.HashMap;
