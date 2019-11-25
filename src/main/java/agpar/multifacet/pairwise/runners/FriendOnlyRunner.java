@@ -1,6 +1,6 @@
 package agpar.multifacet.pairwise.runners;
 
-import agpar.multifacet.data_interface.yelp.YelpData;
+import agpar.multifacet.data_interface.DataSet;
 import agpar.multifacet.data_interface.collections.UsersById;
 import agpar.multifacet.data_interface.data_classes.User;
 import agpar.multifacet.pairwise.PairwiseResult;
@@ -31,7 +31,7 @@ public class FriendOnlyRunner implements Runnable {
 
     @Override
     public void run() {
-        UsersById usersById = YelpData.getInstance().getUsersById();
+        UsersById usersById = DataSet.getInstance().getUsersById();
         User outerUser =  this.users.get(this.outerIndex);
         List<PairwiseResult> results = new ArrayList<>(users.size() - (outerIndex + 1));
         for(int friendId : outerUser.getFriendsInt()) {

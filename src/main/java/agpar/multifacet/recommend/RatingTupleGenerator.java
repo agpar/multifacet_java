@@ -1,7 +1,7 @@
 package agpar.multifacet.recommend;
 
 import agpar.multifacet.Settings;
-import agpar.multifacet.data_interface.yelp.YelpData;
+import agpar.multifacet.data_interface.DataSet;
 import agpar.multifacet.data_interface.collections.ReviewsById;
 import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.data_classes.User;
@@ -19,7 +19,7 @@ import static java.lang.System.exit;
 public class RatingTupleGenerator {
 
     public static void GenerateTrainReviewTuples(int userCount, String outputPath) {
-        YelpData yd = YelpData.getInstance();
+        DataSet yd = DataSet.getInstance();
         yd.load(0, userCount);
         ArrayList<Review> reviewsToWrite = new ArrayList<>();
 

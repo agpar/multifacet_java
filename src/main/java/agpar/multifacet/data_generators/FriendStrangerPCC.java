@@ -1,6 +1,6 @@
 package agpar.multifacet.data_generators;
 
-import agpar.multifacet.data_interface.yelp.YelpData;
+import agpar.multifacet.data_interface.DataSet;
 import agpar.multifacet.data_interface.data_classes.User;
 import agpar.multifacet.pairwise.runners.PairwiseCalculator;
 import agpar.multifacet.pairwise.PairwiseResult;
@@ -20,7 +20,7 @@ import static java.lang.System.exit;
 public class FriendStrangerPCC {
 
     public static void generateData(String path, int userCount) {
-        YelpData yd = YelpData.getInstance();
+        DataSet yd = DataSet.getInstance();
         yd.load(0, userCount);
         System.out.println("Done loading.");
 

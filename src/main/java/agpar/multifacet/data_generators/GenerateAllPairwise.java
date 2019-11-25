@@ -1,7 +1,7 @@
 package agpar.multifacet.data_generators;
 
 
-import agpar.multifacet.data_interface.yelp.YelpData;
+import agpar.multifacet.data_interface.DataSet;
 import agpar.multifacet.data_interface.data_classes.User;
 import agpar.multifacet.pairwise.review_avg_calculators.ItemReviewAvgCalculator;
 import agpar.multifacet.pairwise.runners.PairwiseCalculator;
@@ -15,7 +15,7 @@ import java.util.List;
 
 public class GenerateAllPairwise {
     public static void generateYelpData(String path, int userCount, boolean printProgress) {
-        YelpData yd = YelpData.getInstance();
+        DataSet yd = DataSet.getInstance();
         yd.load(0, userCount);
 
         ReviewAvgCalculator avgCalculator = new ItemReviewAvgCalculator(yd.getReviewsByItemId());

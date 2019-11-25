@@ -1,6 +1,7 @@
 package agpar.multifacet;
 
 import agpar.multifacet.data_generators.GenerateAllPairwise;
+import agpar.multifacet.data_interface.DATA_SOURCE;
 import agpar.multifacet.experiments.DescriptionLoader;
 import agpar.multifacet.experiments.ExperimentDescription;
 import agpar.multifacet.experiments.ExperimentRunner;
@@ -19,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 
 import static java.lang.System.exit;
 
-enum DATA_SOURCE {YELP, EPINIONS}
 
 public class Main {
 
@@ -151,5 +151,9 @@ public class Main {
             // clear social data matrix before moving to next set of experiments
             SharedDataModel.resetSocial();
         }
+    }
+
+    public static DATA_SOURCE get_source() {
+        return Main.SOURCE;
     }
 }

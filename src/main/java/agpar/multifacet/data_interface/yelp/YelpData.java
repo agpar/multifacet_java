@@ -1,32 +1,18 @@
 package agpar.multifacet.data_interface.yelp;
 
 import agpar.multifacet.Settings;
+import agpar.multifacet.data_interface.DataSet;
 import agpar.multifacet.data_interface.data_classes.Business;
 import agpar.multifacet.data_interface.collections.ReviewsById;
-import agpar.multifacet.data_interface.collections.UsersById;
 import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.data_classes.User;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
-public class YelpData {
-    private UsersById usersById;
-    private ReviewsById reviewsByItemId;
-    private HashMap<Integer, Business> businesses;
-    private DataReader reader;
-    private static YelpData instance;
+public class YelpData extends DataSet {
 
-    private YelpData() {
+    public YelpData() {
         this.reader = new DataReader(Settings.YELP_DATA_DIR());
-    }
-
-    public static YelpData getInstance() {
-        if(YelpData.instance == null) {
-            YelpData.instance = new YelpData();
-        }
-        return YelpData.instance;
     }
 
     public void load(int start, int stop) {
@@ -57,17 +43,5 @@ public class YelpData {
             }
         }
 
-    }
-
-    public ReviewsById getReviewsByItemId() {
-        return this.reviewsByItemId;
-    }
-
-    public Collection<User> getUsers() {
-        return this.usersById.values();
-    }
-
-    public UsersById getUsersById() {
-        return this.usersById;
     }
 }
