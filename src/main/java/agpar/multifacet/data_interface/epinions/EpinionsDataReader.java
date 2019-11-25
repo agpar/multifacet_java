@@ -80,7 +80,7 @@ public class EpinionsDataReader {
                     users.put(new User(
                             "null",
                             userId,
-                            friends.get(userId)
+                            friends.getOrDefault(userId, new HashSet<Integer>)
                     ));
                 }
                 line = reader.readLine();
