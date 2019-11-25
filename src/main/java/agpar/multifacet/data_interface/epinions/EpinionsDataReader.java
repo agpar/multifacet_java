@@ -76,14 +76,13 @@ public class EpinionsDataReader {
             while (line != null) {
                 String[] splitLine = line.split(",");
                 int userId = Integer.parseInt(splitLine[1]);
-                if (users.containsKey(userId)) {
-                    continue;
+                if (!users.containsKey(userId)) {
+                    users.put(new User(
+                            "null",
+                            userId,
+                            friends.get(userId)
+                    ));
                 }
-                users.put(new User(
-                        "null",
-                        userId,
-                        friends.get(userId)
-                ));
                 line = reader.readLine();
             }
         } catch(IOException e) {
