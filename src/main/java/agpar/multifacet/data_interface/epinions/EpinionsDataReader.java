@@ -129,6 +129,7 @@ public class EpinionsDataReader {
             while (line != null) {
                 String[] splitLine = line.split(",");
                 Business business = new Business(Integer.parseInt(splitLine[0]), new HashSet<Integer>());
+                businesses.put(business.itemId, business);
                 line = reader.readLine();
             }
         } catch (IOException e) {
