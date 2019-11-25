@@ -3,8 +3,8 @@ package agpar.multifacet.pairwise.runners;
 
 import agpar.multifacet.data_interface.DataSet;
 import agpar.multifacet.data_interface.data_classes.User;
+import agpar.multifacet.pairwise.result_calculators.RelevantConnectionsCalculator;
 import agpar.multifacet.pairwise.review_avg_calculators.ItemReviewAvgCalculator;
-import agpar.multifacet.pairwise.runners.PairwiseCalculator;
 import agpar.multifacet.pairwise.io.SynchronizedAppendResultWriter;
 import agpar.multifacet.pairwise.result_calculators.AllResultsCalculator;
 import agpar.multifacet.pairwise.result_calculators.ResultCalculator;
@@ -19,7 +19,7 @@ public class GenerateAllPairwise {
         data.load(0, userCount);
 
         ReviewAvgCalculator avgCalculator = new ItemReviewAvgCalculator(data.getReviewsByItemId());
-        ResultCalculator resultCalculator = new AllResultsCalculator(avgCalculator, 3);
+        ResultCalculator resultCalculator = new RelevantConnectionsCalculator(avgCalculator, 3);
         SynchronizedAppendResultWriter writer = new SynchronizedAppendResultWriter(path);
         List<User> users = new ArrayList<User>(data.getUsers());
 
