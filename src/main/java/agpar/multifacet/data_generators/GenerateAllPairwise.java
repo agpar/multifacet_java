@@ -17,7 +17,6 @@ public class GenerateAllPairwise {
     public static void generateYelpData(String path, int userCount, boolean printProgress) {
         YelpData yd = YelpData.getInstance();
         yd.load(0, userCount);
-        System.out.println("Done loading.");
 
         ReviewAvgCalculator avgCalculator = new ItemReviewAvgCalculator(yd.getReviewsByItemId());
         ResultCalculator resultCalculator = new AllResultsCalculator(avgCalculator, 3);
