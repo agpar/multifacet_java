@@ -6,7 +6,7 @@ import agpar.multifacet.data_interface.collections.ReviewsById;
 import agpar.multifacet.data_interface.collections.UsersById;
 import agpar.multifacet.data_interface.data_classes.Business;
 import agpar.multifacet.data_interface.data_classes.User;
-import agpar.multifacet.data_interface.yelp.DataReader;
+import agpar.multifacet.data_interface.yelp.YelpDataReader;
 import agpar.multifacet.data_interface.yelp.YelpData;
 
 import java.util.Collection;
@@ -16,7 +16,7 @@ public abstract class DataSet {
     protected UsersById usersById;
     protected ReviewsById reviewsByItemId;
     protected HashMap<Integer, Business> businesses;
-    protected DataReader reader;
+    protected YelpDataReader reader;
     private static DataSet instance;
 
     public abstract void load(int start, int stop);

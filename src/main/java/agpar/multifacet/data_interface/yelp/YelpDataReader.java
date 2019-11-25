@@ -15,7 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-public class DataReader {
+public class YelpDataReader {
     private String dataDir;
     private Path userFile;
     private Path reviewTrainFile;
@@ -24,7 +24,7 @@ public class DataReader {
     private IdStringToIntMap categoryIdMap;
 
 
-    public DataReader(String dataDir) {
+    public YelpDataReader(String dataDir) {
         this.dataDir = dataDir;
         this.userFile = Paths.get(dataDir, "user.json");
         this.reviewTrainFile = Paths.get(dataDir, "review_train.json");

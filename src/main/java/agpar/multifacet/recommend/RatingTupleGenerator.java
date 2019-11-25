@@ -5,7 +5,7 @@ import agpar.multifacet.data_interface.DataSet;
 import agpar.multifacet.data_interface.collections.ReviewsById;
 import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.data_classes.User;
-import agpar.multifacet.data_interface.yelp.DataReader;
+import agpar.multifacet.data_interface.yelp.YelpDataReader;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -31,7 +31,7 @@ public class RatingTupleGenerator {
         writeOut(reviewsToWrite, outputPath);
     }
     public static void GenerateTestReviewTuples(int userCount, String outputFile) {
-        DataReader reader = new DataReader(Settings.YELP_DATA_DIR());
+        YelpDataReader reader = new YelpDataReader(Settings.YELP_DATA_DIR());
         ReviewsById reviews = reader.loadTestReviews();
         ArrayList<Review> reviewsToWrite = new ArrayList<>();
         for (Collection<Review> reviewList : reviews.values()) {

@@ -13,13 +13,13 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class DataReader {
+public class EpinionsDataReader {
     private String dataDir;
     private Path contentFile;
     private Path trustFile;
     private Path reviewFile;
 
-    public DataReader(String dataDir) {
+    public EpinionsDataReader(String dataDir) {
         this.dataDir = dataDir;
         this.contentFile = Paths.get(dataDir, "mc.txt");
         this.trustFile = Paths.get(dataDir, "user_rating.txt");

@@ -12,7 +12,7 @@ import java.util.List;
 public class YelpData extends DataSet {
 
     public YelpData() {
-        this.reader = new DataReader(Settings.YELP_DATA_DIR());
+        this.reader = new YelpDataReader(Settings.YELP_DATA_DIR());
     }
 
     public void load(int start, int stop) {
