@@ -11,30 +11,27 @@ from collections import defaultdict, Counter
 import matplotlib.pyplot as plt
 
 """
-<<<<<<< HEAD:src/main/python/filter_yelp.py
-Filter files, only retaining users who have reviewed at least 20 restaurant
-or food related reviews. Also dedupes reviews (retaining only the latest
-review a user left for an item.
-=======
 Filter users. Only look at users who have rated at least MIN_REVIEWS restaurants. Pick
-NUM_USERS randomly from the set.
->>>>>>> 78412c5715fbe9719af29d4e71ff4ad3e02fb207:src/main/python/filter_dataset.py
+NUM_USERS randomly from the set. Reviews are deduped, using only the latest review for
+each item for each user.
 
-Splits into train/test set.
+Splits reviews into train/test set using leave k out strategy.
  
 Maps each user id to a integer, which is also used as the index to refer to that
 user in any matrix in later processing.
 """
 
-MIN_REVIEWS = 5
-LEAVE_OUT = 2
+MIN_USER_REVIEWS = 10
+MIN_ITEM_REVIEWS = 10
+LEAVE_OUT = 1
 NUM_USERS = 30_000
-BUSINESS_FILE = path.join(settings.DATA_DIR, 'business.json')
-REVIEW_FILE = path.join(settings.DATA_DIR, 'review.json')
-USER_FILE = path.join(settings.DATA_DIR, 'user.json')
-TIP_FILE = path.join(settings.DATA_DIR, 'tip.json')
+BUSINESS_FILE = path.join(settings.YELP_DATA_DIR, 'business.json')
+REVIEW_FILE = path.join(settings.YELP_DATA_DIR, 'review.json')
+USER_FILE = path.join(settings.YELP_DATA_DIR, 'user.json')
+TIP_FILE = path.join(settings.YELP_DATA_DIR, 'tip.json')
 
-def read_all(min_reviews=MIN_REVIEWS):
+
+def read_all(min_user_reviews=MIN_USER_REVIEWS):
     def business_filter(business):
         if not business.get('categories'):
             return None
@@ -53,6 +50,8 @@ def read_all(min_reviews=MIN_REVIEWS):
         else:
             return None
     reviews_by_userid, _ = read_reviews(REVIEW_FILE, filter=review_filter)
+    for user in reviews_by_userid:
+        reviews_by_userid[user] = UserReviews.linear_dupe_removal(reviews_by_userid[user])
 
     def tip_filter(tip):
         if tip['business_id'] in businesses:
@@ -63,7 +62,7 @@ def read_all(min_reviews=MIN_REVIEWS):
     tips_by_userid = read_tips(TIP_FILE, filter=tip_filter)
 
     def user_filter(user):
-        if len(reviews_by_userid.get(user['user_id'], [])) >= min_reviews:
+        if len(reviews_by_userid.get(user['user_id'], [])) >= min_user_reviews:
             return user
         else:
             return None
@@ -86,11 +85,9 @@ def choose_sample(users_by_id, reviews_by_userid):
 
 
 def write_stats(nat_users, sampled_users, reviews):
-    stats_file = path.join(settings.DATA_DIR, 'sample_stat.json')
+    stats_file = path.join(settings.YELP_DATA_DIR, 'sample_stat.json')
     nat_review_lens = [len(reviews[user]) for user in nat_users]
     sam_review_lens = [len(reviews[user]) for user in sampled_users]
-    #nat_review_scores = [[r['stars'] for r in user_reviews] for user in nat_users for user_reviews in reviews_by_userid[user]]
-    #sam_review_scores = [[r['stars'] for r in user_reviews] for user in sampled_users for user_reviews in reviews_by_userid[user]]
     stats = {}
     stats['nat_mean_review_len'] = float(np.mean(nat_review_lens))
     stats['nat_median_review_len'] = float(np.median(nat_review_lens))
@@ -100,9 +97,6 @@ def write_stats(nat_users, sampled_users, reviews):
     stats['sam_median_review_len'] = float(np.median(sam_review_lens))
     stats['sam_min_review_len'] = float(np.min(sam_review_lens))
     stats['sam_max_review_len'] = float(np.max(sam_review_lens))
-
-    #stats['sam_review_scores'] = sam_review_scores
-    #stats['nat_review_scores'] = nat_review_scores
 
     with open(stats_file, 'w') as f:
         json.dump(stats, f)
@@ -124,11 +118,11 @@ def split_reviews(selected_users, reviews_by_user_id):
 
 
 def write_filtered(users_by_id, review_train, review_test, tips_by_userid, businesses):
-    business_filtered = path.join(settings.DATA_DIR, 'business_filtered.json')
-    review_train_filtered = path.join(settings.DATA_DIR, 'review_train_filtered.json')
-    review_test_filtered = path.join(settings.DATA_DIR, 'review_test_filtered.json')
-    user_filtered = path.join(settings.DATA_DIR, 'user_filtered.json')
-    tip_filtered = path.join(settings.DATA_DIR, 'tip_filtered.json')
+    business_filtered = path.join(settings.YELP_DATA_DIR, 'business_filtered.json')
+    review_train_filtered = path.join(settings.YELP_DATA_DIR, 'review_train_filtered.json')
+    review_test_filtered = path.join(settings.YELP_DATA_DIR, 'review_test_filtered.json')
+    user_filtered = path.join(settings.YELP_DATA_DIR, 'user_filtered.json')
+    tip_filtered = path.join(settings.YELP_DATA_DIR, 'tip_filtered.json')
 
     businessIdMap = IDIndexMap()
     reviewIdMap = IDIndexMap()
