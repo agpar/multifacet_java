@@ -1,7 +1,7 @@
 package agpar.multifacet.recommend;
 
 import agpar.multifacet.Settings;
-import agpar.multifacet.YelpData;
+import agpar.multifacet.data_interface.yelp.YelpData;
 import agpar.multifacet.data_interface.yelp.collections.ReviewsById;
 import agpar.multifacet.data_interface.yelp.data_classes.Review;
 import agpar.multifacet.data_interface.yelp.data_classes.User;

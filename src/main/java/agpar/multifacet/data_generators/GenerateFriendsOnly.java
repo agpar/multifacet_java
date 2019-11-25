@@ -1,6 +1,6 @@
 package agpar.multifacet.data_generators;
 
-import agpar.multifacet.YelpData;
+import agpar.multifacet.data_interface.yelp.YelpData;
 import agpar.multifacet.data_interface.yelp.data_classes.User;
 import agpar.multifacet.pairwise.result_calculators.AllResultsCalculator;
 import agpar.multifacet.pairwise.runners.FriendOnlyCalculator;

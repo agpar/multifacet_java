@@ -1,5 +1,6 @@
-package agpar.multifacet;
+package agpar.multifacet.data_interface.yelp;
 
+import agpar.multifacet.Settings;
 import agpar.multifacet.data_interface.yelp.data_classes.Business;
 import agpar.multifacet.data_interface.yelp.io.DataReader;
 import agpar.multifacet.data_interface.yelp.collections.ReviewsById;
