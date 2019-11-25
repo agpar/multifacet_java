@@ -1,6 +1,6 @@
 package agpar.multifacet;
 
-import agpar.multifacet.data_generators.GenerateAllPairwise;
+import agpar.multifacet.pairwise.runners.GenerateAllPairwise;
 import agpar.multifacet.data_interface.DATA_SOURCE;
 import agpar.multifacet.experiments.DescriptionLoader;
 import agpar.multifacet.experiments.ExperimentDescription;

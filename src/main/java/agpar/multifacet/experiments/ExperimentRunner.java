@@ -1,7 +1,6 @@
 package agpar.multifacet.experiments;
 
 import agpar.multifacet.Settings;
-import agpar.multifacet.data_generators.GenerateAllPairwise;
 import agpar.multifacet.pairwise.io.ResultWriter;
 import agpar.multifacet.recommend.RatingTupleGenerator;
 import agpar.multifacet.recommend.RecommenderTester;
@@ -11,8 +10,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-
-import static java.lang.System.exit;
 
 /*
 Runs an entire experiment from beginning to end.

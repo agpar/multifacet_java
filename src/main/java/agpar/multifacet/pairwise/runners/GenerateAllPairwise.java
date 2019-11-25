@@ -1,4 +1,4 @@
-package agpar.multifacet.data_generators;
+package agpar.multifacet.pairwise.runners;
 
 
 import agpar.multifacet.data_interface.DataSet;
