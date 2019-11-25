@@ -51,13 +51,8 @@ public class Main {
                     System.exit(1);
                 }
                 System.out.printf("Generating pairs and outputting to %s\n", files.get(0));
-                if (SOURCE == DATA_SOURCE.YELP) {
-                    System.out.println("Generating pairwise data for YELP");
-                    GenerateAllPairwise.generateYelpData(files.get(0), 500_000_000, false);
-                } else if (SOURCE == DATA_SOURCE.EPINIONS) {
-                    System.out.println("Generating pairwise data for EPINIONS");
-                    GenerateAllPairwise.generateEpinionsData(files.get(0), false);
-                }
+                System.out.printf("Using %s data.\n", SOURCE.toString());
+                GenerateAllPairwise.generateData(files.get(0), 500_000_000, false);
                 System.exit(0);
             }
 

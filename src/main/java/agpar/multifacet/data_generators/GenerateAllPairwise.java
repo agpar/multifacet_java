@@ -14,26 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GenerateAllPairwise {
-    public static void generateYelpData(String path, int userCount, boolean printProgress) {
-        DataSet yd = DataSet.getInstance();
-        yd.load(0, userCount);
+    public static void generateData(String path, int userCount, boolean printProgress) {
+        DataSet data = DataSet.getInstance();
+        data.load(0, userCount);
 
-        ReviewAvgCalculator avgCalculator = new ItemReviewAvgCalculator(yd.getReviewsByItemId());
+        ReviewAvgCalculator avgCalculator = new ItemReviewAvgCalculator(data.getReviewsByItemId());
         ResultCalculator resultCalculator = new AllResultsCalculator(avgCalculator, 3);
         SynchronizedAppendResultWriter writer = new SynchronizedAppendResultWriter(path);
-        List<User> users = new ArrayList<User>(yd.getUsers());
+        List<User> users = new ArrayList<User>(data.getUsers());
 
         PairwiseCalculator.calc(users, resultCalculator, writer, printProgress);
-    }
-
-    public static void generateYelpData(String path, int userCount) {
-        GenerateAllPairwise.generateYelpData(path, userCount, true);
-    }
-
-    public static void generateEpinionsData(String path, boolean printProgress) {
-        DataSet ed = DataSet.getInstance();
-        ed.load(0, 1000000000);
-
-
     }
 }

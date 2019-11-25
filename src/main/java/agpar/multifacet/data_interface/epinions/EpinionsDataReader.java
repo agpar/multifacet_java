@@ -1,6 +1,7 @@
 package agpar.multifacet.data_interface.epinions;
 
 import agpar.multifacet.data_interface.collections.ReviewsById;
+import agpar.multifacet.data_interface.data_classes.Business;
 import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.collections.UsersById;
 import agpar.multifacet.data_interface.data_classes.User;
@@ -117,6 +118,25 @@ public class EpinionsDataReader {
             System.exit(1);
         }
         return friends;
+    }
+
+    public HashMap<Integer, Business> loadBusinesses() {
+        BufferedReader reader;
+        HashMap<Integer, Business> businesses = new HashMap<>();
+        try {
+            reader = new BufferedReader(new FileReader(this.reviewFile.toFile()));
+            String header = reader.readLine();
+            String line = reader.readLine();
+            while (line != null) {
+                String[] splitLine = line.split(",");
+                Business business = new Business(Integer.parseInt(splitLine[0]), new HashSet<Integer>());
+                line = reader.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        return businesses;
     }
 
     private void verifyTrustHeader(String header) {

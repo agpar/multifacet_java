@@ -17,5 +17,6 @@ public class EpinionsData extends DataSet {
         System.out.println("Loading Reviews");
         this.reviewsByItemId = reader.loadTrainReviews();
         System.out.println("Loading Businesses");
+        this.businesses = reader.loadBusinesses();
     }
 }
