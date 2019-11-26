@@ -2,6 +2,7 @@ package agpar.multifacet.single_features;
 
 import agpar.multifacet.data_interface.DataSet;
 import agpar.multifacet.data_interface.data_classes.User;
+import agpar.multifacet.data_interface.epinions.EpinionsUser;
 
 import java.io.*;
 import java.util.Arrays;
@@ -20,9 +21,12 @@ public class GenerateAllSingle {
 
         for(User user : ds.getUsers()) {
             // Count outgoing trust links for users.
+            EpinionsUser epUser = (EpinionsUser) user;
             HashMap<String, Integer> trusterFeats = usersToFeatures.getOrDefault(user.getUserIdInt(), new HashMap<>());
             trusterFeats.put("outgoingTrust", user.getFriendsInt().size());
+            trusterFeats.put("outgoingDistrust", epUser.getDistrustedUsers().size());
             trusterFeats.put("incomingTrust", 0);
+            trusterFeats.put("incomingDistrust", 0);
             trusterFeats.put("userId", user.getUserIdInt());
             usersToFeatures.put(user.getUserIdInt(), trusterFeats);
 
@@ -31,6 +35,14 @@ public class GenerateAllSingle {
                 HashMap<String, Integer> trusteeFeats = usersToFeatures.getOrDefault(trusteeId, new HashMap<>());
                 int currentIncoming = trusteeFeats.getOrDefault("incomingTrust", 0);
                 trusteeFeats.put("incomingTrust", currentIncoming + 1);
+                usersToFeatures.put(trusteeId, trusteeFeats);
+            }
+
+            // Increment incoming distrust links for all enemies
+            for (Integer trusteeId : epUser.getDistrustedUsers()) {
+                HashMap<String, Integer> trusteeFeats = usersToFeatures.getOrDefault(trusteeId, new HashMap<>());
+                int currentIncoming = trusteeFeats.getOrDefault("incomingDistrust", 0);
+                trusteeFeats.put("incomingDistrust", currentIncoming + 1);
                 usersToFeatures.put(trusteeId, trusteeFeats);
             }
         }

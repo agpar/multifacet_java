@@ -66,7 +66,9 @@ public class EpinionsDataReader {
     public UsersById loadUsers() {
         BufferedReader reader;
         UsersById users = new UsersById();
-        HashMap<Integer, HashSet<Integer>> friends = loadTrustLinks();
+        HashMap<String, HashMap<Integer, HashSet<Integer>>> trustLinks = loadTrustLinks();
+        HashMap<Integer, HashSet<Integer>> friends = trustLinks.get("friends");
+        HashMap<Integer, HashSet<Integer>> enemies = trustLinks.get("enemies");
 
         try {
             reader = new BufferedReader(new FileReader(this.reviewFile.toString()));
@@ -77,10 +79,11 @@ public class EpinionsDataReader {
                 String[] splitLine = line.split(",");
                 int userId = Integer.parseInt(splitLine[1]);
                 if (!users.containsKey(userId)) {
-                    users.put(new User(
+                    users.put(new EpinionsUser(
                             "null",
                             userId,
-                            friends.getOrDefault(userId, new HashSet<Integer>())
+                            friends.getOrDefault(userId, new HashSet<>()),
+                            enemies.getOrDefault(userId, new HashSet<>())
                     ));
                 }
                 line = reader.readLine();
@@ -92,9 +95,10 @@ public class EpinionsDataReader {
         return users;
     }
 
-    private HashMap<Integer, HashSet<Integer>> loadTrustLinks() {
+    private HashMap<String, HashMap<Integer, HashSet<Integer>>> loadTrustLinks() {
         BufferedReader reader;
         HashMap<Integer, HashSet<Integer>> friends = new HashMap<>();
+        HashMap<Integer, HashSet<Integer>> enemies = new HashMap<>();
         try {
             reader = new BufferedReader(new FileReader(this.trustFile.toFile()));
             String header = reader.readLine();
@@ -103,12 +107,14 @@ public class EpinionsDataReader {
             while (line != null) {
                 String[] splitLine = line.split(",");
                 int trustPolarity = Integer.parseInt(splitLine[2]);
-                // For now only consider positive trust links.
+                int trusterId = Integer.parseInt(splitLine[0]);
+                int trusteeId = Integer.parseInt(splitLine[1]);
                 if (trustPolarity > 0) {
-                    int trusterId = Integer.parseInt(splitLine[0]);
-                    int trusteeId = Integer.parseInt(splitLine[1]);
                     friends.computeIfAbsent(trusterId, k -> new HashSet<>());
                     friends.get(trusterId).add(trusteeId);
+                } else {
+                   enemies.computeIfAbsent(trusterId, k -> new HashSet<>());
+                   enemies.get(trusterId).add(trusteeId);
                 }
                 line = reader.readLine();
             }
@@ -116,7 +122,10 @@ public class EpinionsDataReader {
             e.printStackTrace();
             System.exit(1);
         }
-        return friends;
+        return new HashMap<>() {{
+            put("friends", friends);
+            put("enemies", enemies);
+        }};
     }
 
     public HashMap<Integer, Business> loadBusinesses() {
