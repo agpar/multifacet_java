@@ -26,6 +26,8 @@ public class Main {
     private static int NUM_EXPERIMENTS = Runtime.getRuntime().availableProcessors();
     private static boolean GENERATE_PAIRS = false;
     private static DATA_SOURCE SOURCE = DATA_SOURCE.YELP;
+    private static boolean GENERATE_SINGLE = false;
+    private static boolean PRINT_HELP = false;
 
     public static void main(String[] args) throws Exception {
         if(args.length == 0) {
@@ -45,6 +47,10 @@ public class Main {
 
         try {
             setFlags(flags);
+            if (PRINT_HELP) {
+                System.out.println("Options are --numThread, --genPairs, --genSingle and --epinions");
+                System.exit(0);
+            }
             if (GENERATE_PAIRS) {
                 if(files.size() == 0) {
                     System.out.println("An output path for --genPairs is needed.");
@@ -56,11 +62,27 @@ public class Main {
                 System.exit(0);
             }
 
+            if (GENERATE_SINGLE) {
+                if(files.size() == 0) {
+                    System.out.println("An output path for --genSingle is needed.");
+                    System.exit(1);
+                }
+
+                if (SOURCE != DATA_SOURCE.EPINIONS) {
+                    System.out.println("--genSingle is only supported when --epinions is also used.");
+                    System.exit(1);
+                }
+
+                // Generate the single vects for epinions.
+            }
+
+            // If no other flag is supplied, try to start a prediction task.
             if (files.size() > 0) {
                 List<ExperimentRunner> experiments = loadExperiments(files);
                 runAllExperiments(experiments);
             } else {
-
+                System.out.println("No flags or files were specified. Exiting.");
+                System.exit(1);
             }
         } finally {
             SynchronizedAppendResultWriter.closeAllSingletons();
@@ -74,6 +96,12 @@ public class Main {
             }
             else if (flag.startsWith("--genPairs")) {
                 GENERATE_PAIRS = true;
+            }
+            else if (flag.startsWith("--genSingle")) {
+                GENERATE_SINGLE = true;
+            }
+            else if (flag.equals("-h") || flag.equals("help")) {
+                PRINT_HELP = true;
             }
             else if (flag.startsWith("--epinions")) {
                 SOURCE = DATA_SOURCE.EPINIONS;
