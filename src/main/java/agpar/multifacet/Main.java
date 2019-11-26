@@ -7,6 +7,7 @@ import agpar.multifacet.experiments.ExperimentDescription;
 import agpar.multifacet.experiments.ExperimentRunner;
 import agpar.multifacet.pairwise_features.io.SynchronizedAppendResultWriter;
 import agpar.multifacet.recommend.SharedDataModel;
+import agpar.multifacet.single_features.GenerateAllSingle;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
@@ -74,6 +75,10 @@ public class Main {
                 }
 
                 // Generate the single vects for epinions.
+                System.out.printf("Generating single features and outputting to %s\n", files.get(0));
+                System.out.printf("Using %s data.\n", SOURCE.toString());
+                GenerateAllSingle.generateData(files.get(0));
+                System.exit(0);
             }
 
             // If no other flag is supplied, try to start a prediction task.
