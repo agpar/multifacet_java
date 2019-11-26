@@ -83,6 +83,7 @@ public class GenerateAllSingle {
                 }
                 writer.write(String.join(",", values) + "\n");
             }
+            writer.close();
         } catch (IOException e) {
             System.out.println("Could not open file to write single results!");
             e.printStackTrace();
