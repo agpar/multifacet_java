@@ -64,4 +64,8 @@ public class ReviewList implements Iterable<Review>{
     public Iterator<Review> iterator() {
         return Arrays.asList(this.reviews).iterator();
     }
+
+    public int size() {
+        return this.reviews.length;
+    }
 }

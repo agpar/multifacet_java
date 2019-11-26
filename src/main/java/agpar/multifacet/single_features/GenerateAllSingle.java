@@ -22,6 +22,8 @@ public class GenerateAllSingle {
             // Count outgoing trust links for users.
             HashMap<String, Integer> trusterFeats = usersToFeatures.getOrDefault(user.getUserIdInt(), new HashMap<>());
             trusterFeats.put("outgoingTrust", user.getFriendsInt().size());
+            trusterFeats.put("incomingTrust", 0);
+            trusterFeats.put("userId", user.getUserIdInt());
             usersToFeatures.put(user.getUserIdInt(), trusterFeats);
 
             // Increment incoming trust links for all friends.
@@ -43,13 +45,26 @@ public class GenerateAllSingle {
 
             // Write out a header.
             HashMap randomFeatureSet = userFeatures.values().iterator().next();
-            String[] sortedKeys = (String[]) randomFeatureSet.keySet().toArray();
-            Arrays.sort(sortedKeys);
+            String[] sortedKeys = new String[randomFeatureSet.keySet().size()] ;
+            sortedKeys[0] = "userId";
+            int i = 1;
+            for(Object key : randomFeatureSet.keySet()) {
+                if (key.equals("userId")) {
+                    continue;
+                }
+                sortedKeys[i] = (String) key;
+                i++;
+            }
             writer.write(String.join(",", sortedKeys) + "\n");
 
             for (Integer userId : userFeatures.keySet()) {
+                HashMap<String, Integer> currentUserFeatures = userFeatures.get(userId);
+                // Bail if user is not included in data set (is only referenced by other users)
+                if (! currentUserFeatures.containsKey("userId")) {
+                    continue;
+                }
                 String[] values = new String[sortedKeys.length];
-                int i = 0;
+                i= 0;
                 for (String key : sortedKeys) {
                     values[i] = userFeatures.get(userId).get(key).toString();
                     i++;
