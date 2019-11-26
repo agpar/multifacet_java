@@ -1,4 +1,4 @@
-package agpar.multifacet.pairwise;
+package agpar.multifacet.pairwise_features;
 
 public class PairwiseResult {
     public int user1Id;

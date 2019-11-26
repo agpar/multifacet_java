@@ -1,7 +1,7 @@
 package agpar.multifacet.experiments;
 
 import agpar.multifacet.Settings;
-import agpar.multifacet.pairwise.io.ResultWriter;
+import agpar.multifacet.pairwise_features.io.ResultWriter;
 import agpar.multifacet.recommend.RecommenderTester;
 
 import java.io.IOException;

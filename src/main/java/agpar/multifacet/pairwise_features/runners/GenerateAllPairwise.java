@@ -1,14 +1,13 @@
-package agpar.multifacet.pairwise.runners;
+package agpar.multifacet.pairwise_features.runners;
 
 
 import agpar.multifacet.data_interface.DataSet;
 import agpar.multifacet.data_interface.data_classes.User;
-import agpar.multifacet.pairwise.result_calculators.RelevantConnectionsCalculator;
-import agpar.multifacet.pairwise.review_avg_calculators.ItemReviewAvgCalculator;
-import agpar.multifacet.pairwise.io.SynchronizedAppendResultWriter;
-import agpar.multifacet.pairwise.result_calculators.AllResultsCalculator;
-import agpar.multifacet.pairwise.result_calculators.ResultCalculator;
-import agpar.multifacet.pairwise.review_avg_calculators.ReviewAvgCalculator;
+import agpar.multifacet.pairwise_features.result_calculators.RelevantConnectionsCalculator;
+import agpar.multifacet.pairwise_features.review_avg_calculators.ItemReviewAvgCalculator;
+import agpar.multifacet.pairwise_features.io.SynchronizedAppendResultWriter;
+import agpar.multifacet.pairwise_features.result_calculators.ResultCalculator;
+import agpar.multifacet.pairwise_features.review_avg_calculators.ReviewAvgCalculator;
 
 import java.util.ArrayList;
 import java.util.List;

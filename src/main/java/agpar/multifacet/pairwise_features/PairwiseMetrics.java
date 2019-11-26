@@ -1,7 +1,7 @@
-package agpar.multifacet.pairwise;
+package agpar.multifacet.pairwise_features;
 
 import agpar.multifacet.data_interface.data_classes.Review;
-import agpar.multifacet.pairwise.review_avg_calculators.ReviewAvgCalculator;
+import agpar.multifacet.pairwise_features.review_avg_calculators.ReviewAvgCalculator;
 import agpar.multifacet.data_interface.collections.ReviewList;
 import agpar.multifacet.data_interface.data_classes.User;
 

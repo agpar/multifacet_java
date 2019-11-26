@@ -1,4 +1,4 @@
-package agpar.multifacet.pairwise;
+package agpar.multifacet.pairwise_features;
 
 import agpar.multifacet.data_interface.data_classes.Review;
 

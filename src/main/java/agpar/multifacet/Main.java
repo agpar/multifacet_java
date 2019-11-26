@@ -1,11 +1,11 @@
 package agpar.multifacet;
 
-import agpar.multifacet.pairwise.runners.GenerateAllPairwise;
+import agpar.multifacet.pairwise_features.runners.GenerateAllPairwise;
 import agpar.multifacet.data_interface.DATA_SOURCE;
 import agpar.multifacet.experiments.DescriptionLoader;
 import agpar.multifacet.experiments.ExperimentDescription;
 import agpar.multifacet.experiments.ExperimentRunner;
-import agpar.multifacet.pairwise.io.SynchronizedAppendResultWriter;
+import agpar.multifacet.pairwise_features.io.SynchronizedAppendResultWriter;
 import agpar.multifacet.recommend.SharedDataModel;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

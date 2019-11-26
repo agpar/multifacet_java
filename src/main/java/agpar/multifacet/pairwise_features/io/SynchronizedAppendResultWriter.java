@@ -1,6 +1,6 @@
-package agpar.multifacet.pairwise.io;
+package agpar.multifacet.pairwise_features.io;
 
-import agpar.multifacet.pairwise.PairwiseResult;
+import agpar.multifacet.pairwise_features.PairwiseResult;
 
 import java.io.*;
 import java.nio.file.Files;

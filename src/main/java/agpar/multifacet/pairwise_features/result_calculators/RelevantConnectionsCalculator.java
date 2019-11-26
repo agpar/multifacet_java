@@ -1,9 +1,9 @@
-package agpar.multifacet.pairwise.result_calculators;
+package agpar.multifacet.pairwise_features.result_calculators;
 
 import agpar.multifacet.data_interface.data_classes.User;
-import agpar.multifacet.pairwise.PairwiseMetrics;
-import agpar.multifacet.pairwise.PairwiseResult;
-import agpar.multifacet.pairwise.review_avg_calculators.ReviewAvgCalculator;
+import agpar.multifacet.pairwise_features.PairwiseMetrics;
+import agpar.multifacet.pairwise_features.PairwiseResult;
+import agpar.multifacet.pairwise_features.review_avg_calculators.ReviewAvgCalculator;
 
 /*
 Only returns a result when the pair of users have either a item-reviewed or social overlap

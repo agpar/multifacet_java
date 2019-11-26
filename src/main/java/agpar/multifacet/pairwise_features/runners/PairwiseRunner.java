@@ -1,9 +1,9 @@
-package agpar.multifacet.pairwise.runners;
+package agpar.multifacet.pairwise_features.runners;
 
 import agpar.multifacet.data_interface.data_classes.User;
-import agpar.multifacet.pairwise.PairwiseResult;
-import agpar.multifacet.pairwise.io.ResultWriter;
-import agpar.multifacet.pairwise.result_calculators.ResultCalculator;
+import agpar.multifacet.pairwise_features.PairwiseResult;
+import agpar.multifacet.pairwise_features.io.ResultWriter;
+import agpar.multifacet.pairwise_features.result_calculators.ResultCalculator;
 
 import java.io.IOException;
 import java.util.ArrayList;
