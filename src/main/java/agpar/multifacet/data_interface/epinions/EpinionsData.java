@@ -18,19 +18,21 @@ public class EpinionsData extends DataSet {
 
     @Override
     public void load(int start, int stop) {
-        System.out.println("Loading Users");
-        this.usersById = reader.loadUsers();
         System.out.println("Loading Reviews");
         this.reviewsByItemId = reader.loadTrainReviews();
-        System.out.println("Loading Businesses");
-        this.businesses = reader.loadBusinesses();
-
         // Adding reviews and categories to users.
         ReviewsById reviewsByUserId = new ReviewsById();
         for (List<Review> reviews: this.reviewsByItemId.values()) {
             for (Review review: reviews) {
                 reviewsByUserId.put(review.getUserIdInt(), review);
             }
+
+        System.out.println("Loading Users");
+        this.usersById = reader.loadUsers(reviewsByUserId);
+
+        System.out.println("Loading Businesses");
+        this.businesses = reader.loadBusinesses();
+
         }
 
         for (User user : this.usersById.values()) {

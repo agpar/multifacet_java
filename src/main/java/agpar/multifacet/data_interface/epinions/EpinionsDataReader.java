@@ -63,7 +63,7 @@ public class EpinionsDataReader {
         assert(splitHeader[5].equals("date"));
     }
 
-    public UsersById loadUsers() {
+    public UsersById loadUsers(ReviewsById reviewsByUserId) {
         BufferedReader reader;
         UsersById users = new UsersById();
         HashMap<String, HashMap<Integer, HashSet<Integer>>> trustLinks = loadTrustLinks();
@@ -78,6 +78,9 @@ public class EpinionsDataReader {
             while (line != null) {
                 String[] splitLine = line.split(",");
                 int userId = Integer.parseInt(splitLine[1]);
+                if(reviewsByUserId.get(userId).size() < 19) {
+                    continue;
+                }
                 if (!users.containsKey(userId)) {
                     users.put(new EpinionsUser(
                             "null",
