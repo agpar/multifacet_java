@@ -78,10 +78,7 @@ public class EpinionsDataReader {
             while (line != null) {
                 String[] splitLine = line.split(",");
                 int userId = Integer.parseInt(splitLine[1]);
-                if(reviewsByUserId.get(userId).size() < 19) {
-                    continue;
-                }
-                if (!users.containsKey(userId)) {
+                if ((!users.containsKey(userId)) && (reviewsByUserId.get(userId).size() >=19)) {
                     users.put(new EpinionsUser(
                             "null",
                             userId,
