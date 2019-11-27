@@ -1,4 +1,4 @@
-from regression import learn_boost
+from regression import learn_logit
 from sklearn.model_selection import train_test_split
 from prediction_tools import *
 
@@ -10,10 +10,10 @@ class ClassifierTrainer:
         print("Learning")
         if train_size < 1.0:
             X, X_test, Y, Y_test = train_test_split(X, Y, train_size=0.8, shuffle=True, random_state=42)
-            clf = learn_boost(np.array(X), np.array(Y))
+            clf = learn_logit(np.array(X), np.array(Y))
             return clf, clf.score(np.array(X_test), np.array(Y_test))
         else:
-            clf = learn_boost(np.array(X), np.array(Y))
+            clf = learn_logit(np.array(X), np.array(Y))
             return clf, clf.score(np.array(X), np.array(Y))
 
     def output_predictions(self, single_path, pairwise_path, output_path, classifier):
