@@ -23,17 +23,16 @@ public class EpinionsData extends DataSet {
         // Adding reviews and categories to users.
         ReviewsById reviewsByUserId = new ReviewsById();
         for (List<Review> reviews: this.reviewsByItemId.values()) {
-            for (Review review: reviews) {
+            for (Review review : reviews) {
                 reviewsByUserId.put(review.getUserIdInt(), review);
             }
+        }
 
         System.out.println("Loading Users");
         this.usersById = reader.loadUsers(reviewsByUserId);
 
         System.out.println("Loading Businesses");
         this.businesses = reader.loadBusinesses();
-
-        }
 
         for (User user : this.usersById.values()) {
             user.addReviews(reviewsByUserId.get(user.getUserIdInt()));
