@@ -2,6 +2,7 @@ import os.path as path
 import csv
 from collections import defaultdict, namedtuple
 import json
+import numpy as np
 
 import settings
 from tools.id_index_map import IDIndexMap
@@ -16,6 +17,7 @@ to refer to that user in a matrix of user x item reviews.
 """
 
 MIN_REVIEWS = 20
+LEAVE_OUT = 2
 ITEM_REVIEW_FILE = path.join(settings.EPINIONS_DATA_DIR, 'rating.txt')
 USER_REVIEW_FILE = path.join(settings.EPINIONS_DATA_DIR, 'user_rating.txt')
 CONTENT_FILE = path.join(settings.EPINIONS_DATA_DIR, 'mc.txt')
@@ -62,24 +64,41 @@ def read_all():
             if content.author_id in relevant_users:
                 content_list.append(content)
 
-    return relevant_reviews, trust_links, content_list
+    return relevant_users, reviews_by_user, trust_links, content_list
 
 
-def write_filtered(reviews, trust_links, content):
-    ITEM_REVIEW_FILTERED = path.join(settings.EPINIONS_DATA_DIR, 'rating_filtered.txt')
+def split_reviews(selected_users, reviews_by_userid):
+    test_set = defaultdict(list)
+    for user_id in selected_users:
+        user_reviews = reviews_by_userid[user_id]
+        for i in range(LEAVE_OUT):
+            selected_idx = np.random.choice(len(user_reviews))
+            selected_review = user_reviews.pop(selected_idx)
+            test_set[user_id].append(selected_review)
+    return reviews_by_userid, test_set
+
+
+def write_filtered(reviews_train, reviews_test, trust_links, content):
+    ITEM_REVIEW_FILTERED_TRAIN = path.join(settings.EPINIONS_DATA_DIR, 'rating_train_filtered.txt')
+    ITEM_REVIEW_FILTERED_TEST = path.join(settings.EPINIONS_DATA_DIR, 'rating_test_filtered.txt')
+
     USER_REVIEW_FILTERED = path.join(settings.EPINIONS_DATA_DIR, 'user_rating_filtered.txt')
     CONTENT_FILTERED = path.join(settings.EPINIONS_DATA_DIR, 'mc_filtered.txt')
 
     itemIdMap= IDIndexMap()
     userIdMap = IDIndexMap()
 
-    with open(ITEM_REVIEW_FILTERED, 'w') as f:
-        writer = csv.writer(f)
-        writer.writerow(reviews[0]._fields)
-        for review in reviews:
-            review = review._replace(user_id=userIdMap.get_int(review.user_id))
-            review = review._replace(object_id=itemIdMap.get_int(review.object_id))
-            writer.writerow(review)
+    for fname, data in [(ITEM_REVIEW_FILTERED_TRAIN, reviews_train), (ITEM_REVIEW_FILTERED_TEST, reviews_test)]:
+        import pdb
+        pdb.set_trace()
+        with open(fname, 'w') as f:
+            writer = csv.writer(f)
+            writer.writerow(next(iter(data.items()))[1][0]._fields)
+            for user_id, reviews in data.items():
+                for review in reviews:
+                    review = review._replace(user_id=userIdMap.get_int(review.user_id))
+                    review = review._replace(object_id=itemIdMap.get_int(review.object_id))
+                    writer.writerow(review)
 
     with open(USER_REVIEW_FILTERED, 'w') as f:
         writer = csv.writer(f)
@@ -96,6 +115,8 @@ def write_filtered(reviews, trust_links, content):
             cont = cont._replace(author_id=userIdMap.get_int(cont.author_id))
             writer.writerow(cont)
 
+
 if __name__ == '__main__':
-    reviews, links, content = read_all()
-    write_filtered(reviews, links, content)
+    users, reviews, links, content = read_all()
+    train_reviews, test_reviews = split_reviews(set(users), reviews)
+    write_filtered(train_reviews, test_reviews, links, content)

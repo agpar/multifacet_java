@@ -106,10 +106,10 @@ def filter_friend_list(user, userIdMap):
     return ", ".join([str(userIdMap.get_int(u)) for u in user['friends'].split(", ")])
 
 
-def split_reviews(selected_users, reviews_by_user_id):
+def split_reviews(selected_users, reviews_by_userid):
     test_set = defaultdict(list)
     for user_id in selected_users:
-        user_reviews = reviews_by_user_id[user_id]
+        user_reviews = reviews_by_userid[user_id]
         for i in range(LEAVE_OUT):
             selected_idx = np.random.choice(len(user_reviews))
             selected_review = user_reviews.pop(selected_idx)
