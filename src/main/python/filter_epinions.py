@@ -89,8 +89,6 @@ def write_filtered(reviews_train, reviews_test, trust_links, content):
     userIdMap = IDIndexMap()
 
     for fname, data in [(ITEM_REVIEW_FILTERED_TRAIN, reviews_train), (ITEM_REVIEW_FILTERED_TEST, reviews_test)]:
-        import pdb
-        pdb.set_trace()
         with open(fname, 'w') as f:
             writer = csv.writer(f)
             writer.writerow(next(iter(data.items()))[1][0]._fields)
