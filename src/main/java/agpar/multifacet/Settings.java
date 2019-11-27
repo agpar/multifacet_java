@@ -10,7 +10,6 @@ import java.util.Properties;
 public class Settings {
 
     private String YELP_DATA_DIR;
-    private String EXPERIMENT_DIR;
     private String PYTHON_PROJECT_DIR;
     private String EPINIONS_DATA_DIR;
 
@@ -22,7 +21,6 @@ public class Settings {
         Properties prop = new Properties();
         try {
             prop.load(new FileReader(settings_path));
-            this.EXPERIMENT_DIR = prop.getProperty("experiment_dir");
             this.YELP_DATA_DIR = prop.getProperty("yelp_data_dir");
             this.EPINIONS_DATA_DIR = prop.getProperty("epinions_data_dir");
             this.PYTHON_PROJECT_DIR = Path.of(multifacet_root, "src/main/python").toString();
@@ -63,11 +61,6 @@ public class Settings {
     public static String YELP_DATA_DIR() {
         init();
         return settings.YELP_DATA_DIR;
-    }
-
-    public static String EXPERIMENT_DIR() {
-        init();
-        return settings.EXPERIMENT_DIR;
     }
 
     public static String PYTHON_PROJECT_DIR() {

@@ -10,6 +10,7 @@ import java.util.List;
 public class ExperimentDescription {
     private String name;
     private String recommenderName;
+    private String expDir;
     private int numUsers;
     private int randomSeed;
     private int numIterations;
@@ -24,9 +25,10 @@ public class ExperimentDescription {
 
     private HashMap<String, Double> results;
 
-    public ExperimentDescription(String name, String recommenderName, int numUsers, int randomSeed, int numIterations, float socialReg, String predictionFile) {
+    public ExperimentDescription(String name, String recommenderName, String expDir, int numUsers, int randomSeed, int numIterations, float socialReg, String predictionFile) {
         this.name = name;
         this.recommenderName = recommenderName;
+        this.expDir = expDir;
         this.numUsers = numUsers;
         this.randomSeed = randomSeed;
         this.numIterations = numIterations;
@@ -58,6 +60,7 @@ public class ExperimentDescription {
                 descriptions.add(new ExperimentDescription(
                         this.name,
                         this.recommenderName,
+                        this.expDir,
                         this.numUsers,
                         seed,
                         this.numIterations,
@@ -120,6 +123,10 @@ public class ExperimentDescription {
     }
     public String getPredictionFile() {
         return predictionFile;
+    }
+
+    public String getExperimentDir() {
+        return this.expDir;
     }
 
     public int getLatentDim() {

@@ -2,6 +2,7 @@
   {
     "name": "NoPrediction",
     "recommenderName": "TrustMF",
+    "expDir": "directory/for/experiment",
     "numUsers": 40000,
     "randomSeed": 2,
     "numIterations": 500,

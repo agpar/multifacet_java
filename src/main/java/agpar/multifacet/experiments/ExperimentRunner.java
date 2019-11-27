@@ -24,7 +24,7 @@ public abstract class ExperimentRunner implements Runnable {
 
     public ExperimentRunner(ExperimentDescription description, RecommenderTester recommender, ResultWriter resultWriter) throws IOException{
         this.name = description.getName();
-        this.expDir = Path.of(Settings.EXPERIMENT_DIR(), name).toString();
+        this.expDir = Path.of(description.getExperimentDir(), name).toString();
         this.recommender = recommender;
         this.description = description;
         this.resultWriter = resultWriter;
@@ -66,7 +66,7 @@ public abstract class ExperimentRunner implements Runnable {
     protected HashMap<String, Double> evaluatePredictions(int numUsers) throws LibrecException {
         this.recommender.loadDescription(this.description);
         return this.recommender.learn(
-                Settings.EXPERIMENT_DIR(),
+                this.description.getExperimentDir(),
                 this.name,
                 Path.of(this.trainRatingFilePath(numUsers)).getFileName().toString(),
                 Path.of(this.testRatingFilePath(numUsers)).getFileName().toString(),
@@ -107,12 +107,12 @@ public abstract class ExperimentRunner implements Runnable {
 
     protected String trainRatingFilePath(int numUsers) {
         String pairwiseVectFileName = String.format("ratings_train_%d.txt", numUsers);
-        return Path.of(Settings.EXPERIMENT_DIR(), pairwiseVectFileName).toString();
+        return Path.of(this.description.getExperimentDir(), pairwiseVectFileName).toString();
     }
 
     protected String testRatingFilePath(int numUsers) {
         String pairwiseVectFileName = String.format("ratings_test_%d.txt", numUsers);
-        return Path.of(Settings.EXPERIMENT_DIR(), pairwiseVectFileName).toString();
+        return Path.of(this.description.getExperimentDir(), pairwiseVectFileName).toString();
     }
 
     protected void generateTrainRating(int numUsers) {

@@ -15,6 +15,6 @@ public class PreComputedPredictionRunner extends ExperimentRunner{
     @Override
     protected String predictionsFilePath(int numUsers) {
         String pairwiseVectFileName = this.description.getPredictionFile();
-        return Path.of(Settings.EXPERIMENT_DIR(), pairwiseVectFileName).toString();
+        return Path.of(this.description.getExperimentDir(), pairwiseVectFileName).toString();
     }
 }
