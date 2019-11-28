@@ -70,30 +70,10 @@ class AvgClusterDistCalculator:
         """
         self.dist_matrix = dist_matrix
         self.clusters = clusters
-        self.cluster_dists = {}
 
-        self.__init_clusters()
+    def avg_dist_psuedo_means(self):
+        new_clusteroids = np.empty((len(self.clusters), self.dist_matrix.shape[0]))
+        for key, cluster in self.clusters.keys().sorted():
+            new_clusteroids[key] = np.mean(self.dist_matrix[list(cluster)], axis=0)
+        return new_clusteroids
 
-    def __init_clusters(self):
-        self.cluster_dists = np.empty((len(self.clusters), self.dist_matrix.shape[0]))
-        for key, cluster in self.clusters.items():
-            cluster_dists = self.dist_matrix[list(cluster)]
-            self.cluster_dists[key] = self.__aggregate_dists(cluster_dists)
-
-    def __aggregate_dists(self, cluster_dists):
-        return np.mean(cluster_dists, axis=0)
-
-    def avg_dist(self, idx, cluster_key):
-        return self.cluster_dists[cluster_key][idx]
-
-    def sim_clusteroid(self, cluster_key):
-        return self.cluster_dists[cluster_key]
-
-    def nearest_cluster(self, idx):
-        min_val = math.inf
-        min_ind = -1
-        for key, avgs in self.cluster_dists:
-            if avgs[idx] < min_val:
-                min_val = avgs[idx]
-                min_ind = key
-        return min_ind
