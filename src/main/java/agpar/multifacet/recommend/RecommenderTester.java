@@ -39,7 +39,8 @@ public abstract class RecommenderTester {
         conf.set("data.appender.path", this.socialFile);
         conf.set("data.appender.class", "net.librec.data.convertor.appender.SocialDataAppender");
         conf.set("data.model.splitter", "net.librec.data.splitter.GivenTestSetDataSplitter");
-        conf.setFloat("rec.iterator.learnrate.maximum", 10f);
+        conf.setFloat("rec.iterator.learnrate.maximum", 0.1f);
+	conf.setFloat("rec.iterator.learnrate", 0.0001f);
         Recommender recommender = this.learnImplementation();
         return this.evaluate(recommender);
     };
