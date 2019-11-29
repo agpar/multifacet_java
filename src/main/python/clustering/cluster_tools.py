@@ -2,6 +2,7 @@ import math
 import numpy as np
 from sklearn.metrics import silhouette_score
 from collections import defaultdict
+from scipy.stats import hmean
 
 
 def eval(dists, cluster_labels):
@@ -73,7 +74,7 @@ class AvgClusterDistCalculator:
 
     def avg_dist_psuedo_means(self):
         new_clusteroids = np.empty((len(self.clusters), self.dist_matrix.shape[0]))
-        for key, cluster in self.clusters.keys().sorted():
+        for key in sorted(list(self.clusters.keys())):
+            cluster = self.clusters[key]
             new_clusteroids[key] = np.mean(self.dist_matrix[list(cluster)], axis=0)
         return new_clusteroids
-
