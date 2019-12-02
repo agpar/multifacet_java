@@ -10,7 +10,7 @@ public class User {
     private int userIdInt;
     private HashSet<Integer> friendsInt;
     private HashSet<Integer> categoriesReviewed = new HashSet<>();
-    private ReviewList reviews;
+    private ReviewList reviews = new ReviewList(new ArrayList<>());
 
     public User(String userId, int userIdInt, HashSet<Integer> friendsInt) {
         this.userId = userId;

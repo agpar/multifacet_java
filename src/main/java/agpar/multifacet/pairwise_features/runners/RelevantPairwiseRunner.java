@@ -38,7 +38,7 @@ public class RelevantPairwiseRunner implements Runnable{
     @Override
     public void run() {
         User baseUser = users.get(this.userIndex);
-        HashSet<User> usersToCompareTo = findRelevantUsers(baseUser);
+        HashSet<User> usersToCompareTo = findRelevantUsers(baseUser, DataSet.getInstance());
         List<PairwiseResult> results = new ArrayList<>(usersToCompareTo.size());
         for (User relevantUser : usersToCompareTo) {
             PairwiseResult result = resultCalculator.calc(baseUser, relevantUser);
@@ -47,12 +47,10 @@ public class RelevantPairwiseRunner implements Runnable{
             }
         }
         writeResults(results);
-
     }
 
-    private HashSet<User> findRelevantUsers(User baseUser) {
+    public HashSet<User> findRelevantUsers(User baseUser, DataSet loadedData) {
         // Find the set of users to compare this users to.
-        DataSet loadedData = DataSet.getInstance();
         UsersById allUsers = loadedData.getUsersById();
         ReviewsById allReviews = loadedData.getReviewsByItemId();
         HashSet<User> usersToCompareTo = new HashSet<>();
@@ -81,6 +79,7 @@ public class RelevantPairwiseRunner implements Runnable{
                 }
             }
         }
+        usersToCompareTo.remove(baseUser);
         return usersToCompareTo;
     }
 
