@@ -15,7 +15,7 @@ public class PairwiseCalculator {
     public static void calc(List<User> users, ResultCalculator resultCalculator, ResultWriter writer, boolean printProgress) {
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         for (int i = 0; i < users.size(); i++) {
-            PairwiseRunner runner = new PairwiseRunner(users, resultCalculator, writer, i, printProgress);
+            RelevantPairwiseRunner runner = new RelevantPairwiseRunner(users, resultCalculator, writer, i, printProgress);
             executor.execute(runner);
         }
         boolean exited;
