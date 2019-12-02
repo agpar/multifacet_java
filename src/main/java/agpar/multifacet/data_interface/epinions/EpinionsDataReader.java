@@ -67,7 +67,8 @@ public class EpinionsDataReader {
         BufferedReader reader;
         UsersById users = new UsersById();
         HashMap<String, HashMap<Integer, HashSet<Integer>>> trustLinks = loadTrustLinks();
-        HashMap<Integer, HashSet<Integer>> friends = trustLinks.get("friends");
+        HashMap<Integer, HashSet<Integer>> friendsIncoming = trustLinks.get("friendsIncoming");
+        HashMap<Integer, HashSet<Integer>> friendsOutgoing = trustLinks.get("friendsOutgoing");
         HashMap<Integer, HashSet<Integer>> enemies = trustLinks.get("enemies");
 
         try {
@@ -82,8 +83,9 @@ public class EpinionsDataReader {
                     users.put(new EpinionsUser(
                             "null",
                             userId,
-                            friends.getOrDefault(userId, new HashSet<>()),
-                            enemies.getOrDefault(userId, new HashSet<>())
+                            friendsOutgoing.getOrDefault(userId, new HashSet<>()),
+                            enemies.getOrDefault(userId, new HashSet<>()),
+                            friendsIncoming.getOrDefault(userId, new HashSet<>())
                     ));
                 }
                 line = reader.readLine();
@@ -97,7 +99,8 @@ public class EpinionsDataReader {
 
     private HashMap<String, HashMap<Integer, HashSet<Integer>>> loadTrustLinks() {
         BufferedReader reader;
-        HashMap<Integer, HashSet<Integer>> friends = new HashMap<>();
+        HashMap<Integer, HashSet<Integer>> friendsOutgoing = new HashMap<>();
+        HashMap<Integer, HashSet<Integer>> friendsIncoming = new HashMap<>();
         HashMap<Integer, HashSet<Integer>> enemies = new HashMap<>();
         try {
             reader = new BufferedReader(new FileReader(this.trustFile.toFile()));
@@ -110,8 +113,10 @@ public class EpinionsDataReader {
                 int trusterId = Integer.parseInt(splitLine[0]);
                 int trusteeId = Integer.parseInt(splitLine[1]);
                 if (trustPolarity > 0) {
-                    friends.computeIfAbsent(trusterId, k -> new HashSet<>());
-                    friends.get(trusterId).add(trusteeId);
+                    friendsOutgoing.computeIfAbsent(trusterId, k -> new HashSet<>());
+                    friendsOutgoing.get(trusterId).add(trusteeId);
+                    friendsIncoming.computeIfAbsent(trusteeId, k -> new HashSet<>());
+                    friendsIncoming.get(trusteeId).add(trusterId);
                 } else {
                    enemies.computeIfAbsent(trusterId, k -> new HashSet<>());
                    enemies.get(trusterId).add(trusteeId);
@@ -123,7 +128,8 @@ public class EpinionsDataReader {
             System.exit(1);
         }
         return new HashMap<>() {{
-            put("friends", friends);
+            put("friendsOutgoing", friendsOutgoing);
+            put("friendsIncoming", friendsIncoming);
             put("enemies", enemies);
         }};
     }

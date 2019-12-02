@@ -5,7 +5,6 @@ import agpar.multifacet.data_interface.data_classes.User;
 import agpar.multifacet.data_interface.epinions.EpinionsUser;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class GenerateAllSingle {
@@ -23,7 +22,7 @@ public class GenerateAllSingle {
             // Count outgoing trust links for users.
             EpinionsUser epUser = (EpinionsUser) user;
             HashMap<String, Integer> trusterFeats = usersToFeatures.getOrDefault(user.getUserIdInt(), new HashMap<>());
-            trusterFeats.put("outgoingTrust", user.getFriendsInt().size());
+            trusterFeats.put("outgoingTrust", user.getFriendsLinksOutgoing().size());
             trusterFeats.put("outgoingDistrust", epUser.getDistrustedUsers().size());
             trusterFeats.put("incomingTrust", 0);
             trusterFeats.put("incomingDistrust", 0);
@@ -31,7 +30,7 @@ public class GenerateAllSingle {
             usersToFeatures.put(user.getUserIdInt(), trusterFeats);
 
             // Increment incoming trust links for all friends.
-            for (Integer trusteeId : user.getFriendsInt()) {
+            for (Integer trusteeId : user.getFriendsLinksOutgoing()) {
                 HashMap<String, Integer> trusteeFeats = usersToFeatures.getOrDefault(trusteeId, new HashMap<>());
                 int currentIncoming = trusteeFeats.getOrDefault("incomingTrust", 0);
                 trusteeFeats.put("incomingTrust", currentIncoming + 1);

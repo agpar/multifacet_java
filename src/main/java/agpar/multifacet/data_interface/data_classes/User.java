@@ -38,9 +38,11 @@ public class User {
         return this.userIdInt;
     }
 
-    public Set<Integer> getFriendsInt() {
+    public Set<Integer> getFriendsLinksOutgoing() {
         return Collections.unmodifiableSet(this.friendsInt);
     }
+
+    public Set<Integer> getFriendsLinksIncoming() { return Collections.unmodifiableSet(this.friendsInt); }
 
     public void addReviews(List<Review> reviews) {
        this.reviews = new ReviewList(reviews);
