@@ -1,8 +1,6 @@
-import math
 import numpy as np
 from sklearn.metrics import silhouette_score
 from collections import defaultdict
-from scipy.stats import hmean
 
 
 def eval(dists, cluster_labels):
@@ -11,12 +9,15 @@ def eval(dists, cluster_labels):
 
 def average_intra_clust_distance(dists, clusters):
     avg_dist = 0
+    cluster_len = 0
     for cluster in clusters.values():
-        cluster_list = list(cluster)
-        intra_dists = np.array([d[cluster_list] for d in dists[cluster_list]])
-        avg = np.mean(intra_dists)
-        avg_dist += avg
-    return avg_dist / len(clusters)
+        if cluster:
+            cluster_list = list(cluster)
+            intra_dists = np.array([d[cluster_list] for d in dists[cluster_list]])
+            avg = np.nanmean(intra_dists)
+            avg_dist += avg
+            cluster_len += 1
+    return avg_dist / cluster_len
 
 
 def median_intra_clust_distance(dists, clusters):
@@ -70,11 +71,15 @@ class AvgClusterDistCalculator:
         :param clusters: A dict : int -> set(int) of clusters, like produced by labels_to_clusters()
         """
         self.dist_matrix = dist_matrix
+        self.dist_max = np.nanmax(dist_matrix).item()
         self.clusters = clusters
 
     def avg_dist_psuedo_means(self):
         new_clusteroids = np.empty((len(self.clusters), self.dist_matrix.shape[0]))
         for key in sorted(list(self.clusters.keys())):
             cluster = self.clusters[key]
-            new_clusteroids[key] = np.mean(self.dist_matrix[list(cluster)], axis=0)
+            if cluster:
+                new_clusteroids[key] = np.mean(self.dist_matrix[list(cluster)], axis=0)
+            else:
+                new_clusteroids[key] = np.full(self.dist_matrix.shape[0], self.dist_max)
         return new_clusteroids
