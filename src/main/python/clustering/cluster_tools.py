@@ -4,6 +4,8 @@ from collections import defaultdict
 
 
 def eval(dists, cluster_labels):
+    if np.isnan(dists).any():
+        return None
     return silhouette_score(dists, cluster_labels, metric='precomputed')
 
 
@@ -79,7 +81,7 @@ class AvgClusterDistCalculator:
         for key in sorted(list(self.clusters.keys())):
             cluster = self.clusters[key]
             if cluster:
-                new_clusteroids[key] = np.mean(self.dist_matrix[list(cluster)], axis=0)
+                new_clusteroids[key] = np.nanmean(self.dist_matrix[list(cluster)], axis=0)
             else:
                 new_clusteroids[key] = np.full(self.dist_matrix.shape[0], self.dist_max)
         return new_clusteroids

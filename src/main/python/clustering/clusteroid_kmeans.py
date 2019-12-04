@@ -2,7 +2,7 @@ from clustering.cluster_tools import *
 
 
 def cluster(dists: np.array, k, iters):
-    init_clusteroids = choose_initial_clusteroids(dists, k, strategy='k++')
+    init_clusteroids = choose_initial_clusteroids(dists, k, strategy='partition')
     clusters = assign_points_to_clusters(dists, init_clusteroids)
     for i in range(iters - 1):
         new_clusteroids = choose_next_clusteroids(dists, k, clusters, "cluster-avg")
@@ -43,6 +43,13 @@ def choose_initial_clusteroids(dists, k, strategy='central'):
             clusteroid = next_idx_to_cluster(means, clusteroids)
             clusteroids.append(clusteroid)
         return dists[clusteroids]
+    elif strategy == 'partition':
+        buckets = {i: set() for i in range(k)}
+        for i in range(dists.shape[0]):
+            np.random.choice(list(buckets.values())).add(i)
+
+        return AvgClusterDistCalculator(dists, buckets).avg_dist_psuedo_means()
+
     elif strategy == 'k++':
         clusteroids = []
         choices = set()
@@ -117,6 +124,8 @@ def nearest_clusteroid_index(idx, clusteroids):
     """
 
     clusteroid_dists = clusteroids[:, idx]
-    min_dist_val = np.min(clusteroid_dists)
+    min_dist_val = np.nanmin(clusteroid_dists)
     min_dist_idxs = np.nonzero(clusteroid_dists == min_dist_val)[0]
-    return np.min(min_dist_idxs)
+    if not min_dist_idxs.any():
+        return np.random.choice(clusteroids.shape[0])
+    return np.nanmin(min_dist_idxs)

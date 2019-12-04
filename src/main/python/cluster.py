@@ -106,6 +106,7 @@ def run(single_path, pairwise_path, cluster_type, output_path, dists_in, dists_o
     clusters = kmeans.cluster(dist_arr, k, iters)
     with open(output_path, 'w') as f:
         f.write(json.dumps(clusters.tolist()))
+    return clusters
 
 
 if __name__ == '__main__':
