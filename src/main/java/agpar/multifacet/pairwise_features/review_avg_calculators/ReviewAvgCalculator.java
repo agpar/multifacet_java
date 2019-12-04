@@ -4,6 +4,7 @@ import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.collections.ReviewsById;
 import agpar.multifacet.data_interface.data_classes.User;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,7 +14,7 @@ public abstract class ReviewAvgCalculator {
     private ReviewsById reviewsByItems;
     private ConcurrentHashMap<Integer, Double> avgItemReviews = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, Double> avgUserReviews = new ConcurrentHashMap<>();
-    private static double GLOBAL_AVG_REVIEW_SCORE = 3.7161;
+    private Double GLOBAL_AVG_REVIEW_SCORE;
 
     public ReviewAvgCalculator(ReviewsById reviewsByItems) {
         this.reviewsByItems = reviewsByItems;
@@ -33,7 +34,24 @@ public abstract class ReviewAvgCalculator {
     }
 
     public double getGlobalAvg() {
+        if (this.GLOBAL_AVG_REVIEW_SCORE == null) {
+            calculateGlobalAverage();
+        }
         return this.GLOBAL_AVG_REVIEW_SCORE;
+    }
+
+    private synchronized void calculateGlobalAverage() {
+        if (this.GLOBAL_AVG_REVIEW_SCORE == null) {
+            int sum = 0;
+            int count = 0;
+            for (List<Review> reviewList : reviewsByItems.values()) {
+                for (Review review : reviewList) {
+                    sum += review.getStars();
+                    count += 1;
+                }
+            }
+            this.GLOBAL_AVG_REVIEW_SCORE = (((double) sum) / count);
+        }
     }
 
     public double getItemAvg(int itemId) {
@@ -54,6 +72,10 @@ public abstract class ReviewAvgCalculator {
         for (Review review : reviews) {
             sum += review.getStars();
             count++;
+        }
+
+        if (count == 0) {
+            throw new IllegalArgumentException("Can not compute average of 0 items");
         }
         return sum / count;
     }
