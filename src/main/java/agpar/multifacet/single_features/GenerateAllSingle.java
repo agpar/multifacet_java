@@ -1,55 +1,86 @@
 package agpar.multifacet.single_features;
 
 import agpar.multifacet.data_interface.DataSet;
+import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.data_classes.User;
 import agpar.multifacet.data_interface.epinions.EpinionsUser;
+import agpar.multifacet.pairwise_features.PairwiseMetrics;
+import agpar.multifacet.pairwise_features.ReviewSimilarity;
+import agpar.multifacet.pairwise_features.review_avg_calculators.GlobalReviewAvgCalculator;
+import agpar.multifacet.pairwise_features.review_avg_calculators.ItemReviewAvgCalculator;
+import agpar.multifacet.pairwise_features.review_avg_calculators.ReviewAvgCalculator;
+import agpar.multifacet.pairwise_features.review_avg_calculators.UserReviewAvgCalculator;
 
 import java.io.*;
 import java.util.HashMap;
 
 public class GenerateAllSingle {
+
     public static void generateData(String path) {
         DataSet ds = DataSet.getInstance();
         ds.load(0, 1_000_000_000);
-        HashMap<Integer, HashMap<String, Integer>> userFeats = computeUserFeatures(ds);
+        HashMap<Integer, HashMap<String, String>> userFeats = computeUserFeatures(ds);
         writeUserFeatures(path, userFeats);
     }
 
-    private static HashMap<Integer, HashMap<String, Integer>> computeUserFeatures(DataSet ds) {
-        HashMap<Integer, HashMap<String, Integer>> usersToFeatures = new HashMap<>();
+    private static HashMap<Integer, HashMap<String, String>> computeUserFeatures(DataSet ds) {
+        HashMap<Integer, HashMap<String, String>> usersToFeatures = new HashMap<>();
+        ItemReviewAvgCalculator avgCalculator = new ItemReviewAvgCalculator(ds.getReviewsByItemId());
 
         for(User user : ds.getUsers()) {
             // Count outgoing trust links for users.
             EpinionsUser epUser = (EpinionsUser) user;
-            HashMap<String, Integer> trusterFeats = usersToFeatures.getOrDefault(user.getUserIdInt(), new HashMap<>());
-            trusterFeats.put("outgoingTrust", user.getFriendsLinksOutgoing().size());
-            trusterFeats.put("outgoingDistrust", epUser.getDistrustedUsers().size());
-            trusterFeats.put("incomingTrust", 0);
-            trusterFeats.put("incomingDistrust", 0);
-            trusterFeats.put("userId", user.getUserIdInt());
+            HashMap<String, String> trusterFeats = usersToFeatures.getOrDefault(user.getUserIdInt(), new HashMap<>());
+            trusterFeats.put("outgoingTrust", String.valueOf(user.getFriendsLinksOutgoing().size()));
+            trusterFeats.put("outgoingDistrust", String.valueOf(epUser.getDistrustedUsers().size()));
+            trusterFeats.put("incomingTrust", String.valueOf(epUser.getFriendsLinksIncoming().size()));
+            trusterFeats.put("userId", String.valueOf(user.getUserIdInt()));
+            trusterFeats.put("incomingDistrust", "0");
             usersToFeatures.put(user.getUserIdInt(), trusterFeats);
-
-            // Increment incoming trust links for all friends.
-            for (Integer trusteeId : user.getFriendsLinksOutgoing()) {
-                HashMap<String, Integer> trusteeFeats = usersToFeatures.getOrDefault(trusteeId, new HashMap<>());
-                int currentIncoming = trusteeFeats.getOrDefault("incomingTrust", 0);
-                trusteeFeats.put("incomingTrust", currentIncoming + 1);
-                usersToFeatures.put(trusteeId, trusteeFeats);
-            }
 
             // Increment incoming distrust links for all enemies
             for (Integer trusteeId : epUser.getDistrustedUsers()) {
-                HashMap<String, Integer> trusteeFeats = usersToFeatures.getOrDefault(trusteeId, new HashMap<>());
-                int currentIncoming = trusteeFeats.getOrDefault("incomingDistrust", 0);
-                trusteeFeats.put("incomingDistrust", currentIncoming + 1);
+                HashMap<String, String> trusteeFeats = usersToFeatures.getOrDefault(trusteeId, new HashMap<>());
+                int currentIncoming = Integer.parseInt(trusteeFeats.getOrDefault("incomingDistrust", "0"));
+                trusteeFeats.put("incomingDistrust", String.valueOf(currentIncoming + 1));
                 usersToFeatures.put(trusteeId, trusteeFeats);
             }
+
+            trusterFeats.put("integrity", String.format("%f", (integrity(user, ds, avgCalculator))));
         }
 
         return usersToFeatures;
     }
 
-    private static void writeUserFeatures(String path, HashMap<Integer, HashMap<String, Integer>> userFeatures) {
+    private static Double integrity(User u, DataSet ds, ItemReviewAvgCalculator avgCalculator){
+        Review[] u1Reviews = new Review[u.getReviews().size()];
+        {
+            int i = 0;
+            for (Review review : u.getReviews()) {
+                u1Reviews[i] = review;
+                i++;
+            }
+        }
+        double[] u1Avgs = new UserReviewAvgCalculator(ds.getReviewsByItemId()).getAvgs(u1Reviews, u);
+
+        Review[] globalReviews = new Review[u.getReviews().size()];
+        for(int i = 0; i < globalReviews.length; i++) {
+            int itemReviewed = u1Reviews[i].getItemIdInt();
+            Review avgReview = new Review(
+                    "fake",
+                    -1,
+                    itemReviewed,
+                    "",
+                    avgCalculator.getItemAvg(itemReviewed)
+            );
+            globalReviews[i] = avgReview;
+        }
+        double[] globalAvgReviews = new GlobalReviewAvgCalculator(ds.getReviewsByItemId()).getAvgs(globalReviews, null);
+
+        return ReviewSimilarity.pcc(u1Reviews, u1Avgs, globalReviews, globalAvgReviews);
+    };
+
+    private static void writeUserFeatures(String path, HashMap<Integer, HashMap<String, String>> userFeatures) {
 
         try {
             Writer writer = new BufferedWriter(new FileWriter(path));
@@ -69,7 +100,7 @@ public class GenerateAllSingle {
             writer.write(String.join(",", sortedKeys) + "\n");
 
             for (Integer userId : userFeatures.keySet()) {
-                HashMap<String, Integer> currentUserFeatures = userFeatures.get(userId);
+                HashMap<String, String> currentUserFeatures = userFeatures.get(userId);
                 // Bail if user is not included in data set (is only referenced by other users)
                 if (! currentUserFeatures.containsKey("userId")) {
                     continue;
