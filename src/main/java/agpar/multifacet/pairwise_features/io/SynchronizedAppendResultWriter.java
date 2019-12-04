@@ -16,6 +16,7 @@ have atomic writes ANYWAY. Oh well.
 public class SynchronizedAppendResultWriter implements ResultWriter{
     private String filePath;
     private BufferedWriter writer;
+    private boolean needsHeader = false;
     private static HashMap<String, SynchronizedAppendResultWriter> staticWriters = new HashMap<>();
 
     public SynchronizedAppendResultWriter(String filePath) {
@@ -23,8 +24,17 @@ public class SynchronizedAppendResultWriter implements ResultWriter{
     }
 
     public synchronized void writeResults(List<PairwiseResult> results) throws IOException{
+        if (results.size() == 0) {
+            return;
+        }
+
         if (this.writer == null) {
             this.open();
+        }
+
+        if (needsHeader) {
+            this.writer.write(String.format("%s\n", results.get(0).header()));
+            needsHeader = false;
         }
 
         for (PairwiseResult result : results) {
@@ -45,10 +55,10 @@ public class SynchronizedAppendResultWriter implements ResultWriter{
 
     public synchronized void open() throws IOException{
         boolean alreadyExisted = Files.exists(Path.of(this.filePath));
-        this.writer = new BufferedWriter(new FileWriter(this.filePath, true));
         if (! alreadyExisted) {
-            this.writer.write(String.format("%s\n", PairwiseResult.header()));
+            needsHeader = true;
         }
+        this.writer = new BufferedWriter(new FileWriter(this.filePath, true));
     }
 
     public synchronized void close() throws IOException{

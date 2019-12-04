@@ -21,12 +21,12 @@ public class ResultReader {
         }
 
         // Throw away the header.
+        String[] header = this.reader.readLine().split(",");
         String line = this.reader.readLine();
-        line = this.reader.readLine();
-        int lineno =1;
+        int lineno = 1;
         while(line != null) {
             try {
-                results.add(PairwiseResult.fromString(line));
+                results.add(PairwiseResult.fromString(header, line));
             } catch (Exception e) {
                 e.printStackTrace();
             }

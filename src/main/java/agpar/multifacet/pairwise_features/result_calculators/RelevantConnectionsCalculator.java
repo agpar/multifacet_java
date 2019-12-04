@@ -27,16 +27,17 @@ public class RelevantConnectionsCalculator extends ResultCalculator {
             return null;
         }
         Double pcc = PairwiseMetrics.reviewPcc(user1, user2, this.avgCalculator, this.minPCCOverlap);
+        Double predictability = PairwiseMetrics.predictability(user1, user2, 1, 3);
         double categoryJacc = PairwiseMetrics.categoryJaccard(user1, user2);
-        return new PairwiseResult(
-                user1.getUserIdInt(),
-                user2.getUserIdInt(),
-                pcc,
-                socialJacc,
-                areFriends,
-                socialJacc > 0,
-                itemJacc,
-                categoryJacc
-        );
+
+        PairwiseResult result =  new PairwiseResult(user1.getUserIdInt(), user2.getUserIdInt());
+        result.addResult("PCC", pcc);
+        result.addResult("socialJacc", socialJacc);
+        result.addResult("areFriends", areFriends);
+        result.addResult("areFriendsOfFriends", socialJacc > 0);
+        result.addResult("itemJacc", itemJacc);
+        result.addResult("categoryJacc", categoryJacc);
+        result.addResult("predictability", predictability);
+        return result;
     }
 }
