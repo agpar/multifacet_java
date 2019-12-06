@@ -8,7 +8,7 @@ def cluster(dists: np.array, k, iters):
         new_clusteroids = choose_next_clusteroids(dists, k, clusters, "cluster-avg")
         clusters = assign_points_to_clusters(dists, new_clusteroids)
         print(f"{i}: Average intra cluster dist: {average_intra_clust_distance(dists, clusters)}")
-        print(f"{i}: Silo score: {eval(dists, clusters_to_labels(dists, clusters))}")
+        print(f"{i}: Silo score: {eval_silhouette(dists, clusters_to_labels(dists, clusters))}")
 
     return clusters_to_labels(dists, clusters)
 

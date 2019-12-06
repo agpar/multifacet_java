@@ -16,8 +16,8 @@ Maps each ID to a contiguous ascending integer, which can later be used (without
 to refer to that user in a matrix of user x item reviews.
 """
 
-MIN_REVIEWS = 20
-LEAVE_OUT = 2
+MIN_REVIEWS = 10
+LEAVE_OUT = 1
 ITEM_REVIEW_FILE = path.join(settings.EPINIONS_DATA_DIR, 'rating.txt')
 USER_REVIEW_FILE = path.join(settings.EPINIONS_DATA_DIR, 'user_rating.txt')
 CONTENT_FILE = path.join(settings.EPINIONS_DATA_DIR, 'mc.txt')
@@ -114,7 +114,11 @@ def write_filtered(reviews_train, reviews_test, trust_links, content):
             writer.writerow(cont)
 
 
-if __name__ == '__main__':
+def run():
     users, reviews, links, content = read_all()
     train_reviews, test_reviews = split_reviews(set(users), reviews)
     write_filtered(train_reviews, test_reviews, links, content)
+
+
+if __name__ == '__main__':
+    run()

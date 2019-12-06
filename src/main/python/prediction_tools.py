@@ -13,6 +13,9 @@ def parse_pairwise_line(line):
     pcc_ind = INDEXES['PCC']
     if line[pcc_ind] == 'null':
         line[pcc_ind] = 0.0
+    for i, item in enumerate(line):
+        if item == 'null':
+            line[i] = 0.0
     return [float(x) for x in line]
 
 
@@ -152,11 +155,8 @@ def write_predictions(stream, clf, path):
             user1_id = int(pair[0])
             user2_id = int(pair[1])
             pred1 = int(clf.predict(user1_id, [clf.trainer.filter_target(pair[2:])])[0])
-            pred2 = int(clf.predict(user2_id, [clf.trainer.filter_target(pair[2:])])[0])
             if pred1:
                 f.write(f"{user1_id} {user2_id} {pred1}\n")
-            if pred2:
-                f.write(f"{user2_id} {user1_id} {pred2}\n")
 
 
 def multiprocess_predict(single_path, pairwise_path, output_path, cluster_classifier):

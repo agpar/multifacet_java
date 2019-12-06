@@ -1,7 +1,11 @@
 import numpy as np
 from multiprocessing.pool import Pool
-from clustering.clusteroid_kmeans import cluster as cluster_fn
-from clustering.cluster_tools import eval as eval_fn
+from clustering.cluster_tools import clusters_to_labels
+from sklearn.metrics import silhouette_score
+
+
+def eval_silouette(dists, clusters):
+    return silhouette_score(dists, clusters_to_labels(dists, clusters), metric='precomputed')
 
 
 def _clust_and_eval(cluster_fn, dists_path, k, iters, eval_fn):
@@ -12,7 +16,7 @@ def _clust_and_eval(cluster_fn, dists_path, k, iters, eval_fn):
     return k, eval_fn(dists, clusts)
 
 
-def choose_k(cluster_fn, dists_path, k_range, iters, eval_fn, num_procs=8):
+def choose_k(cluster_fn, dists_path, k_range, iters, eval_fn, num_procs=14):
     """Evaluate multiple values of n using multiprocessing.
 
     :param dists_path: The realpath of saved numpy dists to load

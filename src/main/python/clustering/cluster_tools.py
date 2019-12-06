@@ -3,7 +3,7 @@ from sklearn.metrics import silhouette_score
 from collections import defaultdict
 
 
-def eval(dists, cluster_labels):
+def eval_silhouette(dists, cluster_labels):
     if np.isnan(dists).any():
         return None
     return silhouette_score(dists, cluster_labels, metric='precomputed')

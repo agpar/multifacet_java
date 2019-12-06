@@ -61,7 +61,7 @@ def social_jacc_dists(single_path, pairwise_path):
         jacc = line[INDEXES['socialJacc']]
         return social_jacc_to_dist(float(jacc))
 
-    return pairwise_dist_matrix(single_path, pairwise_path, selector, social_jacc_dists(0))
+    return pairwise_dist_matrix(single_path, pairwise_path, selector, social_jacc_to_dist(0))
 
 
 def pairwise_dist_matrix(single_path, pairwise_path, selector, default_val):
@@ -87,19 +87,26 @@ def pairwise_dist_matrix(single_path, pairwise_path, selector, default_val):
     return arr
 
 
+def gen_dist_matrix(single_path, pairwise_path, cluster_type):
+    init_indexes(single_path, pairwise_path)
+    if cluster_type == "pcc":
+        dist_arr = pcc_dists(single_path, pairwise_path)
+    elif cluster_type == "social":
+        dist_arr = social_jacc_dists(single_path, pairwise_path)
+    else:
+        print(f"Cluster type must be 'pcc' or 'social', not {cluster_type}")
+        exit(1)
+
+    return dist_arr
+
+
 def run(single_path, pairwise_path, cluster_type, output_path, dists_in, dists_out, k, iters):
     init_indexes(single_path, pairwise_path)
     dist_arr = None
     if dists_in:
         dist_arr = np.load(dists_in[0])
     else:
-        if cluster_type == "pcc":
-            dist_arr = pcc_dists(single_path, pairwise_path)
-        elif cluster_type == "social":
-            dist_arr = social_jacc_dists(single_path, pairwise_path)
-        else:
-            print(f"Cluster type must be 'pcc' or 'social', not {cluster_type}")
-            exit(1)
+        dist_arr = gen_dist_matrix(single_path, pairwise_path, cluster_type)
     if dists_out:
         np.save(dists_out[0], dist_arr)
 

@@ -172,11 +172,16 @@ def plot_review_counts(user_ids, reviews_by_userid):
     plt.ylabel("User #")
 
 
-if __name__ == '__main__':
+def run():
     users_by_id, reviews_by_userid, tips_by_userid, businesses = read_all()
     random_users = choose_sample(users_by_id, reviews_by_userid)
     write_stats(users_by_id, random_users, reviews_by_userid)
     review_train, review_test = split_reviews(list(random_users.keys()), reviews_by_userid)
     write_filtered(random_users, review_train, review_test, tips_by_userid, businesses)
+
+
+if __name__ == '__main__':
+    run()
+
 
 
