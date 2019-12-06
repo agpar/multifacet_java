@@ -26,10 +26,10 @@ public class YelpDataReader {
 
     public YelpDataReader(String dataDir) {
         this.dataDir = dataDir;
-        this.userFile = Paths.get(dataDir, "user.json");
-        this.reviewTrainFile = Paths.get(dataDir, "review_train.json");
-        this.reviewTestFile = Paths.get(dataDir, "review_test.json");
-        this.businessFile = Paths.get(dataDir, "business.json");
+        this.userFile = Paths.get(dataDir, "user_filtered.json");
+        this.reviewTrainFile = Paths.get(dataDir, "review_train_filtered.json");
+        this.reviewTestFile = Paths.get(dataDir, "review_test_filtered.json");
+        this.businessFile = Paths.get(dataDir, "business_filtered.json");
         this.categoryIdMap = new IdStringToIntMap();
     }
 

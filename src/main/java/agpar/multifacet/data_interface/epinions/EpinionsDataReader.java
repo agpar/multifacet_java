@@ -22,9 +22,9 @@ public class EpinionsDataReader {
 
     public EpinionsDataReader(String dataDir) {
         this.dataDir = dataDir;
-        this.contentFile = Paths.get(dataDir, "mc.txt");
-        this.trustFile = Paths.get(dataDir, "user_rating.txt");
-        this.reviewFile = Paths.get(dataDir, "rating_train.txt");
+        this.contentFile = Paths.get(dataDir, "mc_filtered.txt");
+        this.trustFile = Paths.get(dataDir, "user_rating_filtered.txt");
+        this.reviewFile = Paths.get(dataDir, "rating_train_filtered.txt");
     }
 
     public ReviewsById loadTrainReviews() {
