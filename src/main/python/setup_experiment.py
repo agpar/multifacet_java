@@ -115,11 +115,11 @@ def run(experiment_dir=None, data_set=None):
     np.save(social_dist_matrix_path, social_dist_matrix)
 
     print("Determining optimal cluster count...")
-    k_goodness_pcc = choose_k(clusteroid_kmeans.cluster, pcc_dist_matrix_path, range(20, 80), 30, eval_silouette)
+    k_goodness_pcc = choose_k(clusteroid_kmeans.cluster, pcc_dist_matrix_path, range(15, 60), 20, eval_silouette)
     with open(os.path.join(experiment_dir, "k_pcc_results.json"), 'w') as f:
         json.dump(k_goodness_pcc, f)
 
-    k_goodness_social = choose_k(clusteroid_kmeans.cluster, social_dist_matrix_path, range(20, 80), 30, eval_silouette)
+    k_goodness_social = choose_k(clusteroid_kmeans.cluster, social_dist_matrix_path, range(15, 60), 20, eval_silouette)
     with open(os.path.join(experiment_dir, "k_social_results.json"), 'w') as f:
         json.dump(k_goodness_social, f)
 

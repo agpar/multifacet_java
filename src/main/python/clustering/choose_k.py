@@ -5,7 +5,7 @@ from sklearn.metrics import silhouette_score
 
 
 def eval_silouette(dists, clusters):
-    return silhouette_score(dists, clusters_to_labels(dists, clusters), metric='precomputed')
+    return float(silhouette_score(dists, clusters, metric='precomputed'))
 
 
 def _clust_and_eval(cluster_fn, dists_path, k, iters, eval_fn):
