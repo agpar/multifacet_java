@@ -78,7 +78,7 @@ def split_reviews(selected_users, reviews_by_userid):
     return reviews_by_userid, test_set
 
 
-def write_filtered(reviews_train, reviews_test, trust_links, content):
+def write_filtered(relevant_users, reviews_train, reviews_test, trust_links, content):
     ITEM_REVIEW_FILTERED_TRAIN = path.join(settings.EPINIONS_DATA_DIR, 'rating_train_filtered.txt')
     ITEM_REVIEW_FILTERED_TEST = path.join(settings.EPINIONS_DATA_DIR, 'rating_test_filtered.txt')
 
@@ -87,6 +87,17 @@ def write_filtered(reviews_train, reviews_test, trust_links, content):
 
     itemIdMap= IDIndexMap()
     userIdMap = IDIndexMap()
+
+    for user in relevant_users:
+        userIdMap.get_int(user)
+
+    with open(USER_REVIEW_FILTERED, 'w') as f:
+        writer = csv.writer(f)
+        writer.writerow(trust_links[0]._fields)
+        for link in trust_links:
+            link = link._replace(user_id=userIdMap.get_int(link.user_id))
+            link = link._replace(other_id=userIdMap.get_int(link.other_id))
+            writer.writerow(link)
 
     for fname, data in [(ITEM_REVIEW_FILTERED_TRAIN, reviews_train), (ITEM_REVIEW_FILTERED_TEST, reviews_test)]:
         with open(fname, 'w') as f:
@@ -98,13 +109,6 @@ def write_filtered(reviews_train, reviews_test, trust_links, content):
                     review = review._replace(object_id=itemIdMap.get_int(review.object_id))
                     writer.writerow(review)
 
-    with open(USER_REVIEW_FILTERED, 'w') as f:
-        writer = csv.writer(f)
-        writer.writerow(trust_links[0]._fields)
-        for link in trust_links:
-            link = link._replace(user_id=userIdMap.get_int(link.user_id))
-            link = link._replace(other_id=userIdMap.get_int(link.other_id))
-            writer.writerow(link)
 
     with open(CONTENT_FILTERED, 'w') as f:
         writer = csv.writer(f)
@@ -117,7 +121,7 @@ def write_filtered(reviews_train, reviews_test, trust_links, content):
 def run():
     users, reviews, links, content = read_all()
     train_reviews, test_reviews = split_reviews(set(users), reviews)
-    write_filtered(train_reviews, test_reviews, links, content)
+    write_filtered(users, train_reviews, test_reviews, links, content)
 
 
 if __name__ == '__main__':

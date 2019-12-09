@@ -70,10 +70,10 @@ def generate_predictions(experiment_dir, single_path, pairwise_path, pcc_cluster
         (os.path.join(experiment_dir, "global_pcc_predictions.txt"), None, "pcc"),
         (os.path.join(experiment_dir, "global_social_predictions.txt"), None, "friend"),
         (os.path.join(experiment_dir, "global_real_friends.txt"), None, "realfriend"),
-        (os.path.join(experiment_dir, "pcc_clustered_pcc_predictions.txt"), pcc_cluster_path, "pcc"),
-        (os.path.join(experiment_dir, "pcc_clustered_social_predictions.txt"), pcc_cluster_path, "friend"),
-        (os.path.join(experiment_dir, "social_clustered_pcc_predictions.txt"), social_cluster_path, "pcc"),
-        (os.path.join(experiment_dir, "social_clustered_social_predictions.txt"), social_cluster_path, "friend")
+        (os.path.join(experiment_dir, "pcc_clustered_pcc_predictions.txt"), [pcc_cluster_path], "pcc"),
+        (os.path.join(experiment_dir, "pcc_clustered_social_predictions.txt"), [pcc_cluster_path], "friend"),
+        (os.path.join(experiment_dir, "social_clustered_pcc_predictions.txt"), [social_cluster_path], "pcc"),
+        (os.path.join(experiment_dir, "social_clustered_social_predictions.txt"), [social_cluster_path], "friend")
     ]
     processes = []
     for task in prediction_tasks:
@@ -144,6 +144,8 @@ def run(experiment_dir=None, data_set=None, skipto=None):
 
         cluster.run(single_path, pairwise_path, "social", social_cluster_path, [social_dist_matrix_path], None, k_goodness_social[0][0], 50)
         #cluster.run(single_path, pairwise_path, "social", social_cluster_path, [social_dist_matrix_path], None, 50, 50)
+
+    #TODO add rating tuple generation.
 
     if STEPS.index("predict") >= skip_to:
         print("Running all predictions in parallel.")

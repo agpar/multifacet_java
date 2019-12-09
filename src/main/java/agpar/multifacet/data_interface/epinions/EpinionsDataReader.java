@@ -79,6 +79,7 @@ public class EpinionsDataReader {
             while (line != null) {
                 String[] splitLine = line.split(",");
                 int userId = Integer.parseInt(splitLine[1]);
+                //TODO switch this line to a pre-determined relevancy set.
                 if ((!users.containsKey(userId)) && (reviewsByUserId.get(userId).size() >=19)) {
                     users.put(new EpinionsUser(
                             "null",

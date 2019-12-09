@@ -16,6 +16,7 @@ import java.util.HashMap;
 
 public class GenerateAllSingle {
 
+    private static GlobalReviewAvgCalculator globalAverageReviews;
     public static void generateData(String path) {
         DataSet ds = DataSet.getInstance();
         ds.load(0, 1_000_000_000);
@@ -53,6 +54,10 @@ public class GenerateAllSingle {
     }
 
     private static Double integrity(User u, DataSet ds, ItemReviewAvgCalculator avgCalculator){
+        if (globalAverageReviews == null) {
+            globalAverageReviews = new GlobalReviewAvgCalculator(ds.getReviewsByItemId());
+        }
+
         Review[] u1Reviews = new Review[u.getReviews().size()];
         {
             int i = 0;
@@ -75,7 +80,7 @@ public class GenerateAllSingle {
             );
             globalReviews[i] = avgReview;
         }
-        double[] globalAvgReviews = new GlobalReviewAvgCalculator(ds.getReviewsByItemId()).getAvgs(globalReviews, null);
+        double[] globalAvgReviews = globalAverageReviews.getAvgs(globalReviews, null);
 
         return ReviewSimilarity.pcc(u1Reviews, u1Avgs, globalReviews, globalAvgReviews);
     };
