@@ -18,8 +18,7 @@ import java.util.HashMap;
 public class YelpDataReader {
     private String dataDir;
     private Path userFile;
-    private Path reviewTrainFile;
-    private Path reviewTestFile;
+    private Path reviewFile;
     private Path businessFile;
     private IdStringToIntMap categoryIdMap;
 
@@ -27,8 +26,7 @@ public class YelpDataReader {
     public YelpDataReader(String dataDir) {
         this.dataDir = dataDir;
         this.userFile = Paths.get(dataDir, "user_filtered.json");
-        this.reviewTrainFile = Paths.get(dataDir, "review_train_filtered.json");
-        this.reviewTestFile = Paths.get(dataDir, "review_test_filtered.json");
+        this.reviewFile = Paths.get(dataDir, "review_filtered.json");
         this.businessFile = Paths.get(dataDir, "business_filtered.json");
         this.categoryIdMap = new IdStringToIntMap();
     }
@@ -60,12 +58,8 @@ public class YelpDataReader {
         return users;
     }
 
-    public ReviewsById loadTrainReviews() {
-        return loadReviews(this.reviewTrainFile.toString());
-    }
-
-    public ReviewsById loadTestReviews() {
-        return loadReviews(this.reviewTestFile.toString());
+    public ReviewsById loadReviews() {
+        return loadReviews(this.reviewFile.toString());
     }
 
     private ReviewsById loadReviews(String path) {

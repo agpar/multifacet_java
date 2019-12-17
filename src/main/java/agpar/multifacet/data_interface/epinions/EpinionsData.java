@@ -19,7 +19,7 @@ public class EpinionsData extends DataSet {
     @Override
     public void load(int start, int stop) {
         System.out.println("Loading Reviews");
-        this.reviewsByItemId = reader.loadTrainReviews();
+        this.reviewsByItemId = reader.loadReviews();
         // Adding reviews and categories to users.
         ReviewsById reviewsByUserId = new ReviewsById();
         for (List<Review> reviews: this.reviewsByItemId.values()) {

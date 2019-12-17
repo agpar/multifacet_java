@@ -19,15 +19,17 @@ public class EpinionsDataReader {
     private Path contentFile;
     private Path trustFile;
     private Path reviewFile;
+    private Path userFile;
 
     public EpinionsDataReader(String dataDir) {
         this.dataDir = dataDir;
+        this.userFile  = Paths.get(dataDir, "users.txt");
         this.contentFile = Paths.get(dataDir, "mc_filtered.txt");
         this.trustFile = Paths.get(dataDir, "user_rating_filtered.txt");
-        this.reviewFile = Paths.get(dataDir, "rating_train_filtered.txt");
+        this.reviewFile = Paths.get(dataDir, "rating_filtered.txt");
     }
 
-    public ReviewsById loadTrainReviews() {
+    public ReviewsById loadReviews() {
         BufferedReader reader;
         ReviewsById reviews = new ReviewsById();
         int reviewId = 0;
@@ -66,6 +68,21 @@ public class EpinionsDataReader {
     public UsersById loadUsers(ReviewsById reviewsByUserId) {
         BufferedReader reader;
         UsersById users = new UsersById();
+        HashSet<Integer> relevantUsers = new HashSet<>();
+
+        try {
+            reader = new BufferedReader(new FileReader(this.userFile.toString()));
+            String line = reader.readLine();
+            while (line != null) {
+                relevantUsers.add(Integer.parseInt(line));
+                line = reader.readLine();
+            }
+
+        } catch(IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
         HashMap<String, HashMap<Integer, HashSet<Integer>>> trustLinks = loadTrustLinks();
         HashMap<Integer, HashSet<Integer>> friendsIncoming = trustLinks.get("friendsIncoming");
         HashMap<Integer, HashSet<Integer>> friendsOutgoing = trustLinks.get("friendsOutgoing");
@@ -79,8 +96,7 @@ public class EpinionsDataReader {
             while (line != null) {
                 String[] splitLine = line.split(",");
                 int userId = Integer.parseInt(splitLine[1]);
-                //TODO switch this line to a pre-determined relevancy set.
-                if ((!users.containsKey(userId)) && (reviewsByUserId.get(userId).size() >=19)) {
+                if (relevantUsers.contains(userId) && !users.containsKey(userId)) {
                     users.put(new EpinionsUser(
                             "null",
                             userId,

@@ -19,7 +19,7 @@ public class YelpData extends DataSet {
         System.out.println("Loading Users");
         this.usersById = reader.loadUsers(start, stop);
         System.out.println("Loading Reviews");
-        this.reviewsByItemId = reader.loadTrainReviews();
+        this.reviewsByItemId = reader.loadReviews();
         System.out.println("Loading Businesses");
         this.businesses = reader.loadBusinesses();
 

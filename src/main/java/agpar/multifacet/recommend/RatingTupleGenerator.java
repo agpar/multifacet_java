@@ -30,9 +30,10 @@ public class RatingTupleGenerator {
         }
         writeOut(reviewsToWrite, outputPath);
     }
+    
     public static void GenerateTestReviewTuples(int userCount, String outputFile) {
         YelpDataReader reader = new YelpDataReader(Settings.YELP_DATA_DIR());
-        ReviewsById reviews = reader.loadTestReviews();
+        ReviewsById reviews = reader.loadReviews();
         ArrayList<Review> reviewsToWrite = new ArrayList<>();
         for (Collection<Review> reviewList : reviews.values()) {
             reviewsToWrite.addAll(reviewList);

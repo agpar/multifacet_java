@@ -15,8 +15,6 @@ Filter users. Only look at users who have rated at least MIN_REVIEWS restaurants
 NUM_USERS randomly from the set. Reviews are deduped, using only the latest review for
 each item for each user.
 
-Splits reviews into train/test set using leave k out strategy.
- 
 Maps each user id to a integer, which is also used as the index to refer to that
 user in any matrix in later processing.
 """
@@ -106,21 +104,9 @@ def filter_friend_list(user, userIdMap):
     return ", ".join([str(userIdMap.get_int(u)) for u in user['friends'].split(", ")])
 
 
-def split_reviews(selected_users, reviews_by_userid):
-    test_set = defaultdict(list)
-    for user_id in selected_users:
-        user_reviews = reviews_by_userid[user_id]
-        for i in range(LEAVE_OUT):
-            selected_idx = np.random.choice(len(user_reviews))
-            selected_review = user_reviews.pop(selected_idx)
-            test_set[user_id].append(selected_review)
-    return reviews_by_userid, test_set
-
-
-def write_filtered(users_by_id, review_train, review_test, tips_by_userid, businesses):
+def write_filtered(users_by_id, reviews, tips_by_userid, businesses):
     business_filtered = path.join(settings.YELP_DATA_DIR, 'business_filtered.json')
-    review_train_filtered = path.join(settings.YELP_DATA_DIR, 'review_train_filtered.json')
-    review_test_filtered = path.join(settings.YELP_DATA_DIR, 'review_test_filtered.json')
+    review_filtered = path.join(settings.YELP_DATA_DIR, 'review_filtered.json')
     user_filtered = path.join(settings.YELP_DATA_DIR, 'user_filtered.json')
     tip_filtered = path.join(settings.YELP_DATA_DIR, 'tip_filtered.json')
 
@@ -138,15 +124,14 @@ def write_filtered(users_by_id, review_train, review_test, tips_by_userid, busin
             user['friends'] = filter_friend_list(user, userIdMap)
             f.write(f"{json.dumps(user)}\n")
 
-    for fname, data in [(review_train_filtered, review_train), (review_test_filtered, review_test)]:
-        with open(fname, 'w') as f:
-            for user_id, reviews in data.items():
-                for review in reviews:
-                    review['true_review_id'] = review['review_id']
-                    review['review_id'] = reviewIdMap.get_int(review['review_id'])
-                    review['business_id'] = businessIdMap.get_int(review['business_id'])
-                    review['user_id'] = userIdMap.get_int(review['user_id'])
-                    f.write(f"{json.dumps(review)}\n")
+    with open(review_filtered, 'w') as f:
+        for user_id, reviews in reviews.items():
+            for review in reviews:
+                review['true_review_id'] = review['review_id']
+                review['review_id'] = reviewIdMap.get_int(review['review_id'])
+                review['business_id'] = businessIdMap.get_int(review['business_id'])
+                review['user_id'] = userIdMap.get_int(review['user_id'])
+                f.write(f"{json.dumps(review)}\n")
 
     with open(tip_filtered, 'w') as f:
         for user_id, tips in tips_by_userid.items():
@@ -176,8 +161,7 @@ def run():
     users_by_id, reviews_by_userid, tips_by_userid, businesses = read_all()
     random_users = choose_sample(users_by_id, reviews_by_userid)
     write_stats(users_by_id, random_users, reviews_by_userid)
-    review_train, review_test = split_reviews(list(random_users.keys()), reviews_by_userid)
-    write_filtered(random_users, review_train, review_test, tips_by_userid, businesses)
+    write_filtered(random_users, reviews_by_userid, tips_by_userid, businesses)
 
 
 if __name__ == '__main__':
