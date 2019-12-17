@@ -3,10 +3,12 @@ package agpar.multifacet.recommend;
 import agpar.multifacet.experiments.ExperimentDescription;
 import net.librec.common.LibrecException;
 import net.librec.data.DataModel;
-import net.librec.data.model.TextDataModel;
 import net.librec.recommender.Recommender;
 import net.librec.recommender.RecommenderContext;
 import net.librec.recommender.context.rating.TrustSVDRecommender;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class TrustSVDTester extends RecommenderTester {
     @Override
@@ -27,9 +29,21 @@ public class TrustSVDTester extends RecommenderTester {
         RecommenderContext context = new RecommenderContext(conf, dataModel);
 
         // training
-        Recommender recommender = new TrustSVDRecommender();
+        Recommender recommender = new SynchronousTrustSVDRecommender();
         recommender.recommend(context);
 
         return recommender;
+    }
+}
+// Gets around a race condition in the setup function.
+class SynchronousTrustSVDRecommender extends TrustSVDRecommender {
+
+    private static Lock setupLock = new ReentrantLock();
+
+    public void setup() throws LibrecException
+    {
+        setupLock.lock();
+        super.setup();
+        setupLock.unlock();
     }
 }

@@ -44,7 +44,7 @@ public class TrustMFTester extends RecommenderTester {
 
 // Gets around a race condition in the setup function.
 class SynchronousTrustMFRecommender extends TrustMFRecommender {
-    public static Lock setupLock = new ReentrantLock();
+    private static Lock setupLock = new ReentrantLock();
 
     public void setup() throws LibrecException
     {
