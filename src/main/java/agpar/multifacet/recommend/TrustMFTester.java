@@ -8,6 +8,9 @@ import net.librec.recommender.Recommender;
 import net.librec.recommender.RecommenderContext;
 import net.librec.recommender.context.rating.TrustMFRecommender;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class TrustMFTester extends RecommenderTester {
 
     @Override
@@ -32,9 +35,21 @@ public class TrustMFTester extends RecommenderTester {
         RecommenderContext context = new RecommenderContext(conf, dataModel);
 
         // training
-        Recommender recommender = new TrustMFRecommender();
+        Recommender recommender = new SynchronousTrustMFRecommender();
         recommender.recommend(context);
 
         return recommender;
+    }
+}
+
+// Gets around a race condition in the setup function.
+class SynchronousTrustMFRecommender extends TrustMFRecommender {
+    public static Lock setupLock = new ReentrantLock();
+
+    public void setup() throws LibrecException
+    {
+        setupLock.lock();
+        super.setup();
+        setupLock.unlock();
     }
 }
