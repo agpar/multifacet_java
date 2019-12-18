@@ -3,7 +3,7 @@ package agpar.multifacet.recommend;
 import agpar.multifacet.experiments.ExperimentDescription;
 import net.librec.common.LibrecException;
 import net.librec.data.DataModel;
-import net.librec.data.model.TextDataModel;
+import net.librec.math.algorithm.Randoms;
 import net.librec.recommender.Recommender;
 import net.librec.recommender.RecommenderContext;
 import net.librec.recommender.context.rating.TrustMFRecommender;
@@ -35,7 +35,7 @@ public class TrustMFTester extends RecommenderTester {
         RecommenderContext context = new RecommenderContext(conf, dataModel);
 
         // training
-        Recommender recommender = new SynchronousTrustMFRecommender();
+        Recommender recommender = new SynchronousTrustMFRecommender(this.randomSeed);
         recommender.recommend(context);
 
         return recommender;
@@ -45,6 +45,10 @@ public class TrustMFTester extends RecommenderTester {
 // Gets around a race condition in the setup function.
 class SynchronousTrustMFRecommender extends TrustMFRecommender {
     private static Lock setupLock = new ReentrantLock();
+
+    public SynchronousTrustMFRecommender(long seed) {
+        Randoms.seed(seed);
+    }
 
     public void setup() throws LibrecException
     {

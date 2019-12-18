@@ -130,6 +130,7 @@ public class Main {
         return experiments;
     }
 
+    // Primarily use this to test the goodness of hyper parameters. It does not really do k-fold cross validation.
     public static void runAllExperimentsParallel(List<ExperimentRunner> experiments) {
         // Experiments must be grouped by seed, as the seed is a global static.
         HashMap<Integer, List<ExperimentRunner>> experimentsBySeed = new HashMap<>();

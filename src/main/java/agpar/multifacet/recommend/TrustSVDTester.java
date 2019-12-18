@@ -3,6 +3,7 @@ package agpar.multifacet.recommend;
 import agpar.multifacet.experiments.ExperimentDescription;
 import net.librec.common.LibrecException;
 import net.librec.data.DataModel;
+import net.librec.math.algorithm.Randoms;
 import net.librec.recommender.Recommender;
 import net.librec.recommender.RecommenderContext;
 import net.librec.recommender.context.rating.TrustSVDRecommender;
@@ -29,7 +30,7 @@ public class TrustSVDTester extends RecommenderTester {
         RecommenderContext context = new RecommenderContext(conf, dataModel);
 
         // training
-        Recommender recommender = new SynchronousTrustSVDRecommender();
+        Recommender recommender = new SynchronousTrustSVDRecommender(this.randomSeed);
         recommender.recommend(context);
 
         return recommender;
@@ -39,6 +40,10 @@ public class TrustSVDTester extends RecommenderTester {
 class SynchronousTrustSVDRecommender extends TrustSVDRecommender {
 
     private static Lock setupLock = new ReentrantLock();
+
+    public SynchronousTrustSVDRecommender(long seed) {
+        Randoms.seed(seed);
+    }
 
     public void setup() throws LibrecException
     {

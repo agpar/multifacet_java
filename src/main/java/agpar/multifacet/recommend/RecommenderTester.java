@@ -18,6 +18,7 @@ public abstract class RecommenderTester {
     protected String experimentDir;
     protected String ratingFile;
     protected String socialFile;
+    protected long randomSeed;
     public Configuration conf = new Configuration();
 
     public  HashMap<String, Double> learn(String experimentDir, String experimentName, String ratingFile, String socialFile) throws LibrecException {
@@ -31,12 +32,8 @@ public abstract class RecommenderTester {
         conf.set("data.input.path", this.ratingFile);
         conf.set("data.appender.path", this.socialFile);
         conf.set("data.appender.class", "net.librec.data.convertor.appender.SocialDataAppender");
-        conf.set("data.model.splitter", "net.librec.data.splitter.GivenTestSetDataSplitter");
         conf.setFloat("rec.iterator.learnrate.maximum", 0.1f);
         conf.setFloat("rec.iterator.learnrate", 0.0001f);
-
-        //conf.setInt("data.splitter.cv.index", splitIndex);
-        //conf.setInt("data.splitter.cv.number", splitNum);
 
         Recommender recommender = this.learnImplementation();
         return this.evaluate(recommender);
@@ -54,6 +51,8 @@ public abstract class RecommenderTester {
     public void loadDescription(ExperimentDescription description) {
         conf.set("rec.iterator.maximum", String.valueOf(description.getNumIterations()));
         conf.setInt("rec.factor.number", description.getLatentDim());
+        conf.setLong("rec.random.seed", description.getRandomSeed());
+        this.randomSeed = description.getRandomSeed();
         Randoms.seed(description.getRandomSeed());
     };
 
