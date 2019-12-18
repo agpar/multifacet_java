@@ -1,0 +1,3 @@
+[submodule "src/libs/librec"]
+	path = src/libs/librec
+	url = https://github.com/agpar/librec/
