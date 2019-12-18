@@ -12,6 +12,7 @@ import net.librec.data.convertor.AbstractDataConvertor;
 import net.librec.data.convertor.TextDataConvertor;
 import net.librec.data.convertor.appender.SocialDataAppender;
 import net.librec.data.model.AbstractDataModel;
+import net.librec.data.splitter.KCVDataSplitter;
 import net.librec.data.splitter.RatioDataSplitter;
 import net.librec.math.structure.DataSet;
 import net.librec.math.structure.SparseMatrix;
@@ -40,8 +41,7 @@ public class SharedDataModel extends AbstractDataModel implements DataModel {
     }
 
     public static synchronized void resetSplit() {
-        SharedRatioDataSplitter.reset();
-
+        SharedKCVDataSplitter.reset();
     }
 
     @Override
@@ -60,7 +60,13 @@ public class SharedDataModel extends AbstractDataModel implements DataModel {
     }
 
     protected void buildSplitter() throws LibrecException {
-        dataSplitter = SharedRatioDataSplitter.getInstance(dataConvertor, conf);
+        int splitIndex = conf.getInt("data.splitter.cv.index", 0);
+        conf.setInt("data.splitter.cv.index", splitIndex);
+        int splitNum = conf.getInt("data.splitter.cv.number", 5);
+        conf.setInt("data.splitter.cv.number", splitNum);
+
+        dataSplitter = SharedKCVDataSplitter.getInstance(dataConvertor, conf);
+        ((SharedKCVDataSplitter) dataSplitter).splitFolds();
         dataSplitter.splitData();
         trainDataSet = dataSplitter.getTrainData();
         testDataSet = dataSplitter.getTestData();
@@ -229,5 +235,51 @@ class SharedRatioDataSplitter implements DataSplitter {
     @Override
     public SparseMatrix getValidData() {
         return rdt.getValidData();
+    }
+}
+
+class SharedKCVDataSplitter extends KCVDataSplitter {
+
+    private static KCVDataSplitter splitter;
+    private static SharedKCVDataSplitter instance;
+
+    private SharedKCVDataSplitter(DataConvertor dataConvertor, Configuration conf) {
+        splitter = new KCVDataSplitter(dataConvertor, conf);
+    }
+
+    public static SharedKCVDataSplitter getInstance(DataConvertor dataConvertor, Configuration conf) {
+        if (instance == null) {
+            instance = new SharedKCVDataSplitter(dataConvertor, conf);
+        }
+        return instance;
+    }
+
+    public static void reset() {
+        instance = null;
+    }
+
+    @Override
+    public void splitData() throws LibrecException {
+        splitter.splitData();
+    }
+
+    @Override
+    public void setDataConvertor(DataConvertor dataConvertor) {
+        splitter.setDataConvertor(dataConvertor);
+    }
+
+    @Override
+    public SparseMatrix getTrainData() {
+        return splitter.getTrainData();
+    }
+
+    @Override
+    public SparseMatrix getTestData() {
+        return splitter.getTestData();
+    }
+
+    @Override
+    public SparseMatrix getValidData() {
+        return splitter.getTestData();
     }
 }
