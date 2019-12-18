@@ -12,7 +12,6 @@ import net.librec.data.convertor.AbstractDataConvertor;
 import net.librec.data.convertor.TextDataConvertor;
 import net.librec.data.convertor.appender.SocialDataAppender;
 import net.librec.data.model.AbstractDataModel;
-import net.librec.data.splitter.KCVDataSplitter;
 import net.librec.data.splitter.RatioDataSplitter;
 import net.librec.math.structure.DataSet;
 import net.librec.math.structure.SparseMatrix;
@@ -40,10 +39,6 @@ public class SharedDataModel extends AbstractDataModel implements DataModel {
         SharedSocialDataAppender.reset();
     }
 
-    public static synchronized void resetSplit() {
-        SharedKCVDataSplitter.reset();
-    }
-
     @Override
     protected void buildConvert() throws LibrecException {
         String[] inputDataPath = conf.get(Configured.CONF_DATA_INPUT_PATH).trim().split(" ");
@@ -60,14 +55,12 @@ public class SharedDataModel extends AbstractDataModel implements DataModel {
     }
 
     protected void buildSplitter() throws LibrecException {
-        int splitIndex = conf.getInt("data.splitter.cv.index", 0);
+        int splitIndex = conf.getInt("data.splitter.cv.index", 1);
         conf.setInt("data.splitter.cv.index", splitIndex);
         int splitNum = conf.getInt("data.splitter.cv.number", 5);
         conf.setInt("data.splitter.cv.number", splitNum);
 
-        dataSplitter = SharedKCVDataSplitter.getInstance(dataConvertor, conf);
-        ((SharedKCVDataSplitter) dataSplitter).splitFolds();
-        dataSplitter.splitData();
+        dataSplitter = ThreadSafeKCVDataSplitter.getInstance(splitIndex, splitNum,  dataConvertor, conf);
         trainDataSet = dataSplitter.getTrainData();
         testDataSet = dataSplitter.getTestData();
     }
@@ -238,48 +231,3 @@ class SharedRatioDataSplitter implements DataSplitter {
     }
 }
 
-class SharedKCVDataSplitter extends KCVDataSplitter {
-
-    private static KCVDataSplitter splitter;
-    private static SharedKCVDataSplitter instance;
-
-    private SharedKCVDataSplitter(DataConvertor dataConvertor, Configuration conf) {
-        splitter = new KCVDataSplitter(dataConvertor, conf);
-    }
-
-    public static SharedKCVDataSplitter getInstance(DataConvertor dataConvertor, Configuration conf) {
-        if (instance == null) {
-            instance = new SharedKCVDataSplitter(dataConvertor, conf);
-        }
-        return instance;
-    }
-
-    public static void reset() {
-        instance = null;
-    }
-
-    @Override
-    public void splitData() throws LibrecException {
-        splitter.splitData();
-    }
-
-    @Override
-    public void setDataConvertor(DataConvertor dataConvertor) {
-        splitter.setDataConvertor(dataConvertor);
-    }
-
-    @Override
-    public SparseMatrix getTrainData() {
-        return splitter.getTrainData();
-    }
-
-    @Override
-    public SparseMatrix getTestData() {
-        return splitter.getTestData();
-    }
-
-    @Override
-    public SparseMatrix getValidData() {
-        return splitter.getTestData();
-    }
-}

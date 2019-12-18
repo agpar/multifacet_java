@@ -84,7 +84,7 @@ public class Main {
             // If no other flag is supplied, try to start a prediction task.
             if (files.size() > 0) {
                 List<ExperimentRunner> experiments = loadExperiments(files);
-                runAllExperiments(experiments);
+                runAllExperimentsParallel(experiments);
             } else {
                 System.out.println("No flags or files were specified. Exiting.");
                 System.exit(1);
@@ -130,7 +130,7 @@ public class Main {
         return experiments;
     }
 
-    public static void runAllExperiments(List<ExperimentRunner> experiments) {
+    public static void runAllExperimentsParallel(List<ExperimentRunner> experiments) {
         // Experiments must be grouped by seed, as the seed is a global static.
         HashMap<Integer, List<ExperimentRunner>> experimentsBySeed = new HashMap<>();
         for (ExperimentRunner exp : experiments) {
@@ -171,14 +171,14 @@ public class Main {
                 } catch (Exception e) {
                     e.printStackTrace();
                     exit(1);
-                } finally {
-                    // clear data split before next random seed assignment.
-                    SharedDataModel.resetSplit();
                 }
             }
             // clear social data matrix before moving to next set of experiments
             SharedDataModel.resetSocial();
         }
+    }
+
+    public static void runAllExperimentsKFold() {
     }
 
     public static DATA_SOURCE get_source() {

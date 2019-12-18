@@ -34,6 +34,10 @@ public abstract class RecommenderTester {
         conf.set("data.model.splitter", "net.librec.data.splitter.GivenTestSetDataSplitter");
         conf.setFloat("rec.iterator.learnrate.maximum", 0.1f);
         conf.setFloat("rec.iterator.learnrate", 0.0001f);
+
+        //conf.setInt("data.splitter.cv.index", splitIndex);
+        //conf.setInt("data.splitter.cv.number", splitNum);
+
         Recommender recommender = this.learnImplementation();
         return this.evaluate(recommender);
     };
