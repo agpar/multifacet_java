@@ -13,6 +13,7 @@ import filter_yelp
 import filter_epinions
 import cluster
 import predict
+import settings
 from clustering import clusteroid_kmeans
 from clustering.choose_k import choose_k, eval_silouette
 
@@ -75,16 +76,22 @@ def generate_predictions(experiment_dir, single_path, pairwise_path, pcc_cluster
         (os.path.join(experiment_dir, "social_clustered_pcc_predictions.txt"), [social_cluster_path], "pcc"),
         (os.path.join(experiment_dir, "social_clustered_social_predictions.txt"), [social_cluster_path], "friend")
     ]
-    processes = []
-    for task in prediction_tasks:
-        if os.path.exists(task[0]):
-            shutil.move(task[0], task[0] + ".old")
-        p = Process(target=predict.run, args=(base_args + task))
-        p.start()
-        processes.append(p)
-    for p in processes:
-        p.join()
 
+    if settings.MULTIPROCESS_PREDICTIONS:
+        processes = []
+        for task in prediction_tasks:
+            if os.path.exists(task[0]):
+                shutil.move(task[0], task[0] + ".old")
+            p = Process(target=predict.run, args=(base_args + task))
+            p.start()
+            processes.append(p)
+        for p in processes:
+            p.join()
+    else:
+        for task in prediction_tasks:
+            if os.path.exists(task[0]):
+                shutil.move(task[0], task[0] + ".old")
+            predict.run(*(base_args + task))
 
 STEPS = ("filter", "single", "pairwise", "dists", "cluster", "predict")
 def run(experiment_dir=None, data_set=None, skipto=None):

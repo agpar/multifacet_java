@@ -3,6 +3,7 @@ from multiprocessing import Pool, Queue
 from prediction.classifier_trainer import ClassifierTrainer
 from prediction_tools import combined_headers
 from typing import List
+import settings
 
 
 def _train_classifier(i, single_path, pairwise_path, header, combiner, clf_trainer, userIds=None, numVects=None):
@@ -40,30 +41,47 @@ class ClusterClassifier:
         self.classifiers = [None for i in range(self.NUM_CLUSTERS)]
 
         # Start a process pool of workers
-        pool = Pool(self.NUM_CLUSTERS + 1)
-        results = []
+        args, kwargs = [], []
         args_base = (self.SINGLE_PATH, self.PAIRWISE_PATH, header, self.combiner, self.trainer)
         if self.NUM_CLUSTERS > 1:
             for i in range(self.NUM_CLUSTERS):
                 if len(self.clusters[i]) > 100:
-                    args = (i, ) + args_base
-                    kwds = {'userIds': self.clusters[i]}
-                    results.append(pool.apply_async(_train_classifier, args=args, kwds=kwds))
+                    args.append((i, ) + args_base)
+                    kwargs.append({'userIds': self.clusters[i]})
 
         # Compute the "general" classifier at the same time
-        args = (-1, ) + args_base
-        kwds = {'numVects': 500_000}
-        results.append(pool.apply_async(_train_classifier, args=args, kwds=kwds))
+        args.append((-1, ) + args_base)
+        kwargs.append({'numVects': 1_000_000})
+        if settings.MULTIPROCESS_PREDICTIONS:
+            self._train_with_pool(args, kwargs)
+        else:
+            self._train_consecutively(args, kwargs)
+
+    def _train_with_pool(self, arg_list, kwarg_list):
+        results = []
+        pool = Pool(self.NUM_CLUSTERS + 1)
+
+        for args, kwds in zip(arg_list, kwarg_list):
+            results.append(pool.apply_async(_train_classifier, args=args, kwds=kwds))
+
         pool.close()
         for res in results:
             clf, score, i = res.get()
-            if i == -1:
-                self.overall_classifier = clf
-                print(f"Overall classifier score: {score}")
-            else:
-                self.classifiers[i] = clf
-                print(f"Classifier {i} score: {score}")
+            self._apply_result(clf, score, i)
         pool.join()
+
+    def _train_consecutively(self, arg_list, kwarg_list):
+        for args, kwds in zip(arg_list, kwarg_list):
+            clf, score, i = _train_classifier(*args, **kwds)
+            self._apply_result(clf, score, i)
+
+    def _apply_result(self, clf, score, i):
+        if i == -1:
+            self.overall_classifier = clf
+            print(f"Overall classifier score: {score}")
+        else:
+            self.classifiers[i] = clf
+            print(f"Classifier {i} score: {score}")
 
     def fit(self):
         self.init_clusters()
