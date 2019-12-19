@@ -8,7 +8,6 @@ from tools.id_index_map import IDIndexMap
 import numpy as np
 import math
 from collections import defaultdict, Counter
-import matplotlib.pyplot as plt
 
 """
 Filter users. Only look at users who have rated at least MIN_REVIEWS restaurants. Pick
@@ -148,6 +147,7 @@ def write_filtered(users_by_id, reviews, tips_by_userid, businesses):
 
 
 def plot_review_counts(user_ids, reviews_by_userid):
+    import matplotlib.pyplot as plt
     lens = [len(reviews_by_userid[user]) for user in user_ids]
     lens.sort()
     counts = Counter(lens)
