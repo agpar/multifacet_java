@@ -125,7 +125,7 @@ def _combine_balanced_ids(singlePath, pairPath, userIds, test=None):
         fin.readline()
         reader = csv.reader(fin)
         for pair in reader:
-            if not (int(pair[0]) in userIds or int(pair[1]) in userIds):
+            if not int(pair[0]) in userIds:
                 continue
             if test(pair):
                 vects.append(build_vect(pair, singleById))
