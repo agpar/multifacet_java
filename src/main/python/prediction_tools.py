@@ -62,7 +62,7 @@ def pair_are_friends(pair):
 def pcc_positive(pair):
     pcc = pair[INDEXES['PCC']]
     if pcc == 'null':
-        return False
+        return None
     return float(pcc) > 0
 
 
@@ -101,6 +101,8 @@ def _combine_balanced_num(singlePath, pairPath, num_vects, test=None):
         fin.readline()
         reader = csv.reader(fin)
         for pair in reader:
+            if test(pair) is None:
+                continue
             if test(pair):
                 vects.append(build_vect(pair, singleById))
                 posCount += 1
@@ -126,6 +128,8 @@ def _combine_balanced_ids(singlePath, pairPath, userIds, test=None):
         reader = csv.reader(fin)
         for pair in reader:
             if not int(pair[0]) in userIds:
+                continue
+            if test(pair) is None:
                 continue
             if test(pair):
                 vects.append(build_vect(pair, singleById))
