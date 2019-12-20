@@ -51,6 +51,7 @@ public class YelpDataReader {
                     break;
                 }
             }
+            reader.close();
         } catch(IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -75,6 +76,7 @@ public class YelpDataReader {
                 reviews.put(review.getItemIdInt(), review);
                 line = reader.readLine();
             }
+            reader.close();
         } catch(IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -95,6 +97,7 @@ public class YelpDataReader {
                 businesses.put(business.itemId, business);
                 line = reader.readLine();
             }
+            reader.close();
         } catch(IOException e) {
             e.printStackTrace();
             System.exit(1);

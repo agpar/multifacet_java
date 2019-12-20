@@ -50,6 +50,7 @@ public class EpinionsDataReader {
                 reviewId++;
                 line = reader.readLine();
             }
+            reader.close();
         } catch(IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -107,6 +108,7 @@ public class EpinionsDataReader {
                 }
                 line = reader.readLine();
             }
+            reader.close();
         } catch(IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -140,6 +142,7 @@ public class EpinionsDataReader {
                 }
                 line = reader.readLine();
             }
+            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -164,6 +167,7 @@ public class EpinionsDataReader {
                 businesses.put(business.itemId, business);
                 line = reader.readLine();
             }
+            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -178,6 +182,4 @@ public class EpinionsDataReader {
         assert(splitHeader[2].equals("rating"));
         assert(splitHeader[3].equals("date"));
     }
-
-
 }
