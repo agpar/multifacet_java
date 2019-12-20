@@ -18,10 +18,8 @@ Maps each user id to a integer, which is also used as the index to refer to that
 user in any matrix in later processing.
 """
 
-MIN_USER_REVIEWS = 10
-MIN_ITEM_REVIEWS = 10
-LEAVE_OUT = 1
-NUM_USERS = 30_000
+MIN_USER_REVIEWS = 20
+NUM_USERS = 40_000
 BUSINESS_FILE = path.join(settings.YELP_DATA_DIR, 'business.json')
 REVIEW_FILE = path.join(settings.YELP_DATA_DIR, 'review.json')
 USER_FILE = path.join(settings.YELP_DATA_DIR, 'user.json')
@@ -159,9 +157,9 @@ def plot_review_counts(user_ids, reviews_by_userid):
 
 def run():
     users_by_id, reviews_by_userid, tips_by_userid, businesses = read_all()
-    random_users = choose_sample(users_by_id, reviews_by_userid)
-    write_stats(users_by_id, random_users, reviews_by_userid)
-    write_filtered(random_users, reviews_by_userid, tips_by_userid, businesses)
+    # random_users = choose_sample(users_by_id, reviews_by_userid)
+    # write_stats(users_by_id, random_users, reviews_by_userid)
+    write_filtered(users_by_id, reviews_by_userid, tips_by_userid, businesses)
 
 
 if __name__ == '__main__':
