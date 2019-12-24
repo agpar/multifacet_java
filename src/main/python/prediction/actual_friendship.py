@@ -1,5 +1,6 @@
 from prediction.classifier_trainer import ClassifierTrainer
 from prediction_tools import INDEXES
+from data_set import DataSet
 
 
 class FriendPredictor:
@@ -20,4 +21,6 @@ class RealFriendTrainer(ClassifierTrainer):
 
     @staticmethod
     def to_dataset(lines, header):
-        return lines
+        ds = DataSet(lines, header)
+        ds = ds.split(header.index('areFriends'), start_col=2)
+        return ds.X, ds.Y
