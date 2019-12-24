@@ -21,4 +21,9 @@ class RealFriendTrainer(ClassifierTrainer):
 
     @staticmethod
     def to_dataset(lines, header):
-        return [], []
+        lines_mem = []
+        for i in range(10_000):
+            lines_mem.append(next(lines))
+        ds = DataSet(lines_mem, header)
+        ds = ds.split(header.index('areFriends'), start_col=2)
+        return ds.X, ds.Y
