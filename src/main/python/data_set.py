@@ -24,15 +24,20 @@ class DataSet:
 
         mask_list = [m-start_col for m in mask_list]
 
-        X = np.array([d[start_col:] for d in self.data])
-        Y = np.copy(X[:, (target_col - start_col)])
-        X[:, mask_list] = 0
-
-        return DataSplit(self.data, self.labels[start_col:], X, Y, mask_list)
+        if len(self) == 0:
+            return DataSplit(self.data, self.labels[start_col:], np.array([]), np.array([]), mask_list)
+        else:
+            X = np.array([d[start_col:] for d in self.data])
+            Y = np.copy(X[:, (target_col - start_col)])
+            X[:, mask_list] = 0
+            return DataSplit(self.data, self.labels[start_col:], X, Y, mask_list)
 
     @property
     def labels(self):
         return self._labels
+
+    def __len__(self):
+        return len(self.data)
 
 
 class DataSplit(DataSet):
