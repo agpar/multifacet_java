@@ -10,7 +10,7 @@ def _train_classifier(i, single_path, pairwise_path, header, combiner, clf_train
     training_set = combiner(single_path, pairwise_path, userIds=userIds, numVects=numVects)
     X, Y = clf_trainer.to_dataset(training_set, header)
     if len(X) < 1000:
-        return None, f"Not learned, only len(X) examples", i
+        return None, f"Not learned, only {len(X)} examples", i
     clf, score = clf_trainer.learn_classifier(X, Y, header, 1.0)
     if score > 0.6:
         return clf, score, i
