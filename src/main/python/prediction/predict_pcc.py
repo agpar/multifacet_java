@@ -1,5 +1,5 @@
 from data_set import *
-from prediction_tools import *
+from prediction_tools import INDEXES
 
 from prediction.classifier_trainer import ClassifierTrainer
 

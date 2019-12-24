@@ -1,6 +1,6 @@
 from data_set import DataSet
 from prediction.classifier_trainer import ClassifierTrainer
-from prediction_tools import *
+from prediction_tools import INDEXES
 
 
 class FriendshipTrainer(ClassifierTrainer):
