@@ -60,7 +60,9 @@ public class SharedDataModel extends AbstractDataModel implements DataModel {
         int splitNum = conf.getInt("data.splitter.cv.number", 5);
         conf.setInt("data.splitter.cv.number", splitNum);
 
-        dataSplitter = ThreadSafeKCVDataSplitter.getInstance(splitIndex, splitNum,  dataConvertor, conf);
+        dataSplitter = SharedRatioDataSplitter.getInstance(dataConvertor, conf);
+        //dataSplitter = ThreadSafeKCVDataSplitter.getInstance(splitIndex, splitNum,  dataConvertor, conf);
+
         trainDataSet = dataSplitter.getTrainData();
         testDataSet = dataSplitter.getTestData();
     }

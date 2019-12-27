@@ -15,9 +15,16 @@ public class TrustSVDTester extends RecommenderTester {
     @Override
     public void loadDescription(ExperimentDescription description) {
         super.loadDescription(description);
+
+        // Set the social regulation
         conf.setFloat("rec.social.regularization", description.getSocialReg());
+
         // Try to increase the cache size.
         conf.setStrings("guava.cache.spec", "maximumSize=2000,expireAfterAccess=20m");
+
+        // Use a low learn rate.
+        conf.setFloat("rec.iterator.learnrate.maximum", 0.1f);
+        conf.setFloat("rec.iterator.learnrate", 0.0001f);
     }
 
     @Override
