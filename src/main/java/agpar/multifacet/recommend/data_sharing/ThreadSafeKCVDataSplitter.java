@@ -7,58 +7,58 @@ import net.librec.data.DataSplitter;
 import net.librec.data.splitter.KCVDataSplitter;
 import net.librec.math.structure.SparseMatrix;
 
-class StaticDataHolder {
-    private static KCVDataSplitter splitter;
-    private static SparseMatrix[] trainMatrices;
-    private static SparseMatrix[] testMatrices;
-    private static int size;
-
-    public StaticDataHolder(int kFolds, DataConvertor dataConvertor, Configuration conf) {
-        splitter = new KCVDataSplitter(dataConvertor, conf);
-        trainMatrices = new SparseMatrix[kFolds];
-        testMatrices = new SparseMatrix[kFolds];
-        size = kFolds;
-        splitter.splitFolds(kFolds);
-    }
-
-    public synchronized SparseMatrix getTest(int i) throws LibrecException{
-        if (i < 0 || i >= size) {
-            return null;
-        }
-        if (testMatrices[i] == null) {
-            initFold(i);
-        }
-        return testMatrices[i];
-    }
-
-    public synchronized SparseMatrix getTrain(int i) throws LibrecException{
-        if (i < 0 || i >= size) {
-            return null;
-        }
-        if (trainMatrices[i] == null) {
-            System.out.println("Generating fold matrix " + i);
-            initFold(i);
-        }
-        else {
-            System.out.println("Re using fold matrix " + i);
-        }
-        return trainMatrices[i];
-    }
-
-    private synchronized void initFold(int i) throws LibrecException{
-        splitter.splitData(i);
-        trainMatrices[i] = new SparseMatrix(splitter.getTrainData());
-        testMatrices[i] = new SparseMatrix(splitter.getTestData());
-    }
-
-    public int getSize() {
-        return size;
-    }
-}
-
 public class ThreadSafeKCVDataSplitter implements DataSplitter {
     private int kIndex;
     private int kFolds;
+
+    static class StaticDataHolder {
+        private static KCVDataSplitter splitter;
+        private static SparseMatrix[] trainMatrices;
+        private static SparseMatrix[] testMatrices;
+        private static int size;
+
+        public StaticDataHolder(int kFolds, DataConvertor dataConvertor, Configuration conf) {
+            splitter = new KCVDataSplitter(dataConvertor, conf);
+            trainMatrices = new SparseMatrix[kFolds];
+            testMatrices = new SparseMatrix[kFolds];
+            size = kFolds;
+            splitter.splitFolds(kFolds);
+        }
+
+        public synchronized SparseMatrix getTest(int i) throws LibrecException{
+            if (i < 0 || i >= size) {
+                return null;
+            }
+            if (testMatrices[i] == null) {
+                initFold(i);
+            }
+            return testMatrices[i];
+        }
+
+        public synchronized SparseMatrix getTrain(int i) throws LibrecException{
+            if (i < 0 || i >= size) {
+                return null;
+            }
+            if (trainMatrices[i] == null) {
+                System.out.println("Generating fold matrix " + i);
+                initFold(i);
+            }
+            else {
+                System.out.println("Re using fold matrix " + i);
+            }
+            return trainMatrices[i];
+        }
+
+        private synchronized void initFold(int i) throws LibrecException{
+            splitter.splitData(i);
+            trainMatrices[i] = new SparseMatrix(splitter.getTrainData());
+            testMatrices[i] = new SparseMatrix(splitter.getTestData());
+        }
+
+        public int getSize() {
+            return size;
+        }
+    }
 
     private static StaticDataHolder holder;
 

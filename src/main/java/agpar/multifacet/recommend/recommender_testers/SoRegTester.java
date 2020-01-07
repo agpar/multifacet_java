@@ -1,21 +1,21 @@
-package agpar.multifacet.recommend;
+package agpar.multifacet.recommend.recommender_testers;
 
 import agpar.multifacet.experiments.ExperimentDescription;
-import agpar.multifacet.recommend.data_sharing.SharedDataModel;
+import agpar.multifacet.recommend.RecommenderTester;
 import net.librec.common.LibrecException;
 import net.librec.data.DataModel;
+import net.librec.data.model.TextDataModel;
 import net.librec.recommender.Recommender;
 import net.librec.recommender.RecommenderContext;
-import net.librec.recommender.context.rating.SoRecRecommender;
+import net.librec.recommender.context.rating.SoRegRecommender;
+import net.librec.similarity.PCCSimilarity;
+import net.librec.similarity.RecommenderSimilarity;
 
-
-public class SoRecTester extends RecommenderTester {
-
+public class SoRegTester extends RecommenderTester {
     @Override
     public void loadDescription(ExperimentDescription description) {
         super.loadDescription(description);
-        conf.setFloat("rec.rate.social.regularization", description.getSocialReg());
-
+        conf.setFloat("rec.social.regularization", description.getSocialReg());
     }
 
     @Override
@@ -29,14 +29,17 @@ public class SoRecTester extends RecommenderTester {
          */
 
         // build data model
-        DataModel dataModel = new SharedDataModel(conf);
+        DataModel dataModel = new TextDataModel(conf);
         dataModel.buildDataModel();
 
         // set recommendation context
         RecommenderContext context = new RecommenderContext(conf, dataModel);
+        RecommenderSimilarity similarity = new PCCSimilarity();
+        similarity.buildSimilarityMatrix(dataModel);
+        context.setSimilarity(similarity);
 
         // training
-        Recommender recommender = new SoRecRecommender();
+        Recommender recommender = new SoRegRecommender();
         recommender.recommend(context);
 
         return recommender;

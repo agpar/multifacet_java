@@ -1,9 +1,12 @@
 package agpar.multifacet.experiments;
 
-import agpar.multifacet.Settings;
 import agpar.multifacet.pairwise_features.io.ResultWriter;
 import agpar.multifacet.pairwise_features.io.SynchronizedAppendResultWriter;
 import agpar.multifacet.recommend.*;
+import agpar.multifacet.recommend.recommender_testers.SoRecTester;
+import agpar.multifacet.recommend.recommender_testers.SoRegTester;
+import agpar.multifacet.recommend.recommender_testers.TrustMFTester;
+import agpar.multifacet.recommend.recommender_testers.TrustSVDTester;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
