@@ -1,4 +1,4 @@
-package agpar.multifacet.recommend;
+package agpar.multifacet.recommend.data_sharing;
 
 import net.librec.common.LibrecException;
 import net.librec.conf.Configuration;

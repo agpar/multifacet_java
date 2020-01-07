@@ -6,7 +6,7 @@ import agpar.multifacet.experiments.DescriptionLoader;
 import agpar.multifacet.experiments.ExperimentDescription;
 import agpar.multifacet.experiments.ExperimentRunner;
 import agpar.multifacet.pairwise_features.io.SynchronizedAppendResultWriter;
-import agpar.multifacet.recommend.SharedDataModel;
+import agpar.multifacet.recommend.data_sharing.SharedDataModel;
 import agpar.multifacet.single_features.GenerateAllSingle;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

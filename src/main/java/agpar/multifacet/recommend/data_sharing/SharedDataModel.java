@@ -1,4 +1,4 @@
-package agpar.multifacet.recommend;
+package agpar.multifacet.recommend.data_sharing;
 
 import com.google.common.collect.BiMap;
 import net.librec.common.LibrecException;

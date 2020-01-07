@@ -1,15 +1,12 @@
 package agpar.multifacet.recommend;
 
 import agpar.multifacet.experiments.ExperimentDescription;
+import agpar.multifacet.recommend.data_sharing.SharedDataModel;
 import net.librec.common.LibrecException;
 import net.librec.data.DataModel;
-import net.librec.data.model.TextDataModel;
-import net.librec.math.algorithm.Randoms;
 import net.librec.recommender.Recommender;
 import net.librec.recommender.RecommenderContext;
 import net.librec.recommender.context.rating.SoRecRecommender;
-
-import java.util.Random;
 
 
 public class SoRecTester extends RecommenderTester {
