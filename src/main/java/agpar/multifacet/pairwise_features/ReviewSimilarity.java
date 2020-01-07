@@ -24,7 +24,7 @@ public class ReviewSimilarity {
             denom1 += Math.pow((score1 - avg1), 2);
             denom2 += Math.pow((score2 - avg2), 2);
         }
-        double denom = Math.sqrt(denom1 * denom2);
+        double denom = Math.sqrt(denom1) * Math.sqrt(denom2);
         if (denom == 0) {
             return 0;
         } else {
