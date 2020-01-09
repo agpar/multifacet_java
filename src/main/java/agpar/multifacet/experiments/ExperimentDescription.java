@@ -11,7 +11,6 @@ public class ExperimentDescription {
     private String experimentName;
     private String recommenderName;
     private String expDir;
-    private int numUsers;
     private int randomSeed;
     private int numIterations;
     private float socialReg;
@@ -20,11 +19,10 @@ public class ExperimentDescription {
 
     private HashMap<String, Double> results;
 
-    public ExperimentDescription(String experimentName, String recommenderName, String expDir, int numUsers, int randomSeed, int numIterations, float socialReg, String predictionFile) {
+    public ExperimentDescription(String experimentName, String recommenderName, String expDir, int randomSeed, int numIterations, float socialReg, String predictionFile) {
         this.experimentName = experimentName;
         this.recommenderName = recommenderName;
         this.expDir = expDir;
-        this.numUsers = numUsers;
         this.randomSeed = randomSeed;
         this.numIterations = numIterations;
         this.socialReg = socialReg;
@@ -32,15 +30,14 @@ public class ExperimentDescription {
     }
 
     public String toString() {
-        String template = "Predictor: %s\nRecommender: %s\nNumUsers: %d\nSeed: %d\nIters: %d\nSocialReg: %f\n";
-        return String.format(template, this.getPredictorName(), this.recommenderName, this.numUsers, this.randomSeed, this.numIterations, this.socialReg);
+        String template = "Predictor: %s\nRecommender: %s\nSeed: %d\nIters: %d\nSocialReg: %f\n";
+        return String.format(template, this.getPredictorName(), this.recommenderName, this.randomSeed, this.numIterations, this.socialReg);
     }
 
     public String toJson() {
         JsonObject result = new JsonObject();
         result.add("name", new JsonPrimitive(this.experimentName));
         result.add("recommenderName", new JsonPrimitive(this.recommenderName));
-        result.add("numUsers", new JsonPrimitive(this.numUsers));
         result.add("randomSeed", new JsonPrimitive(this.randomSeed));
         result.add("numIterations", new JsonPrimitive(this.numIterations));
         result.add("socialReg", new JsonPrimitive(this.socialReg));
@@ -69,10 +66,6 @@ public class ExperimentDescription {
         return recommenderName;
     }
 
-    public int getNumUsers() {
-        return numUsers;
-    }
-
     public int getRandomSeed() {
         return randomSeed;
     }
@@ -84,6 +77,7 @@ public class ExperimentDescription {
     public float getSocialReg() {
         return socialReg;
     }
+
     public String getPredictionFile() {
         return predictionFile;
     }

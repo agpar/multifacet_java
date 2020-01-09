@@ -27,7 +27,6 @@ public class CompactExperimentDescription {
                             name,
                             recommenderName,
                             experimentDir,
-                            -1, //intending to remove this.
                             randomSeed,
                             numIterations,
                             socialReg,
