@@ -3,16 +3,11 @@ package agpar.multifacet;
 import agpar.multifacet.experiments.*;
 import agpar.multifacet.pairwise_features.runners.GenerateAllPairwise;
 import agpar.multifacet.data_interface.DATA_SOURCE;
-import agpar.multifacet.pairwise_features.io.SynchronizedAppendResultWriter;
+import agpar.multifacet.pairwise_features.io.ResultWriter;
 import agpar.multifacet.recommend.RatingTupleGenerator;
 import agpar.multifacet.recommend.data_sharing.SharedDataModel;
 import agpar.multifacet.single_features.GenerateAllSingle;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 
-import java.io.FileReader;
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -102,7 +97,7 @@ public class Main {
                 System.exit(1);
             }
         } finally {
-            SynchronizedAppendResultWriter.closeAllSingletons();
+            ResultWriter.closeAllSingletons();
         }
     }
 
@@ -180,7 +175,7 @@ public class Main {
                     if (!exited) {
                         throw new Exception("Executor did not terminate.");
                     }
-                    SynchronizedAppendResultWriter.flushAll();
+                    ResultWriter.flushAll();
                 } catch (Exception e) {
                     e.printStackTrace();
                     exit(1);

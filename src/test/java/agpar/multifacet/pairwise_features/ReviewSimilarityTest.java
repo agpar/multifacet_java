@@ -33,7 +33,7 @@ public class ReviewSimilarityTest {
         };
         double[] reviewAvgs = new double[] {2.5, 2.5};
         double pcc = ReviewSimilarity.pcc(reviews1, reviewAvgs, reviews2, reviewAvgs);
-        Assert.assertEquals(-1.0, pcc, 0.0);
+        Assert.assertEquals(-1.0, pcc, 0.00001);
     }
 
     @Test

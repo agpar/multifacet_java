@@ -3,7 +3,7 @@ package agpar.multifacet.pairwise_features.runners;
 import agpar.multifacet.MockedDataSet;
 import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.data_classes.User;
-import agpar.multifacet.pairwise_features.io.SynchronizedAppendResultWriter;
+import agpar.multifacet.pairwise_features.io.ResultWriter;
 import agpar.multifacet.pairwise_features.result_calculators.AllResultsCalculator;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +24,7 @@ public class RelevantPairwiseRunnerTests {
         runner = new RelevantPairwiseRunner(
                 new ArrayList<>(data.dataset.getUsers()),
                 mock(AllResultsCalculator.class),
-                mock(SynchronizedAppendResultWriter.class),
+                mock(ResultWriter.class),
                 1,
                 false
         );

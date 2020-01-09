@@ -13,13 +13,13 @@ import java.util.List;
 After writing this thing I realized it was probably  unnecessary, as a file opened in append  mode should
 have atomic writes ANYWAY. Oh well.
  */
-public class SynchronizedAppendResultWriter implements ResultWriter{
+public class ResultWriter {
     private String filePath;
     private BufferedWriter writer;
     private boolean needsHeader = false;
-    private static HashMap<String, SynchronizedAppendResultWriter> staticWriters = new HashMap<>();
+    private static HashMap<String, ResultWriter> staticWriters = new HashMap<>();
 
-    public SynchronizedAppendResultWriter(String filePath) {
+    public ResultWriter(String filePath) {
         this.filePath = filePath;
     }
 
@@ -73,23 +73,23 @@ public class SynchronizedAppendResultWriter implements ResultWriter{
     }
 
     public static void flushAll() throws IOException{
-        for (SynchronizedAppendResultWriter staticWriter: staticWriters.values()) {
+        for (ResultWriter staticWriter: staticWriters.values()) {
             staticWriter.flush();
         }
     }
 
-    public static synchronized SynchronizedAppendResultWriter getSingleton(String path) {
-        if (SynchronizedAppendResultWriter.staticWriters.containsKey(path)) {
-            return SynchronizedAppendResultWriter.staticWriters.get(path);
+    public static synchronized ResultWriter getSingleton(String path) {
+        if (ResultWriter.staticWriters.containsKey(path)) {
+            return ResultWriter.staticWriters.get(path);
         } else {
-            SynchronizedAppendResultWriter writer = new SynchronizedAppendResultWriter(path);
-            SynchronizedAppendResultWriter.staticWriters.put(path, writer);
+            ResultWriter writer = new ResultWriter(path);
+            ResultWriter.staticWriters.put(path, writer);
             return writer;
         }
     }
 
     public static synchronized void closeAllSingletons() throws IOException {
-        for (ResultWriter writer : SynchronizedAppendResultWriter.staticWriters.values()) {
+        for (ResultWriter writer : ResultWriter.staticWriters.values()) {
             writer.close();
         }
     }

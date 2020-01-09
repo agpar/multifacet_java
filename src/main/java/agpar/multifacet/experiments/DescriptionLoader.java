@@ -1,6 +1,6 @@
 package agpar.multifacet.experiments;
 
-import agpar.multifacet.pairwise_features.io.SynchronizedAppendResultWriter;
+import agpar.multifacet.pairwise_features.io.ResultWriter;
 import agpar.multifacet.recommend.*;
 import agpar.multifacet.recommend.recommender_testers.SoRecTester;
 import agpar.multifacet.recommend.recommender_testers.SoRegTester;
@@ -20,7 +20,7 @@ public class DescriptionLoader {
     public static List<Experiment> load(ExperimentDescription description) {
         RecommenderTester recommender = getRecommender(description.getRecommenderName());
         List<Experiment> experiments = new ArrayList<>();
-        SynchronizedAppendResultWriter writer = setupResultWriter(description);
+        ResultWriter writer = setupResultWriter(description);
         experiments.add(new Experiment(description, recommender, writer));
         return experiments;
     }
@@ -33,9 +33,9 @@ public class DescriptionLoader {
         return experiments;
     }
 
-    private static SynchronizedAppendResultWriter setupResultWriter(ExperimentDescription description) {
+    private static ResultWriter setupResultWriter(ExperimentDescription description) {
         createResultDir(description);
-        return SynchronizedAppendResultWriter.getSingleton(resultFilePath(description).toString());
+        return ResultWriter.getSingleton(resultFilePath(description).toString());
     }
 
     private static synchronized void createResultDir(ExperimentDescription description) {

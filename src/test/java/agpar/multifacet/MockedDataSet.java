@@ -5,11 +5,7 @@ import agpar.multifacet.data_interface.collections.ReviewsById;
 import agpar.multifacet.data_interface.collections.UsersById;
 import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.data_classes.User;
-import agpar.multifacet.pairwise_features.io.SynchronizedAppendResultWriter;
-import agpar.multifacet.pairwise_features.result_calculators.AllResultsCalculator;
-import org.junit.Before;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
