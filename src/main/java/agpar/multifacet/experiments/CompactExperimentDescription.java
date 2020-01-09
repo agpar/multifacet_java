@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CompactExperimentDescription {
+    private String name;
     private List<String> predictionFiles;
     private String recommenderName;
     private String experimentDir;
@@ -23,6 +24,7 @@ public class CompactExperimentDescription {
             for (Float socialReg : expandSocialRegulators()) {
                 for (Integer randomSeed : randomSeeds) {
                     descriptions.add(new ExperimentDescription(
+                            name,
                             recommenderName,
                             experimentDir,
                             -1, //intending to remove this.

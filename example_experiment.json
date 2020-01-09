@@ -1,4 +1,5 @@
 {
+  "name": "todays_experiments",
   "predictionFiles": ["empty.txt"],
   "recommenderName": "TrustMF",
   "experimentDir": "/path/to/generated/files",

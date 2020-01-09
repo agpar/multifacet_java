@@ -1,6 +1,5 @@
 package agpar.multifacet.experiments;
 
-import agpar.multifacet.pairwise_features.io.ResultWriter;
 import agpar.multifacet.pairwise_features.io.SynchronizedAppendResultWriter;
 import agpar.multifacet.recommend.*;
 import agpar.multifacet.recommend.recommender_testers.SoRecTester;
@@ -16,14 +15,12 @@ import java.util.List;
 
 public class DescriptionLoader {
     public static String VALID_RECOMMENDERS = "SoRec, TrustSVD, TrustMF";
-    private static final String defaultResultDir = "results";
     private static final String defaultResultFileName = "results.txt";
 
     public static List<Experiment> load(ExperimentDescription description) {
         RecommenderTester recommender = getRecommender(description.getRecommenderName());
-        createResultDir(description.getExperimentDir());
-        ResultWriter writer = SynchronizedAppendResultWriter.getSingleton(resultFilePath(description.getExperimentDir()));
         List<Experiment> experiments = new ArrayList<>();
+        SynchronizedAppendResultWriter writer = setupResultWriter(description);
         experiments.add(new Experiment(description, recommender, writer));
         return experiments;
     }
@@ -36,9 +33,14 @@ public class DescriptionLoader {
         return experiments;
     }
 
-    private static synchronized void createResultDir(String experimentDir) {
+    private static SynchronizedAppendResultWriter setupResultWriter(ExperimentDescription description) {
+        createResultDir(description);
+        return SynchronizedAppendResultWriter.getSingleton(resultFilePath(description).toString());
+    }
+
+    private static synchronized void createResultDir(ExperimentDescription description) {
         try {
-            Path resultDir = Path.of(experimentDir, defaultResultDir);
+            Path resultDir = resultDir(description);
             if (!Files.exists(resultDir)) {
                 Files.createDirectory(resultDir);
             }
@@ -47,8 +49,12 @@ public class DescriptionLoader {
         }
     }
 
-    private static String resultFilePath(String experimentDir) {
-        return Path.of(experimentDir, defaultResultDir, defaultResultFileName).toString();
+    private static Path resultFilePath(ExperimentDescription description) {
+        return Path.of(resultDir(description).toString(), defaultResultFileName);
+    }
+
+    private static Path resultDir(ExperimentDescription description) {
+        return Path.of(description.getExperimentDir(), description.getExperimentName());
     }
 
     private static RecommenderTester getRecommender(String name) {

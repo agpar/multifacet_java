@@ -1,8 +1,6 @@
 package agpar.multifacet.experiments;
 
 import agpar.multifacet.pairwise_features.io.ResultWriter;
-import agpar.multifacet.pairwise_features.io.SynchronizedAppendResultWriter;
-import agpar.multifacet.recommend.RatingTupleGenerator;
 import agpar.multifacet.recommend.RecommenderTester;
 import net.librec.common.LibrecException;
 
@@ -75,15 +73,15 @@ public class Experiment implements Runnable {
     }
 
     private void printExperimentLogLine() {
-        System.out.printf("Running %s with %d users. Seed: %d. SocialReg: %f\n", this.description.getName(),
-                this.description.getNumUsers(), this.description.getRandomSeed(), this.description.getSocialReg());
+        System.out.printf("Running %s. Seed: %d. SocialReg: %f\n", this.description.getPredictorName(),
+                this.description.getRandomSeed(), this.description.getSocialReg());
     }
 
     private HashMap<String, Double> evaluatePredictions() throws LibrecException {
         this.recommender.loadDescription(this.description);
         return this.recommender.learn(
                 this.description.getExperimentDir(),
-                this.description.getName(),
+                this.description.getExperimentName(),
                 Path.of(this.ratingFilePath()).getFileName().toString(),
                 Path.of(this.predictionsFilePath()).getFileName().toString()
         );

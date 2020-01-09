@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ExperimentDescription {
-    private String name;
+    private String experimentName;
     private String recommenderName;
     private String expDir;
     private int numUsers;
@@ -20,8 +20,8 @@ public class ExperimentDescription {
 
     private HashMap<String, Double> results;
 
-    public ExperimentDescription(String recommenderName, String expDir, int numUsers, int randomSeed, int numIterations, float socialReg, String predictionFile) {
-        this.name = predictionFile.split("\\.")[0];
+    public ExperimentDescription(String experimentName, String recommenderName, String expDir, int numUsers, int randomSeed, int numIterations, float socialReg, String predictionFile) {
+        this.experimentName = experimentName;
         this.recommenderName = recommenderName;
         this.expDir = expDir;
         this.numUsers = numUsers;
@@ -32,13 +32,13 @@ public class ExperimentDescription {
     }
 
     public String toString() {
-        String template = "Experiment: %s\nRecommender: %s\nNumUsers: %d\nSeed: %d\nIters: %d\nSocialReg: %f\n";
-        return String.format(template, this.name, this.recommenderName, this.numUsers, this.randomSeed, this.numIterations, this.socialReg);
+        String template = "Predictor: %s\nRecommender: %s\nNumUsers: %d\nSeed: %d\nIters: %d\nSocialReg: %f\n";
+        return String.format(template, this.getPredictorName(), this.recommenderName, this.numUsers, this.randomSeed, this.numIterations, this.socialReg);
     }
 
     public String toJson() {
         JsonObject result = new JsonObject();
-        result.add("name", new JsonPrimitive(this.name));
+        result.add("name", new JsonPrimitive(this.experimentName));
         result.add("recommenderName", new JsonPrimitive(this.recommenderName));
         result.add("numUsers", new JsonPrimitive(this.numUsers));
         result.add("randomSeed", new JsonPrimitive(this.randomSeed));
@@ -57,8 +57,12 @@ public class ExperimentDescription {
         this.results = results;
     }
 
-    public String getName() {
-        return name;
+    public String getExperimentName() {
+        return experimentName;
+    }
+
+    public String getPredictorName(){
+        return predictionFile.split("\\.")[0];
     }
 
     public String getRecommenderName() {
