@@ -9,4 +9,8 @@ public class ExperimentException extends RuntimeException {
     public ExperimentException(Throwable e) {
         super(e);
     }
+
+    public ExperimentException(String msg, Throwable e) {
+        super(msg, e);
+    }
 }

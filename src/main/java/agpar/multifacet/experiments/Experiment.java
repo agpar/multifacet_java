@@ -11,14 +11,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 
-public abstract class Experiment implements Runnable {
+public class Experiment implements Runnable {
     private final static String expectedRatingFileName = "rating_tuples.txt";
-    protected RecommenderTester recommender;
-    protected ExperimentDescription description;
-    protected ResultWriter resultWriter;
+    private RecommenderTester recommender;
+    private ExperimentDescription description;
+    private ResultWriter resultWriter;
 
-
-    public Experiment(ExperimentDescription description, RecommenderTester recommender, ResultWriter resultWriter) throws IOException{
+    public Experiment(ExperimentDescription description, RecommenderTester recommender, ResultWriter resultWriter) {
         this.recommender = recommender;
         this.description = description;
         this.resultWriter = resultWriter;
@@ -45,17 +44,19 @@ public abstract class Experiment implements Runnable {
         }
     }
 
-    protected boolean predictionsFileExists() {
+    private boolean predictionsFileExists() {
         return Files.exists(Path.of(this.predictionsFilePath()));
     }
 
-    protected abstract String predictionsFilePath();
+    private String predictionsFilePath() {
+        return Path.of(this.description.getExperimentDir(), description.getPredictionFile()).toString();
+    };
 
-    protected boolean ratingFileExists() {
+    private boolean ratingFileExists() {
         return Files.exists(Path.of(this.ratingFilePath()));
     }
 
-    protected String ratingFilePath() {
+    private String ratingFilePath() {
         return Path.of(this.description.getExperimentDir(), expectedRatingFileName).toString();
     }
 
@@ -78,7 +79,7 @@ public abstract class Experiment implements Runnable {
                 this.description.getNumUsers(), this.description.getRandomSeed(), this.description.getSocialReg());
     }
 
-    protected HashMap<String, Double> evaluatePredictions() throws LibrecException {
+    private HashMap<String, Double> evaluatePredictions() throws LibrecException {
         this.recommender.loadDescription(this.description);
         return this.recommender.learn(
                 this.description.getExperimentDir(),
