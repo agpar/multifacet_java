@@ -15,20 +15,20 @@ import java.util.List;
 public class DescriptionLoader {
     public static String VALID_RECOMMENDERS = "SoRec, TrustSVD, TrustMF";
 
-    public static List<ExperimentRunner> load(ExperimentDescription description) throws Exception {
+    public static List<Experiment> load(ExperimentDescription description) throws Exception {
         if(description.isMulti()) {
             return DescriptionLoader.load(description.multiToList());
         }
         RecommenderTester recommender = DescriptionLoader.getRecommender(description.getRecommenderName());
         String resultPath = Path.of(description.getExperimentDir(), description.getName(), "results.txt").toString();
         ResultWriter writer = SynchronizedAppendResultWriter.getSingleton(resultPath);
-        List<ExperimentRunner> runner = new ArrayList<>();
+        List<Experiment> runner = new ArrayList<>();
         runner.add(getRunner(description, recommender, writer));
         return runner;
     }
 
-    public static List<ExperimentRunner> load(List<ExperimentDescription> descriptions) throws Exception {
-        List<ExperimentRunner> runners = new ArrayList<>();
+    public static List<Experiment> load(List<ExperimentDescription> descriptions) throws Exception {
+        List<Experiment> runners = new ArrayList<>();
         for (ExperimentDescription description : descriptions) {
             runners.addAll(DescriptionLoader.load(description));
         }
@@ -51,11 +51,11 @@ public class DescriptionLoader {
         }
     }
 
-    protected static ExperimentRunner getRunner(
+    protected static Experiment getRunner(
             ExperimentDescription description,
             RecommenderTester recommender,
             ResultWriter writer) throws Exception {
             String name  = description.getName();
-            return new PreComputedPredictionRunner(description, recommender, writer);
+            return new PreComputedPredictionsExperiment(description, recommender, writer);
     }
 }

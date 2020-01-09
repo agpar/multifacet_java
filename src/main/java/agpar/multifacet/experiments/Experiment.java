@@ -10,10 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 
-/*
-Runs an entire experiment from beginning to end.
- */
-public abstract class ExperimentRunner implements Runnable {
+public abstract class Experiment implements Runnable {
 
     protected String expDir;
     protected String name;
@@ -21,7 +18,7 @@ public abstract class ExperimentRunner implements Runnable {
     protected ExperimentDescription description;
     protected ResultWriter resultWriter;
 
-    public ExperimentRunner(ExperimentDescription description, RecommenderTester recommender, ResultWriter resultWriter) throws IOException{
+    public Experiment(ExperimentDescription description, RecommenderTester recommender, ResultWriter resultWriter) throws IOException{
         this.name = description.getName();
         this.expDir = Path.of(description.getExperimentDir(), name).toString();
         this.recommender = recommender;
@@ -41,10 +38,13 @@ public abstract class ExperimentRunner implements Runnable {
                 this.description.getNumUsers(), this.description.getRandomSeed(), this.description.getSocialReg());
         if (!this.predictionsFileExists(this.description.getNumUsers()))
         {
-            System.out.println("Prediction file not found. See readme.md on how to generate a prediction file.");
-            System.exit(1);
+            throw new ExperimentException("Prediction file not found at expected path: " +
+                    this.predictionsFilePath(this.description.getNumUsers()));
         }
-        this.initRatings(this.description.getNumUsers());
+        if (!this.ratingFileExists(this.description.getNumUsers())) {
+            throw new ExperimentException("Rating file not found at expected path: " +
+                    this.predictionsFilePath(this.description.getNumUsers()));
+        }
         try {
             HashMap<String, Double> results = this.evaluatePredictions(this.description.getNumUsers());
             description.addResults(results);
@@ -73,16 +73,6 @@ public abstract class ExperimentRunner implements Runnable {
     };
 
 
-    protected void initRatings(int numUsers) {
-        if(!this.ratingFileExists(numUsers)) {
-            System.out.println("Rating tuples not generated. Generating...");
-            this.generateRating(numUsers);
-        } else {
-            System.out.println("Found ratings file.");
-        }
-    }
-
-
     protected boolean predictionsFileExists(int numUsers) {
         return Files.exists(Path.of(this.predictionsFilePath(numUsers)));
     }
@@ -91,14 +81,10 @@ public abstract class ExperimentRunner implements Runnable {
         return Files.exists(Path.of(this.ratingFilePath(numUsers)));
     }
 
-    protected abstract  String predictionsFilePath(int numUsers);
+    protected abstract String predictionsFilePath(int numUsers);
 
     protected String ratingFilePath(int numUsers) {
         String pairwiseVectFileName = String.format("ratings_%d.txt", numUsers);
         return Path.of(this.description.getExperimentDir(), pairwiseVectFileName).toString();
-    }
-
-    protected void generateRating(int numUsers) {
-        RatingTupleGenerator.GenerateTrainReviewTuples(numUsers, this.ratingFilePath(numUsers));
     }
 }

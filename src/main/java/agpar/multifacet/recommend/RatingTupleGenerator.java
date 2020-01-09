@@ -19,11 +19,11 @@ import static java.lang.System.exit;
 public class RatingTupleGenerator {
 
     public static void GenerateTrainReviewTuples(int userCount, String outputPath) {
-        DataSet yd = DataSet.getInstance();
-        yd.load(0, userCount);
+        DataSet ds = DataSet.getInstance();
+        ds.load(0, userCount);
         ArrayList<Review> reviewsToWrite = new ArrayList<>();
 
-        for (User user : yd.getUsers()) {
+        for (User user : ds.getUsers()) {
             for(Review review : user.getReviews()) {
                 reviewsToWrite.add(review);
             }
