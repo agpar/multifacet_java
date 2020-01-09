@@ -1,6 +1,7 @@
 package agpar.multifacet.experiments;
 
 import agpar.multifacet.pairwise_features.io.ResultWriter;
+import agpar.multifacet.pairwise_features.io.SynchronizedAppendResultWriter;
 import agpar.multifacet.recommend.RatingTupleGenerator;
 import agpar.multifacet.recommend.RecommenderTester;
 import net.librec.common.LibrecException;
@@ -11,15 +12,16 @@ import java.nio.file.Path;
 import java.util.HashMap;
 
 public abstract class Experiment implements Runnable {
-
+    private final static String expectedRatingFileName = "rating_tuples.txt";
     protected String expDir;
     protected String name;
     protected RecommenderTester recommender;
     protected ExperimentDescription description;
     protected ResultWriter resultWriter;
 
+
     public Experiment(ExperimentDescription description, RecommenderTester recommender, ResultWriter resultWriter) throws IOException{
-        this.name = description.getName();
+        this.name = description.getPredictionFile().split("\\.")[0];
         this.expDir = Path.of(description.getExperimentDir(), name).toString();
         this.recommender = recommender;
         this.description = description;
@@ -34,57 +36,62 @@ public abstract class Experiment implements Runnable {
     }
 
     public void run() {
-        System.out.printf("Running %s with %d users. Seed: %d. SocialReg: %f\n", this.name,
-                this.description.getNumUsers(), this.description.getRandomSeed(), this.description.getSocialReg());
-        if (!this.predictionsFileExists(this.description.getNumUsers()))
+        checkForNecessaryInputFiles();
+        runExperiment();
+    }
+
+    private void checkForNecessaryInputFiles() {
+        if (!this.predictionsFileExists())
         {
             throw new ExperimentException("Prediction file not found at expected path: " +
-                    this.predictionsFilePath(this.description.getNumUsers()));
+                    this.predictionsFilePath());
         }
-        if (!this.ratingFileExists(this.description.getNumUsers())) {
+        if (!this.ratingFileExists()) {
             throw new ExperimentException("Rating file not found at expected path: " +
-                    this.predictionsFilePath(this.description.getNumUsers()));
-        }
-        try {
-            HashMap<String, Double> results = this.evaluatePredictions(this.description.getNumUsers());
-            description.addResults(results);
-            String resultString = description.toJson();
-            resultWriter.writeResults(String.format("%s\n", resultString));
-        } catch (LibrecException e) {
-            System.out.println("Recommender system failed.");
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.out.println("Failed to write results.");
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.out.println("Failed to write results.");
-            e.printStackTrace();
+                    this.ratingFilePath());
         }
     }
 
-    protected HashMap<String, Double> evaluatePredictions(int numUsers) throws LibrecException {
+    protected boolean predictionsFileExists() {
+        return Files.exists(Path.of(this.predictionsFilePath()));
+    }
+
+    protected abstract String predictionsFilePath();
+
+    protected boolean ratingFileExists() {
+        return Files.exists(Path.of(this.ratingFilePath()));
+    }
+
+    protected String ratingFilePath() {
+        return Path.of(this.description.getExperimentDir(), expectedRatingFileName).toString();
+    }
+
+    private void runExperiment() {
+        printExperimentLogLine();
+        try {
+            description.addResults(this.evaluatePredictions());
+            resultWriter.writeResults(String.format("%s\n", description.toJson()));
+        } catch (LibrecException e) {
+            System.out.println("Recommender system failed.");
+            throw new ExperimentException(e);
+        } catch (IOException e) {
+            System.out.println("Failed to write results.");
+            throw new ExperimentException(e);
+        }
+    }
+
+    private void printExperimentLogLine() {
+        System.out.printf("Running %s with %d users. Seed: %d. SocialReg: %f\n", this.name,
+                this.description.getNumUsers(), this.description.getRandomSeed(), this.description.getSocialReg());
+    }
+
+    protected HashMap<String, Double> evaluatePredictions() throws LibrecException {
         this.recommender.loadDescription(this.description);
         return this.recommender.learn(
                 this.description.getExperimentDir(),
                 this.name,
-                Path.of(this.ratingFilePath(numUsers)).getFileName().toString(),
-                Path.of(this.predictionsFilePath(numUsers)).getFileName().toString()
+                Path.of(this.ratingFilePath()).getFileName().toString(),
+                Path.of(this.predictionsFilePath()).getFileName().toString()
         );
-    };
-
-
-    protected boolean predictionsFileExists(int numUsers) {
-        return Files.exists(Path.of(this.predictionsFilePath(numUsers)));
-    }
-
-    protected boolean ratingFileExists(int numUsers) {
-        return Files.exists(Path.of(this.ratingFilePath(numUsers)));
-    }
-
-    protected abstract String predictionsFilePath(int numUsers);
-
-    protected String ratingFilePath(int numUsers) {
-        String pairwiseVectFileName = String.format("ratings_%d.txt", numUsers);
-        return Path.of(this.description.getExperimentDir(), pairwiseVectFileName).toString();
     }
 }

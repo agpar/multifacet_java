@@ -73,9 +73,9 @@ public class ExperimentDescription {
         return descriptions;
     }
 
-    public String toJson() throws Exception {
+    public String toJson() {
         if (this.isMulti()) {
-            throw new Exception("Can't serialize a multi description");
+            throw new ExperimentException("Attempted to serialize a 'multi' exception.");
         }
         JsonObject result = new JsonObject();
         result.add("name", new JsonPrimitive(this.name));

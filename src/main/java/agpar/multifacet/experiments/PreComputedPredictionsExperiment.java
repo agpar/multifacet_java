@@ -12,7 +12,7 @@ public class PreComputedPredictionsExperiment extends Experiment {
     }
 
     @Override
-    protected String predictionsFilePath(int numUsers) {
+    protected String predictionsFilePath() {
         String pairwiseVectFileName = this.description.getPredictionFile();
         return Path.of(this.description.getExperimentDir(), pairwiseVectFileName).toString();
     }
