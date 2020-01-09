@@ -13,22 +13,15 @@ import java.util.HashMap;
 
 public abstract class Experiment implements Runnable {
     private final static String expectedRatingFileName = "rating_tuples.txt";
-    protected String expDir;
-    protected String name;
     protected RecommenderTester recommender;
     protected ExperimentDescription description;
     protected ResultWriter resultWriter;
 
 
     public Experiment(ExperimentDescription description, RecommenderTester recommender, ResultWriter resultWriter) throws IOException{
-        this.name = description.getPredictionFile().split("\\.")[0];
-        this.expDir = Path.of(description.getExperimentDir(), name).toString();
         this.recommender = recommender;
         this.description = description;
         this.resultWriter = resultWriter;
-        if(!Files.exists(Path.of(this.expDir))) {
-            Files.createDirectory(Path.of(this.expDir));
-        }
     }
 
     public ExperimentDescription getDescription() {
@@ -81,7 +74,7 @@ public abstract class Experiment implements Runnable {
     }
 
     private void printExperimentLogLine() {
-        System.out.printf("Running %s with %d users. Seed: %d. SocialReg: %f\n", this.name,
+        System.out.printf("Running %s with %d users. Seed: %d. SocialReg: %f\n", this.description.getName(),
                 this.description.getNumUsers(), this.description.getRandomSeed(), this.description.getSocialReg());
     }
 
@@ -89,7 +82,7 @@ public abstract class Experiment implements Runnable {
         this.recommender.loadDescription(this.description);
         return this.recommender.learn(
                 this.description.getExperimentDir(),
-                this.name,
+                this.description.getName(),
                 Path.of(this.ratingFilePath()).getFileName().toString(),
                 Path.of(this.predictionsFilePath()).getFileName().toString()
         );

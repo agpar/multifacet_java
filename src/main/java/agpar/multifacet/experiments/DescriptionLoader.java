@@ -20,7 +20,7 @@ public class DescriptionLoader {
             return DescriptionLoader.load(description.multiToList());
         }
         RecommenderTester recommender = DescriptionLoader.getRecommender(description.getRecommenderName());
-        String resultPath = Path.of(description.getExperimentDir(), description.getName(), "results.txt").toString();
+        String resultPath = Path.of(description.getExperimentDir(), "results", "results.txt").toString();
         ResultWriter writer = SynchronizedAppendResultWriter.getSingleton(resultPath);
         List<Experiment> runner = new ArrayList<>();
         runner.add(getRunner(description, recommender, writer));

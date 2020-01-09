@@ -25,8 +25,8 @@ public class ExperimentDescription {
 
     private HashMap<String, Double> results;
 
-    public ExperimentDescription(String name, String recommenderName, String expDir, int numUsers, int randomSeed, int numIterations, float socialReg, String predictionFile) {
-        this.name = name;
+    public ExperimentDescription(String recommenderName, String expDir, int numUsers, int randomSeed, int numIterations, float socialReg, String predictionFile) {
+        this.name = predictionFile.split("\\.")[0];
         this.recommenderName = recommenderName;
         this.expDir = expDir;
         this.numUsers = numUsers;
@@ -58,7 +58,6 @@ public class ExperimentDescription {
         while (f <= socialRegRange.get(1)) {
             for (int seed : this.randomSeeds) {
                 descriptions.add(new ExperimentDescription(
-                        this.name,
                         this.recommenderName,
                         this.expDir,
                         this.numUsers,
