@@ -18,11 +18,6 @@ public class ExperimentDescription {
     private String predictionFile;
     private int latentDim = 10;
 
-    // For multi.
-    private List<Float> socialRegRange;
-    private Float socialRegStep;
-    private List<Integer> randomSeeds;
-
     private HashMap<String, Double> results;
 
     public ExperimentDescription(String recommenderName, String expDir, int numUsers, int randomSeed, int numIterations, float socialReg, String predictionFile) {
@@ -41,41 +36,7 @@ public class ExperimentDescription {
         return String.format(template, this.name, this.recommenderName, this.numUsers, this.randomSeed, this.numIterations, this.socialReg);
     }
 
-    public boolean isMulti() {
-        return randomSeeds != null || socialRegRange != null ||  socialRegStep != null;
-    }
-
-    public List<ExperimentDescription> multiToList() throws Exception {
-        if (!this.isMulti()) {
-            throw new Exception("This descriptions is not a multi!");
-        }
-        if(socialRegRange.size() > 2) {
-            throw new Exception("SocialRegRange must be a list of exactly two floats (upper and lower bound)");
-        }
-
-        ArrayList<ExperimentDescription> descriptions = new ArrayList<>();
-        Float f = socialRegRange.get(0);
-        while (f <= socialRegRange.get(1)) {
-            for (int seed : this.randomSeeds) {
-                descriptions.add(new ExperimentDescription(
-                        this.recommenderName,
-                        this.expDir,
-                        this.numUsers,
-                        seed,
-                        this.numIterations,
-                        f,
-                        this.predictionFile));
-            }
-            f += this.socialRegStep;
-        }
-        System.out.printf("Expanded multi for %s to %d experiments\n", this.name, descriptions.size());
-        return descriptions;
-    }
-
     public String toJson() {
-        if (this.isMulti()) {
-            throw new ExperimentException("Attempted to serialize a 'multi' exception.");
-        }
         JsonObject result = new JsonObject();
         result.add("name", new JsonPrimitive(this.name));
         result.add("recommenderName", new JsonPrimitive(this.recommenderName));
@@ -84,9 +45,8 @@ public class ExperimentDescription {
         result.add("numIterations", new JsonPrimitive(this.numIterations));
         result.add("socialReg", new JsonPrimitive(this.socialReg));
         result.add("latentDim", new JsonPrimitive(this.latentDim));
-        if (this.predictionFile != null) {
-            result.add("predictionFile", new JsonPrimitive(this.predictionFile));
-        }
+        result.add("predictionFile", new JsonPrimitive(this.predictionFile));
+
         for (String key : this.results.keySet()) {
             result.add(key, new JsonPrimitive(this.results.get(key)));
         }

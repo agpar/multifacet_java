@@ -19,11 +19,7 @@ public class DescriptionLoader {
     private static final String defaultResultDir = "results";
     private static final String defaultResultFileName = "results.txt";
 
-    public static List<Experiment> load(ExperimentDescription description) throws Exception {
-        if(description.isMulti()) {
-            return DescriptionLoader.load(description.multiToList());
-        }
-
+    public static List<Experiment> load(ExperimentDescription description) {
         RecommenderTester recommender = getRecommender(description.getRecommenderName());
         createResultDir(description.getExperimentDir());
         ResultWriter writer = SynchronizedAppendResultWriter.getSingleton(resultFilePath(description.getExperimentDir()));
@@ -32,7 +28,7 @@ public class DescriptionLoader {
         return experiments;
     }
 
-    public static List<Experiment> load(List<ExperimentDescription> descriptions) throws Exception {
+    public static List<Experiment> load(List<ExperimentDescription> descriptions) {
         List<Experiment> experiments = new ArrayList<>();
         for (ExperimentDescription description : descriptions) {
             experiments.addAll(DescriptionLoader.load(description));
@@ -55,7 +51,7 @@ public class DescriptionLoader {
         return Path.of(experimentDir, defaultResultDir, defaultResultFileName).toString();
     }
 
-    private static RecommenderTester getRecommender(String name) throws Exception {
+    private static RecommenderTester getRecommender(String name) {
         if (name.equals("SoRec")) {
             return new SoRecTester();
         } else if (name.equals("TrustSVD")) {
@@ -66,7 +62,7 @@ public class DescriptionLoader {
             return new SoRegTester();
         }
         else {
-            throw new Exception(String.format("Unknown recommender name: %s. Valid recommenders are: %s",
+            throw new ExperimentException(String.format("Unknown recommender name: %s. Valid recommenders are: %s",
                     name, DescriptionLoader.VALID_RECOMMENDERS));
         }
     }

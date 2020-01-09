@@ -1,10 +1,8 @@
 package agpar.multifacet;
 
+import agpar.multifacet.experiments.*;
 import agpar.multifacet.pairwise_features.runners.GenerateAllPairwise;
 import agpar.multifacet.data_interface.DATA_SOURCE;
-import agpar.multifacet.experiments.DescriptionLoader;
-import agpar.multifacet.experiments.ExperimentDescription;
-import agpar.multifacet.experiments.Experiment;
 import agpar.multifacet.pairwise_features.io.SynchronizedAppendResultWriter;
 import agpar.multifacet.recommend.RatingTupleGenerator;
 import agpar.multifacet.recommend.data_sharing.SharedDataModel;
@@ -135,14 +133,11 @@ public class Main {
         }
     }
 
-    public static List<Experiment> readExperiments(List<String> files) throws Exception {
-        Type DESCRIPTION_TYPE = new TypeToken<List<ExperimentDescription>>() { }.getType();
+    public static List<Experiment> readExperiments(List<String> files) {
         List<Experiment> experiments = new ArrayList<>();
         for(String descriptionFile : files) {
-            JsonReader reader = new JsonReader(new FileReader(descriptionFile));
-            List<ExperimentDescription> descriptions = new Gson().fromJson(reader, DESCRIPTION_TYPE);
+            List<ExperimentDescription> descriptions = ExperimentDescriptionLoader.loadFromFile(descriptionFile);
             experiments.addAll(DescriptionLoader.load(descriptions));
-            reader.close();
         }
         return experiments;
     }

@@ -1,12 +1,10 @@
-[
-  {
-    "name": "NoPrediction",
-    "recommenderName": "TrustMF",
-    "expDir": "directory/for/experiment",
-    "numUsers": 40000,
-    "randomSeed": 2,
-    "numIterations": 500,
-    "socialReg": 0.5,
-    "predictionFile": "empty.txt"
-  }
-]
+{
+  "predictionFiles": ["empty.txt"],
+  "recommenderName": "TrustMF",
+  "experimentDir": "/path/to/generated/files",
+  "socialRegRange": [0.0, 0.0],
+  "socialRegStep": 0.1,
+  "randomSeeds": [2],
+  "numIterations": 1,
+  "latentDim": 10
+}
