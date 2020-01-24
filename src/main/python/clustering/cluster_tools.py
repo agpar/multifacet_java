@@ -78,10 +78,18 @@ class AvgClusterDistCalculator:
 
     def avg_dist_psuedo_means(self):
         new_clusteroids = np.empty((len(self.clusters), self.dist_matrix.shape[0]))
+
+        dists_nan_diag = self._dists_nan_diagonal()
+
         for key in sorted(list(self.clusters.keys())):
             cluster = self.clusters[key]
             if cluster:
-                new_clusteroids[key] = np.nanmean(self.dist_matrix[list(cluster)], axis=0)
+                new_clusteroids[key] = np.nanmean(dists_nan_diag[list(cluster)], axis=0)
             else:
-                new_clusteroids[key] = np.full(self.dist_matrix.shape[0], self.dist_max)
+                new_clusteroids[key] = np.full(dists_nan_diag.shape[0], self.dist_max)
         return new_clusteroids
+
+    def _dists_nan_diagonal(self):
+        dist_copy = np.copy(self.dist_matrix)
+        np.fill_diagonal(dist_copy, np.nan)
+        return dist_copy
