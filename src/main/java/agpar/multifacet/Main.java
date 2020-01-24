@@ -27,6 +27,7 @@ public class Main {
     //TODO remove user counts.
     private static int LEGACY_USER_COUNT = 500_000_000;
 
+    //TODO make a class to handle cmd line args.
     public static void main(String[] args) throws Exception {
         if(args.length == 0) {
             throw new Exception("At least one experiment description file or flag is required.");
@@ -132,7 +133,7 @@ public class Main {
         List<Experiment> experiments = new ArrayList<>();
         for(String descriptionFile : files) {
             List<ExperimentDescription> descriptions = ExperimentDescriptionLoader.loadFromFile(descriptionFile);
-            experiments.addAll(DescriptionLoader.load(descriptions));
+            experiments.addAll(ExperimentBuilder.build(descriptions));
         }
         return experiments;
     }

@@ -13,11 +13,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DescriptionLoader {
+public class ExperimentBuilder {
     public static String VALID_RECOMMENDERS = "SoRec, TrustSVD, TrustMF";
     private static final String defaultResultFileName = "results.txt";
 
-    public static List<Experiment> load(ExperimentDescription description) {
+    public static List<Experiment> build(ExperimentDescription description) {
         RecommenderTester recommender = getRecommender(description.getRecommenderName());
         List<Experiment> experiments = new ArrayList<>();
         ResultWriter writer = setupResultWriter(description);
@@ -25,10 +25,10 @@ public class DescriptionLoader {
         return experiments;
     }
 
-    public static List<Experiment> load(List<ExperimentDescription> descriptions) {
+    public static List<Experiment> build(List<ExperimentDescription> descriptions) {
         List<Experiment> experiments = new ArrayList<>();
         for (ExperimentDescription description : descriptions) {
-            experiments.addAll(DescriptionLoader.load(description));
+            experiments.addAll(ExperimentBuilder.build(description));
         }
         return experiments;
     }
@@ -69,7 +69,7 @@ public class DescriptionLoader {
         }
         else {
             throw new ExperimentException(String.format("Unknown recommender name: %s. Valid recommenders are: %s",
-                    name, DescriptionLoader.VALID_RECOMMENDERS));
+                    name, ExperimentBuilder.VALID_RECOMMENDERS));
         }
     }
 }
