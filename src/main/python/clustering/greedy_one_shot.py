@@ -1,6 +1,10 @@
 from clustering.cluster_tools import *
 
 
+def cluster_k(dists, k, iters):
+    return cluster_avg(dists, len(dists) // k)
+
+
 def cluster_greedy(dists: np.array, clust_size):
     return cluster(dists, clust_size, closest_points_to_center)
 
