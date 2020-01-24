@@ -1,11 +1,5 @@
 import numpy as np
 from multiprocessing.pool import Pool
-from clustering.cluster_tools import clusters_to_labels
-from sklearn.metrics import silhouette_score
-
-
-def eval_silouette(dists, clusters):
-    return float(silhouette_score(dists, clusters, metric='precomputed'))
 
 
 def _clust_and_eval(cluster_fn, dists_path, k, iters, eval_fn):
@@ -16,7 +10,7 @@ def _clust_and_eval(cluster_fn, dists_path, k, iters, eval_fn):
     return k, eval_fn(dists, clusts)
 
 
-def choose_k(cluster_fn, dists_path, k_range, iters, eval_fn, num_procs=14):
+def choose_k(cluster_fn, dists_path, k_range, iters, eval_fn, num_procs=12):
     """Evaluate multiple values of n using multiprocessing.
 
     :param dists_path: The realpath of saved numpy dists to load
@@ -34,5 +28,5 @@ def choose_k(cluster_fn, dists_path, k_range, iters, eval_fn, num_procs=14):
     for res in results:
         final_results.append(res.get())
 
-    final_results.sort(key=lambda x: -x[1])
+    final_results.sort(key=lambda x: x[1])
     return final_results

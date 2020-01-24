@@ -3,10 +3,15 @@ from sklearn.metrics import silhouette_score
 from collections import defaultdict
 
 
+def eval_both(dists, cluster_labels):
+    return (eval_silhouette(dists, cluster_labels),
+            average_intra_clust_distance(dists, labels_to_clusters(cluster_labels)))
+
+
 def eval_silhouette(dists, cluster_labels):
     if np.isnan(dists).any():
         return None
-    return silhouette_score(dists, cluster_labels, metric='precomputed')
+    return float(silhouette_score(dists, cluster_labels, metric='precomputed'))
 
 
 def average_intra_clust_distance(dists, clusters):
@@ -79,17 +84,13 @@ class AvgClusterDistCalculator:
     def avg_dist_psuedo_means(self):
         new_clusteroids = np.empty((len(self.clusters), self.dist_matrix.shape[0]))
 
-        dists_nan_diag = self._dists_nan_diagonal()
-
+        old_diag_val = self.dist_matrix[0][0]
+        np.fill_diagonal(self.dist_matrix, np.nan)
         for key in sorted(list(self.clusters.keys())):
             cluster = self.clusters[key]
             if cluster:
-                new_clusteroids[key] = np.nanmean(dists_nan_diag[list(cluster)], axis=0)
+                new_clusteroids[key] = np.nanmean(self.dist_matrix[list(cluster)], axis=0)
             else:
-                new_clusteroids[key] = np.full(dists_nan_diag.shape[0], self.dist_max)
+                new_clusteroids[key] = np.full(self.dist_matrix.shape[0], self.dist_max)
+        np.fill_diagonal(self.dist_matrix, old_diag_val)
         return new_clusteroids
-
-    def _dists_nan_diagonal(self):
-        dist_copy = np.copy(self.dist_matrix)
-        np.fill_diagonal(dist_copy, np.nan)
-        return dist_copy
