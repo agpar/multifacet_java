@@ -7,6 +7,7 @@ import agpar.multifacet.pairwise_features.io.ResultWriter;
 import agpar.multifacet.recommend.RatingTupleGenerator;
 import agpar.multifacet.recommend.data_sharing.SharedDataModel;
 import agpar.multifacet.single_features.GenerateAllSingle;
+import net.librec.common.LibrecVersion;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -31,6 +32,10 @@ public class Main {
     public static void main(String[] args) throws Exception {
         if(args.length == 0) {
             throw new Exception("At least one experiment description file or flag is required.");
+        }
+
+        if (!LibrecVersion.VERSION.equals("2.0.0-agpar-fork")) {
+            throw new Exception("Not using forked librec version!");
         }
 
         ArrayList<String> flags = new ArrayList<>();
