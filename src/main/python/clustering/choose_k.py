@@ -35,4 +35,4 @@ def choose_k(cluster_fn, dists_path, k_range, iters, eval_fn, num_procs=12):
         final_results.append(res.get())
 
     final_results.sort(key=lambda x: x[1])
-    return final_results
+    return list(reversed(final_results))
