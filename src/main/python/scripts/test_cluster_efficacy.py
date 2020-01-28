@@ -8,7 +8,7 @@ from clustering.cluster_tools import eval_both
 
 
 def run_experiment(experiment_dir, pcc_dist_matrix_path, social_dist_matrix_path):
-    k_range = list(range(10, 100))
+    k_range = list(range(2, 100))
     iters = 20
 
     k_pcc_greedy = choose_k(greedy_one_shot.cluster_k, pcc_dist_matrix_path, k_range, iters, eval_both)
