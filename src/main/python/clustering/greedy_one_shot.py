@@ -16,7 +16,6 @@ def cluster_avg(dists: np.array, clust_size):
 def cluster(dists: np.array, clust_size, cluster_builder):
     means = sorted_with_idx(mean_dists(dists))
     clusters = assign_clusters(dists, means, clust_size, cluster_builder)
-    print(f"Cluster score: {eval(dists, clusters_to_labels(dists, clusters))}")
     return clusters_to_labels(dists, clusters)
 
 
