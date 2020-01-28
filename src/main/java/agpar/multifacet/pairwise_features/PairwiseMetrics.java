@@ -1,11 +1,15 @@
 package agpar.multifacet.pairwise_features;
 
+import agpar.multifacet.data_interface.DataSet;
+import agpar.multifacet.data_interface.data_classes.Business;
 import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.pairwise_features.review_avg_calculators.ReviewAvgCalculator;
 import agpar.multifacet.data_interface.collections.ReviewList;
 import agpar.multifacet.data_interface.data_classes.User;
 
+import javax.sql.DataSource;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class PairwiseMetrics {
@@ -52,6 +56,18 @@ public class PairwiseMetrics {
            }
         }
         return ((double) (Math.max(nu, Math.max(nn, np)) - Math.min(nu, Math.min(nn, np)))) / reviews1.length;
+    }
+
+    public static boolean haveReviewedInSameRegion(User user1, User user2, Map<Integer, Business> businesses) {
+        for (var r1 : user1.getReviews()) {
+            for (var r2 : user2.getReviews()) {
+                var b1 = businesses.get(r1.getItemIdInt());
+                var b2 = businesses.get(r2.getItemIdInt());
+                if (b1.sameRegion(b2))
+                    return true;
+            }
+        }
+        return false;
     }
 
     protected static <T> double jaccard(Set<T> set1, Set<T> set2) {

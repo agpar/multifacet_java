@@ -9,6 +9,7 @@ import java.util.HashSet;
 public class Business {
     public Integer itemId;
     public HashSet<Integer> categories;
+    private Location location;
 
     public Business(Integer itemId, HashSet<Integer> categories) {
         this.itemId = itemId;
@@ -27,5 +28,21 @@ public class Business {
         }
 
         return new Business(itemId, categories);
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public boolean sameRegion(Business other) {
+        if (this.location == null || other.location == null)
+            return false;
+        return this.location.sameRegion(other.location);
+    }
+
+    public double distanceToInKm(Business other) {
+        if (this.location == null || other.location == null)
+            return -1;
+        return this.location.distanceToInKm(other.location);
     }
 }

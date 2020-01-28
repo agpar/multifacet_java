@@ -12,6 +12,7 @@ import agpar.multifacet.data_interface.yelp.YelpData;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public abstract class DataSet {
     protected UsersById usersById;
@@ -52,5 +53,9 @@ public abstract class DataSet {
 
     public UsersById getUsersById() {
         return this.usersById;
+    }
+
+    public HashMap<Integer, Business> getBussiness() {
+        return this.businesses;
     }
 }

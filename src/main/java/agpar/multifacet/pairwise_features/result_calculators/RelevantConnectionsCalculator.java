@@ -1,9 +1,13 @@
 package agpar.multifacet.pairwise_features.result_calculators;
 
+import agpar.multifacet.data_interface.DataSet;
+import agpar.multifacet.data_interface.data_classes.Business;
 import agpar.multifacet.data_interface.data_classes.User;
 import agpar.multifacet.pairwise_features.PairwiseMetrics;
 import agpar.multifacet.pairwise_features.PairwiseResult;
 import agpar.multifacet.pairwise_features.review_avg_calculators.ReviewAvgCalculator;
+
+import java.util.Map;
 
 /*
 Only returns a result when the pair of users have either a item-reviewed or social overlap
@@ -14,8 +18,12 @@ for recommending items to each other.
  */
 public class RelevantConnectionsCalculator extends ResultCalculator {
 
+    private Map<Integer, Business> businessMap;
+
     public RelevantConnectionsCalculator(ReviewAvgCalculator avgCalculator, int minPCCOverlap) {
         super(avgCalculator, minPCCOverlap);
+
+        businessMap = DataSet.getInstance().getBussiness();
     }
 
     @Override
@@ -23,7 +31,8 @@ public class RelevantConnectionsCalculator extends ResultCalculator {
         double socialJacc = PairwiseMetrics.socialJaccard(user1, user2);
         double itemJacc = PairwiseMetrics.itemJaccard(user1, user2);
         boolean areFriends = PairwiseMetrics.areFriends(user1, user2);
-        if (socialJacc == 0 && itemJacc == 0 && (!areFriends)) {
+        boolean sameRegion = PairwiseMetrics.haveReviewedInSameRegion(user1, user2, businessMap);
+        if (socialJacc == 0 && itemJacc == 0 && (!areFriends) && (!sameRegion)) {
             return null;
         }
         Double pcc = PairwiseMetrics.reviewPcc(user1, user2, this.avgCalculator, this.minPCCOverlap);
