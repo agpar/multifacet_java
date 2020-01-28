@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 from multiprocessing.pool import Pool
 
@@ -5,9 +6,14 @@ from multiprocessing.pool import Pool
 def _clust_and_eval(cluster_fn, dists_path, k, iters, eval_fn):
     # The dists are loaded off disk in each proc as trying to pickle and unpickle the dists
     # is slow and causes a huge memory spike.
-    dists = np.load(dists_path)
-    clusts = cluster_fn(dists, k, iters)
-    return k, eval_fn(dists, clusts)
+    try:
+        dists = np.load(dists_path)
+        clusts = cluster_fn(dists, k, iters)
+        return k, eval_fn(dists, clusts)
+    except Exception as e:
+        print(f"Clustering failed for {k} clusters. Exception below.", file=sys.stderr)
+        print(e, file=sys.stderr)
+        return k, (-1, -1)
 
 
 def choose_k(cluster_fn, dists_path, k_range, iters, eval_fn, num_procs=12):
