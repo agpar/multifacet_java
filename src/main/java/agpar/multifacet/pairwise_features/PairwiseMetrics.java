@@ -58,14 +58,11 @@ public class PairwiseMetrics {
         return ((double) (Math.max(nu, Math.max(nn, np)) - Math.min(nu, Math.min(nn, np)))) / reviews1.length;
     }
 
-    public static boolean haveReviewedInSameRegion(User user1, User user2, Map<Integer, Business> businesses) {
-        for (var r1 : user1.getReviews()) {
-            for (var r2 : user2.getReviews()) {
-                var b1 = businesses.get(r1.getItemIdInt());
-                var b2 = businesses.get(r2.getItemIdInt());
-                if (b1.sameRegion(b2))
-                    return true;
-            }
+    public static boolean haveReviewedInSameRegion(User user1, User user2) {
+        var user1Regions = user1.getRegionsReviewed();
+        for (var user2Region : user2.getRegionsReviewed()) {
+            if (user1Regions.contains(user2Region))
+                return true;
         }
         return false;
     }

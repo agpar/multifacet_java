@@ -3,16 +3,12 @@ package agpar.multifacet.data_interface.data_classes;
 import com.google.gson.JsonObject;
 
 public class Location {
-    private int regionHash;
-
+    private Region region;
     private double lat;
     private double lon;
 
     public Location(String city, String state, double lat, double lon) {
-        city = city.toLowerCase().strip();
-        state = state.toLowerCase().strip();
-        this.regionHash = (city.concat(state)).hashCode();
-
+        this.region = new Region(city, state);
         this.lat = lat;
         this.lon = lon;
     }
@@ -25,8 +21,9 @@ public class Location {
                 businessObj.get("latitude").getAsDouble()
         );
     }
-    public boolean sameRegion(Location other) {
-        return this.regionHash == other.regionHash;
+
+    public Region getRegion() {
+        return this.region;
     }
 
     public double distanceToInKm(Location other) {

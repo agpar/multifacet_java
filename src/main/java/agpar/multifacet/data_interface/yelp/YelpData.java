@@ -35,13 +35,18 @@ public class YelpData extends DataSet {
             user.addReviews(reviewsByUserId.get(user.getUserIdInt()));
         }
 
-        // Adding categories
-        for(User user: this.usersById.values()) {
+        // Adding categories and regions
+        for (User user: this.usersById.values()) {
+            var userCategories = user.getCategoriesReviewed();
+            var userRegions = user.getRegionsReviewed();
             for (Review review : user.getReviews()) {
                 Business business = this.businesses.get(review.getItemIdInt());
-                user.getCategoriesReviewed().addAll(business.categories);
+                userCategories.addAll(business.categories);
+                var region = business.getRegion();
+                if (region != null) {
+                    userRegions.add(region);
+                }
             }
         }
-
     }
 }

@@ -18,12 +18,8 @@ for recommending items to each other.
  */
 public class RelevantConnectionsCalculator extends ResultCalculator {
 
-    private Map<Integer, Business> businessMap;
-
     public RelevantConnectionsCalculator(ReviewAvgCalculator avgCalculator, int minPCCOverlap) {
         super(avgCalculator, minPCCOverlap);
-
-        businessMap = DataSet.getInstance().getBussiness();
     }
 
     @Override
@@ -31,7 +27,7 @@ public class RelevantConnectionsCalculator extends ResultCalculator {
         double socialJacc = PairwiseMetrics.socialJaccard(user1, user2);
         double itemJacc = PairwiseMetrics.itemJaccard(user1, user2);
         boolean areFriends = PairwiseMetrics.areFriends(user1, user2);
-        boolean sameRegion = PairwiseMetrics.haveReviewedInSameRegion(user1, user2, businessMap);
+        boolean sameRegion = PairwiseMetrics.haveReviewedInSameRegion(user1, user2);
         if (socialJacc == 0 && itemJacc == 0 && (!areFriends) && (!sameRegion)) {
             return null;
         }

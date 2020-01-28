@@ -34,10 +34,17 @@ public class Business {
         this.location = location;
     }
 
+    public Region getRegion() {
+        if (location == null) {
+            return null;
+        }
+        return location.getRegion();
+    }
+
     public boolean sameRegion(Business other) {
         if (this.location == null || other.location == null)
             return false;
-        return this.location.sameRegion(other.location);
+        return this.location.getRegion() == other.location.getRegion();
     }
 
     public double distanceToInKm(Business other) {
