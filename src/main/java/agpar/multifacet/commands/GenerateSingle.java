@@ -11,7 +11,7 @@ public class GenerateSingle implements Command {
 
     public GenerateSingle(List<String> outputPaths, DATA_SOURCE source) {
         if(outputPaths.size() != 1) {
-            throw new CommandError("Exactly one path for --genPairs is needed.");
+            throw new CommandError("Exactly one path for --genSingle is needed.");
         }
         else if (source == DATA_SOURCE.YELP) {
             throw new CommandError("--genSingle is only supported when --epinions is also used.");
