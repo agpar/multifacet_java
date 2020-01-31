@@ -7,8 +7,10 @@ def _clust_and_eval(cluster_fn, dists_path, k, iters, eval_fn):
     # The dists are loaded off disk in each proc as trying to pickle and unpickle the dists
     # is slow and causes a huge memory spike.
     try:
+        print(f"Starting cluster task for {k}")
         dists = np.load(dists_path)
         clusts = cluster_fn(dists, k, iters)
+        print(f"Finishing cluster task for {k}")
         return k, eval_fn(dists, clusts)
     except Exception as e:
         print(f"Clustering failed for {k} clusters. Exception below.", file=sys.stderr)
@@ -30,6 +32,8 @@ def choose_k(cluster_fn, dists_path, k_range, iters, eval_fn, num_procs=12):
         args = (cluster_fn, dists_path, k, iters, eval_fn)
         results.append(pool.apply_async(_clust_and_eval, args=args))
     pool.close()
+    pool.join()
+
     final_results = []
     for res in results:
         final_results.append(res.get())
