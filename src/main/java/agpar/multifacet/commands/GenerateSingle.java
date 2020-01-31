@@ -13,7 +13,7 @@ public class GenerateSingle implements Command {
         if(outputPaths.size() != 1) {
             throw new CommandError("Exactly one path for --genPairs is needed.");
         }
-        else if (source != DATA_SOURCE.YELP) {
+        else if (source == DATA_SOURCE.YELP) {
             throw new CommandError("--genSingle is only supported when --epinions is also used.");
         }
         else {
