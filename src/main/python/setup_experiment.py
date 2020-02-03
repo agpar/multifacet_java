@@ -13,9 +13,9 @@ import filter_yelp
 import filter_epinions
 import cluster
 import predict
-import settings
 from clustering import clusteroid_kmeans
-from clustering.choose_k import choose_k, eval_silouette
+from clustering.choose_k import choose_k
+from clustering.cluster_tools import eval_silhouette
 
 if "MULTIFACET_ROOT" not in os.environ:
     raise Exception("$MULTIFACET_ROOT is not set. Can't determine where project is located.")
@@ -140,11 +140,11 @@ def run(experiment_dir=None, data_set=None, skipto=None):
     social_cluster_path = os.path.join(experiment_dir, "social_clusters.json")
     if SETUP_STEPS.index("cluster") >= skip_to:
         print("Determining optimal cluster count...")
-        k_goodness_pcc = choose_k(clusteroid_kmeans.cluster, pcc_dist_matrix_path, range(15, 60), 20, eval_silouette)
+        k_goodness_pcc = choose_k(clusteroid_kmeans.cluster, pcc_dist_matrix_path, range(15, 60), 20, eval_silhouette)
         with open(os.path.join(experiment_dir, "k_pcc_results.json"), 'w') as f:
             json.dump(k_goodness_pcc, f)
 
-        k_goodness_social = choose_k(clusteroid_kmeans.cluster, social_dist_matrix_path, range(15, 60), 20, eval_silouette)
+        k_goodness_social = choose_k(clusteroid_kmeans.cluster, social_dist_matrix_path, range(15, 60), 20, eval_silhouette)
         with open(os.path.join(experiment_dir, "k_social_results.json"), 'w') as f:
             json.dump(k_goodness_social, f)
 
