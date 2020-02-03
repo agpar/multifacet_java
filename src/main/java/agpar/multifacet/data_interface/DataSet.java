@@ -3,6 +3,7 @@ package agpar.multifacet.data_interface;
 
 import agpar.multifacet.Main;
 import agpar.multifacet.data_interface.collections.ReviewsById;
+import agpar.multifacet.data_interface.collections.TrustGraph;
 import agpar.multifacet.data_interface.collections.UsersById;
 import agpar.multifacet.data_interface.data_classes.Business;
 import agpar.multifacet.data_interface.data_classes.User;
@@ -18,7 +19,8 @@ public abstract class DataSet {
     protected UsersById usersById;
     protected ReviewsById reviewsByItemId;
     protected HashMap<Integer, Business> businesses;
-    protected YelpDataReader reader;
+    protected TrustGraph trust;
+    protected TrustGraph distrust;
     private static DataSet instance;
 
     public abstract void load(int start, int stop);
@@ -57,5 +59,13 @@ public abstract class DataSet {
 
     public HashMap<Integer, Business> getBussiness() {
         return this.businesses;
+    }
+
+    public TrustGraph getTrust() {
+        return trust;
+    }
+
+    public TrustGraph getDistrust() {
+        return distrust;
     }
 }

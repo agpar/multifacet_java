@@ -1,5 +1,6 @@
 package agpar.multifacet.data_interface.yelp;
 
+import agpar.multifacet.data_interface.collections.TrustGraph;
 import agpar.multifacet.data_interface.collections.UsersById;
 import agpar.multifacet.data_interface.collections.ReviewsById;
 import agpar.multifacet.data_interface.data_classes.Business;
@@ -105,5 +106,28 @@ public class YelpDataReader {
             System.exit(1);
         }
         return businesses;
+    }
+
+    public void loadTrust() {
+        BufferedReader reader;
+        var trustGraph = TrustGraph.getTrustGlobal();
+        try {
+            reader = new BufferedReader(new FileReader(this.userFile.toString()));
+            String line = reader.readLine();
+            JsonParser parser = new JsonParser();
+            while (line != null) {
+                JsonObject obj = parser.parse(line).getAsJsonObject();
+                Integer userId = obj.get("user_id").getAsInt();
+                String friends = obj.get("friends").getAsString();
+                String[] friendSplit = friends.split(", ");
+                for (var friend : friendSplit) {
+                    trustGraph.addMutualLink(userId, Integer.parseInt(friend));
+                }
+                line = reader.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 }

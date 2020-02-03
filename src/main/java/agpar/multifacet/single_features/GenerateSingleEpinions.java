@@ -31,19 +31,11 @@ public class GenerateSingleEpinions {
             EpinionsUser epUser = (EpinionsUser) user;
             HashMap<String, String> trusterFeats = usersToFeatures.getOrDefault(user.getUserId(), new HashMap<>());
             trusterFeats.put("outgoingTrust", String.valueOf(epUser.getTrustLinksOutgoing().size()));
-            trusterFeats.put("outgoingDistrust", String.valueOf(epUser.getDistrustedUsers().size()));
-            trusterFeats.put("incomingTrust", String.valueOf(epUser.getFriendsLinksIncoming().size()));
+            trusterFeats.put("outgoingDistrust", String.valueOf(epUser.getDistrustLinksOutgoing().size()));
+            trusterFeats.put("incomingTrust", String.valueOf(epUser.getTrustLinksIncoming().size()));
+            trusterFeats.put("incomingDistrust", String.valueOf(epUser.getDistrustLinksIncoming().size()));
             trusterFeats.put("userId", String.valueOf(user.getUserId()));
-            trusterFeats.put("incomingDistrust", "0");
             usersToFeatures.put(user.getUserId(), trusterFeats);
-
-            // Increment incoming distrust links for all enemies
-            for (Integer trusteeId : epUser.getDistrustedUsers()) {
-                HashMap<String, String> trusteeFeats = usersToFeatures.getOrDefault(trusteeId, new HashMap<>());
-                int currentIncoming = Integer.parseInt(trusteeFeats.getOrDefault("incomingDistrust", "0"));
-                trusteeFeats.put("incomingDistrust", String.valueOf(currentIncoming + 1));
-                usersToFeatures.put(trusteeId, trusteeFeats);
-            }
 
             trusterFeats.put("integrity", String.format("%f", (integrity(user, ds, avgCalculator))));
         }

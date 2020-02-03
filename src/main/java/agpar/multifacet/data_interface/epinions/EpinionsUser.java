@@ -1,40 +1,35 @@
 package agpar.multifacet.data_interface.epinions;
 
+import agpar.multifacet.data_interface.collections.TrustGraph;
 import agpar.multifacet.data_interface.data_classes.Region;
 import agpar.multifacet.data_interface.data_classes.User;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 public class EpinionsUser extends User {
-    private HashSet<Integer> trustOutgoing;
-    private HashSet<Integer> distrustedUsers;
-    private HashSet<Integer> friendLinksIncoming;
+    private TrustGraph distrustGraph;
 
-    public EpinionsUser(String userId, int userIdInt, HashSet<Integer> friendsInt,
-                        HashSet<Integer> distrustedUsers, HashSet<Integer> friendLinksIncoming) {
-        super(userIdInt, userId);
-        this.distrustedUsers = distrustedUsers;
-        this.friendLinksIncoming = friendLinksIncoming;
-    }
-
-    public Set<Integer> getDistrustedUsers() {
-        return Collections.unmodifiableSet(distrustedUsers);
-    }
-
-    public Set<Integer> getFriendsLinksIncoming() {
-        return Collections.unmodifiableSet(friendLinksIncoming);
+    public EpinionsUser(int userIdInt) {
+        super(userIdInt, String.valueOf(userIdInt));
+        this.distrustGraph = TrustGraph.getDistrustGlobal();
     }
 
     @Override
-    public void addTrustLinkOutgoing(int otherUserId) {
-        trustOutgoing.add(otherUserId);
+    public void addTrustLink(int destUser) {
+        this.trustGraph.addDirectedLink(userId, destUser);
     }
 
-    @Override
-    public Set<Integer> getTrustLinksOutgoing() {
-        return Collections.unmodifiableSet(trustOutgoing);
+    public Set<Integer> getDistrustLinksIncoming() {
+        return distrustGraph.getIncoming(userId);
+    }
+
+    public Set<Integer> getDistrustLinksOutgoing() {
+        return distrustGraph.getOutgoing(userId);
+    }
+
+    public void addDistrustLink(int destUser) {
+        distrustGraph.addDirectedLink(userId, destUser);
     }
 
     @Override

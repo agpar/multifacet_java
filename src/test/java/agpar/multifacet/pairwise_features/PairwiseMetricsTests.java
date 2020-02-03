@@ -1,10 +1,13 @@
 package agpar.multifacet.pairwise_features;
 
+import agpar.multifacet.data_interface.collections.TrustGraph;
 import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.data_classes.User;
+import agpar.multifacet.data_interface.epinions.EpinionsUser;
 import agpar.multifacet.data_interface.yelp.YelpUser;
 import agpar.multifacet.pairwise_features.review_avg_calculators.UserReviewAvgCalculator;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -16,10 +19,17 @@ public class PairwiseMetricsTests {
 
     private double delta = 0.000001;
 
+    @Before
+    public void setup() {
+        TrustGraph.resetGlobals();
+    }
+
     @Test
     public void are_friends_mutual_is_true() {
         User user1 = new YelpUser(1, "id");
         User user2 = new YelpUser(2, "id");
+        user1.addTrustLink(user2.getUserId());
+        user2.addTrustLink(user1.getUserId());
 
         assert(PairwiseMetrics.areFriends(user1, user2));
     }
@@ -28,15 +38,25 @@ public class PairwiseMetricsTests {
     public void are_friends_outgoing_is_true() {
         User user1 = new YelpUser(1, "id");
         User user2 = new YelpUser(2, "id");
+        user1.addTrustLink(user2.getUserId());
 
         assert(PairwiseMetrics.areFriends(user1, user2));
     }
 
     @Test
-    public void are_friends_incoming_is_false() {
+    public void yelp_are_friends_incoming_is_true() {
         User user1 = Mockito.spy(new YelpUser(1, "id"));
-        Mockito.doReturn(new HashSet<>(Arrays.asList(2))).when(user1).getTrustLinksOutgoing();
         User user2 = new YelpUser(2, "id");
+        user2.addTrustLink(user1.getUserId());
+
+        assert(PairwiseMetrics.areFriends(user1, user2));
+    }
+
+    @Test
+    public void epinions_are_friends_incoming_is_false() {
+        User user1 = new EpinionsUser(1);
+        User user2 = new EpinionsUser(2);
+        user2.addTrustLink(user1.getUserId());
 
         assert(!PairwiseMetrics.areFriends(user1, user2));
     }

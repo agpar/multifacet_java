@@ -2,6 +2,7 @@ package agpar.multifacet.data_interface.yelp;
 
 import agpar.multifacet.Settings;
 import agpar.multifacet.data_interface.DataSet;
+import agpar.multifacet.data_interface.collections.TrustGraph;
 import agpar.multifacet.data_interface.data_classes.Business;
 import agpar.multifacet.data_interface.collections.ReviewsById;
 import agpar.multifacet.data_interface.data_classes.Review;
@@ -10,6 +11,7 @@ import agpar.multifacet.data_interface.data_classes.User;
 import java.util.List;
 
 public class YelpData extends DataSet {
+    private YelpDataReader reader;
 
     public YelpData() {
         this.reader = new YelpDataReader(Settings.YELP_DATA_DIR());
@@ -22,6 +24,10 @@ public class YelpData extends DataSet {
         this.reviewsByItemId = reader.loadReviews();
         System.out.println("Loading Businesses");
         this.businesses = reader.loadBusinesses();
+        System.out.println("Loading Trust");
+        reader.loadTrust();
+        this.trust = TrustGraph.getTrustGlobal();
+        this.distrust = new TrustGraph();
 
         // Adding reviews and categories to users.
         ReviewsById reviewsByUserId = new ReviewsById();

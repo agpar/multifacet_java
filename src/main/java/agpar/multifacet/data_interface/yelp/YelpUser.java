@@ -8,38 +8,23 @@ import java.util.*;
 
 public class YelpUser extends User {
     private HashSet<Region> regionsReviewed = new HashSet<>();
-    private HashSet<Integer> friends = new HashSet<>();
 
     public YelpUser(int userIdInt, String trueUserId) {
         super(userIdInt, trueUserId);
     }
 
+    @Override
+    public Set<Region> getRegionsReviewed() {
+        return regionsReviewed;
+    }
+
     public static User fromJson(JsonObject obj) {
         String userId = obj.get("true_user_id").getAsString();
         int userIdInt = obj.get("user_id").getAsInt();
-        YelpUser user = new YelpUser(userIdInt, userId);
-
-        String friendStr = obj.get("friends").getAsString();
-        Collection<String> friendSplit = Arrays.asList(friendStr.split(", "));
-        for(String friendId : friendSplit) {
-            user.addTrustLinkOutgoing(Integer.parseInt(friendId));
-        }
-
-        return user;
+        return new YelpUser(userIdInt, userId);
     }
 
-    public Set<Region> getRegionsReviewed() {
-        return this.regionsReviewed;
-    }
-
-    @Override
-    public void addTrustLinkOutgoing(int otherUserId) {
-        this.friends.add(otherUserId);
-
-    }
-
-    @Override
-    public Set<Integer> getTrustLinksOutgoing() {
-        return Collections.unmodifiableSet(friends);
+    public void addTrustLink(int destUser) {
+        this.trustGraph.addMutualLink(getUserId(), destUser);
     }
 }

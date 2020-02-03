@@ -62,7 +62,7 @@ public class RelevantPairwiseRunner implements Runnable{
                 usersToCompareTo.add(friend);
 
                 // Connect up users who also have the same friend (socialJacc > 0)
-                for (Integer alsoTrustsFriend : friend.getTrustLinksOutgoing()) {
+                for (Integer alsoTrustsFriend : friend.getTrustLinksIncoming()) {
                     if (allUsers.containsKey(alsoTrustsFriend)) {
                         usersToCompareTo.add(allUsers.get(alsoTrustsFriend));
                     }

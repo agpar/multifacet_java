@@ -1,10 +1,10 @@
 package agpar.multifacet.data_interface.epinions;
 
 import agpar.multifacet.data_interface.collections.ReviewsById;
+import agpar.multifacet.data_interface.collections.TrustGraph;
 import agpar.multifacet.data_interface.data_classes.Business;
 import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.collections.UsersById;
-import agpar.multifacet.data_interface.data_classes.User;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -83,11 +83,6 @@ public class EpinionsDataReader {
             System.exit(1);
         }
 
-        HashMap<String, HashMap<Integer, HashSet<Integer>>> trustLinks = loadTrustLinks();
-        HashMap<Integer, HashSet<Integer>> friendsIncoming = trustLinks.get("friendsIncoming");
-        HashMap<Integer, HashSet<Integer>> friendsOutgoing = trustLinks.get("friendsOutgoing");
-        HashMap<Integer, HashSet<Integer>> enemies = trustLinks.get("enemies");
-
         try {
             reader = new BufferedReader(new FileReader(this.reviewFile.toString()));
             String header = reader.readLine();
@@ -97,13 +92,7 @@ public class EpinionsDataReader {
                 String[] splitLine = line.split(",");
                 int userId = Integer.parseInt(splitLine[1]);
                 if (relevantUsers.contains(userId) && !users.containsKey(userId)) {
-                    users.put(new EpinionsUser(
-                            "null",
-                            userId,
-                            friendsOutgoing.getOrDefault(userId, new HashSet<>()),
-                            enemies.getOrDefault(userId, new HashSet<>()),
-                            friendsIncoming.getOrDefault(userId, new HashSet<>())
-                    ));
+                    users.put(new EpinionsUser(userId));
                 }
                 line = reader.readLine();
             }
@@ -115,11 +104,10 @@ public class EpinionsDataReader {
         return users;
     }
 
-    private HashMap<String, HashMap<Integer, HashSet<Integer>>> loadTrustLinks() {
+    public void loadTrustLinks() {
         BufferedReader reader;
-        HashMap<Integer, HashSet<Integer>> friendsOutgoing = new HashMap<>();
-        HashMap<Integer, HashSet<Integer>> friendsIncoming = new HashMap<>();
-        HashMap<Integer, HashSet<Integer>> enemies = new HashMap<>();
+        TrustGraph trust = TrustGraph.getTrustGlobal();
+        TrustGraph distrust = TrustGraph.getDistrustGlobal();
         try {
             reader = new BufferedReader(new FileReader(this.trustFile.toFile()));
             String header = reader.readLine();
@@ -131,13 +119,9 @@ public class EpinionsDataReader {
                 int trusterId = Integer.parseInt(splitLine[0]);
                 int trusteeId = Integer.parseInt(splitLine[1]);
                 if (trustPolarity > 0) {
-                    friendsOutgoing.computeIfAbsent(trusterId, k -> new HashSet<>());
-                    friendsOutgoing.get(trusterId).add(trusteeId);
-                    friendsIncoming.computeIfAbsent(trusteeId, k -> new HashSet<>());
-                    friendsIncoming.get(trusteeId).add(trusterId);
+                    trust.addDirectedLink(trusterId, trusteeId);
                 } else {
-                   enemies.computeIfAbsent(trusterId, k -> new HashSet<>());
-                   enemies.get(trusterId).add(trusteeId);
+                    distrust.addDirectedLink(trusterId, trusteeId);
                 }
                 line = reader.readLine();
             }
@@ -146,11 +130,6 @@ public class EpinionsDataReader {
             e.printStackTrace();
             System.exit(1);
         }
-        return new HashMap<>() {{
-            put("friendsOutgoing", friendsOutgoing);
-            put("friendsIncoming", friendsIncoming);
-            put("enemies", enemies);
-        }};
     }
 
     public HashMap<Integer, Business> loadBusinesses() {

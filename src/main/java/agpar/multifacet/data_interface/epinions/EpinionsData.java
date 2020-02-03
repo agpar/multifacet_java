@@ -3,6 +3,7 @@ package agpar.multifacet.data_interface.epinions;
 import agpar.multifacet.Settings;
 import agpar.multifacet.data_interface.DataSet;
 import agpar.multifacet.data_interface.collections.ReviewsById;
+import agpar.multifacet.data_interface.collections.TrustGraph;
 import agpar.multifacet.data_interface.data_classes.Business;
 import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.data_classes.User;
@@ -33,6 +34,11 @@ public class EpinionsData extends DataSet {
 
         System.out.println("Loading Businesses");
         this.businesses = reader.loadBusinesses();
+
+        System.out.println("Loading trust");
+        reader.loadTrustLinks();
+        this.trust = TrustGraph.getTrustGlobal();
+        this.distrust = TrustGraph.getDistrustGlobal();
 
         for (User user : this.usersById.values()) {
             user.addReviews(reviewsByUserId.get(user.getUserId()));

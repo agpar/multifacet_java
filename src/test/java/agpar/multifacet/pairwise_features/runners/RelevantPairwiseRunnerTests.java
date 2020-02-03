@@ -1,14 +1,15 @@
 package agpar.multifacet.pairwise_features.runners;
 
 import agpar.multifacet.MockedDataSet;
+import agpar.multifacet.data_interface.collections.TrustGraph;
 import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.data_classes.User;
+import agpar.multifacet.data_interface.epinions.EpinionsUser;
 import agpar.multifacet.data_interface.yelp.YelpUser;
 import agpar.multifacet.pairwise_features.io.ResultWriter;
 import agpar.multifacet.pairwise_features.result_calculators.AllResultsCalculator;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.*;
 
@@ -29,12 +30,15 @@ public class RelevantPairwiseRunnerTests {
                 1,
                 false
         );
+        TrustGraph.resetGlobals();
     }
 
     @Test
     public void mutual_friends_are_compared() {
         User user1 = new YelpUser(1, "id");
         User user2 = new YelpUser(2, "id");
+        user1.addTrustLink(user2.getUserId());
+        user2.addTrustLink(user1.getUserId());
         data.registerUsers(Arrays.asList(user1, user2));
         HashSet<User> relevantUsers = runner.findRelevantUsers(user1, data.dataset);
         assert(relevantUsers.contains(user2));
@@ -44,6 +48,7 @@ public class RelevantPairwiseRunnerTests {
     public void nonmutual_outgoing_friends_are_compared() {
         User user1 = new YelpUser(1, "id");
         User user2 = new YelpUser(2, "id");
+        user1.addTrustLink(user2.getUserId());
         data.registerUsers(Arrays.asList(user1, user2));
         HashSet<User> relevantUsers = runner.findRelevantUsers(user1, data.dataset);
         assert(relevantUsers.contains(user2));
@@ -51,9 +56,9 @@ public class RelevantPairwiseRunnerTests {
 
     @Test
     public void nonmutual_incoming_friends_are_not_compared() {
-        User user1 = Mockito.spy(new YelpUser(1, "id"));
-        Mockito.doReturn(new HashSet<>(Arrays.asList(2))).when(user1).getTrustLinksOutgoing();
-        User user2 = new YelpUser(2, "id");
+        User user1 = new EpinionsUser(1);
+        User user2 = new EpinionsUser(2);
+        user2.addTrustLink(user1.getUserId());
         data.registerUsers(Arrays.asList(user1, user2));
         HashSet<User> relevantUsers = runner.findRelevantUsers(user1, data.dataset);
         assert(relevantUsers.size() == 0);
@@ -63,6 +68,8 @@ public class RelevantPairwiseRunnerTests {
     public void users_not_compared_to_themselves() {
         User user1 = new YelpUser(1, "id");
         User user2 = new YelpUser(2, "id");
+        user1.addTrustLink(user1.getUserId());
+        user2.addTrustLink(user2.getUserId());
         data.registerUsers(Arrays.asList(user1, user2));
         HashSet<User> relevantUsers = runner.findRelevantUsers(user1, data.dataset);
         assert(!relevantUsers.contains(user1));
@@ -71,9 +78,10 @@ public class RelevantPairwiseRunnerTests {
     @Test
     public void users_who_trust_a_middle_user_are_compared() {
         User user1 = new YelpUser(1, "id");
-        User user2 = Mockito.spy(new YelpUser(2, "id"));
-        Mockito.doReturn(new HashSet<>(Arrays.asList(1, 3))).when(user2).getTrustLinksOutgoing();
+        User user2 = new YelpUser(2, "id");
         User user3 = new YelpUser(3, "id");
+        user1.addTrustLink(user2.getUserId());
+        user3.addTrustLink(user2.getUserId());
 
         data.registerUsers(Arrays.asList(user1, user2, user3));
         HashSet<User> relevantUsers = runner.findRelevantUsers(user1, data.dataset);
