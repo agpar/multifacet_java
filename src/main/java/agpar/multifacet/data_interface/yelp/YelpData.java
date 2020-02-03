@@ -37,8 +37,9 @@ public class YelpData extends DataSet {
 
         // Adding categories and regions
         for (User user: this.usersById.values()) {
-            var userCategories = user.getCategoriesReviewed();
-            var userRegions = user.getRegionsReviewed();
+            YelpUser yuser = (YelpUser) user;
+            var userCategories = yuser.getCategoriesReviewed();
+            var userRegions = yuser.getRegionsReviewed();
             for (Review review : user.getReviews()) {
                 Business business = this.businesses.get(review.getItemId());
                 userCategories.addAll(business.categories);

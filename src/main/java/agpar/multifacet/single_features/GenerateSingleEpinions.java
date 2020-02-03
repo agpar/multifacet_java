@@ -30,7 +30,7 @@ public class GenerateSingleEpinions {
             // Count outgoing trust links for users.
             EpinionsUser epUser = (EpinionsUser) user;
             HashMap<String, String> trusterFeats = usersToFeatures.getOrDefault(user.getUserId(), new HashMap<>());
-            trusterFeats.put("outgoingTrust", String.valueOf(user.getFriendsLinksOutgoing().size()));
+            trusterFeats.put("outgoingTrust", String.valueOf(epUser.getTrustLinksOutgoing().size()));
             trusterFeats.put("outgoingDistrust", String.valueOf(epUser.getDistrustedUsers().size()));
             trusterFeats.put("incomingTrust", String.valueOf(epUser.getFriendsLinksIncoming().size()));
             trusterFeats.put("userId", String.valueOf(user.getUserId()));

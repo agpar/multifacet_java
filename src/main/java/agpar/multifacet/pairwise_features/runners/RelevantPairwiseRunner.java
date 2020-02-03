@@ -56,13 +56,13 @@ public class RelevantPairwiseRunner implements Runnable{
         HashSet<User> usersToCompareTo = new HashSet<>();
 
         // Connect up the outgoing friends.
-        for (Integer friendID : baseUser.getFriendsLinksOutgoing()) {
+        for (Integer friendID : baseUser.getTrustLinksOutgoing()) {
             if (allUsers.containsKey(friendID)) {
                 User friend = allUsers.get(friendID);
                 usersToCompareTo.add(friend);
 
                 // Connect up users who also have the same friend (socialJacc > 0)
-                for (Integer alsoTrustsFriend : friend.getFriendsLinksIncoming()) {
+                for (Integer alsoTrustsFriend : friend.getTrustLinksOutgoing()) {
                     if (allUsers.containsKey(alsoTrustsFriend)) {
                         usersToCompareTo.add(allUsers.get(alsoTrustsFriend));
                     }

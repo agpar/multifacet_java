@@ -43,7 +43,7 @@ public class YelpDataReader {
             while (line != null) {
                 if (lineno >= start) {
                     JsonObject obj =  parser.parse(line).getAsJsonObject();
-                    User user = User.fromJson(obj);
+                    User user = YelpUser.fromJson(obj);
                     users.put(user);
                 }
                 line = reader.readLine();

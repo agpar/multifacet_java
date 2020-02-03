@@ -2,6 +2,7 @@ package agpar.multifacet.pairwise_features;
 
 import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.data_classes.User;
+import agpar.multifacet.data_interface.yelp.YelpUser;
 import agpar.multifacet.pairwise_features.review_avg_calculators.UserReviewAvgCalculator;
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,25 +18,25 @@ public class PairwiseMetricsTests {
 
     @Test
     public void are_friends_mutual_is_true() {
-        User user1 = new User("id", 1, new HashSet<>(Arrays.asList(2)));
-        User user2 = new User("id", 2, new HashSet<>(Arrays.asList(1)));
+        User user1 = new YelpUser(1, "id");
+        User user2 = new YelpUser(2, "id");
 
         assert(PairwiseMetrics.areFriends(user1, user2));
     }
 
     @Test
     public void are_friends_outgoing_is_true() {
-        User user1 = new User("id", 1, new HashSet<>(Arrays.asList(2)));
-        User user2 = new User("id", 2, new HashSet<>(Arrays.asList()));
+        User user1 = new YelpUser(1, "id");
+        User user2 = new YelpUser(2, "id");
 
         assert(PairwiseMetrics.areFriends(user1, user2));
     }
 
     @Test
     public void are_friends_incoming_is_false() {
-        User user1 = Mockito.spy(new User("id", 1, new HashSet<>(Arrays.asList())));
-        Mockito.doReturn(new HashSet<>(Arrays.asList(2))).when(user1).getFriendsLinksIncoming();
-        User user2 = new User("id", 2, new HashSet<>(Arrays.asList(1)));
+        User user1 = Mockito.spy(new YelpUser(1, "id"));
+        Mockito.doReturn(new HashSet<>(Arrays.asList(2))).when(user1).getTrustLinksOutgoing();
+        User user2 = new YelpUser(2, "id");
 
         assert(!PairwiseMetrics.areFriends(user1, user2));
     }
@@ -62,8 +63,8 @@ public class PairwiseMetricsTests {
 
     @Test
     public void review_pcc_perfect_correlation() {
-        User user1 = new User("id", 1, new HashSet<>(Arrays.asList()));
-        User user2 = new User("id", 2, new HashSet<>(Arrays.asList()));
+        User user1 = new YelpUser(1, "id");
+        User user2 = new YelpUser(2, "id");
 
         user1.addReviews(Arrays.asList(
                 new Review(1, 1, "", 0),
@@ -83,8 +84,8 @@ public class PairwiseMetricsTests {
 
     @Test
     public void review_pcc_perfect_anti_correlation() {
-        User user1 = new User("id", 1, new HashSet<>(Arrays.asList()));
-        User user2 = new User("id", 2, new HashSet<>(Arrays.asList()));
+        User user1 = new YelpUser(1, "id");
+        User user2 = new YelpUser(2, "id");
 
         user1.addReviews(Arrays.asList(
                 new Review(1, 1, "", 0),
@@ -105,8 +106,8 @@ public class PairwiseMetricsTests {
     @Test
     public void review_pcc_users_with_insufficient_overlapping_returns_null() {
 
-        User user1 = new User("id", 1, new HashSet<>(Arrays.asList()));
-        User user2 = new User("id", 2, new HashSet<>(Arrays.asList()));
+        User user1 = new YelpUser(1, "id");
+        User user2 = new YelpUser(2, "id");
 
         user1.addReviews(Arrays.asList(
                 new Review(1, 1, "", 0),

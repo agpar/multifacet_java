@@ -3,6 +3,7 @@ package agpar.multifacet.pairwise_features.runners;
 import agpar.multifacet.MockedDataSet;
 import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.data_classes.User;
+import agpar.multifacet.data_interface.yelp.YelpUser;
 import agpar.multifacet.pairwise_features.io.ResultWriter;
 import agpar.multifacet.pairwise_features.result_calculators.AllResultsCalculator;
 import org.junit.Before;
@@ -32,8 +33,8 @@ public class RelevantPairwiseRunnerTests {
 
     @Test
     public void mutual_friends_are_compared() {
-        User user1 = new User("id", 1, new HashSet<>(Arrays.asList(2)));
-        User user2 = new User("id", 2, new HashSet<>(Arrays.asList(1)));
+        User user1 = new YelpUser(1, "id");
+        User user2 = new YelpUser(2, "id");
         data.registerUsers(Arrays.asList(user1, user2));
         HashSet<User> relevantUsers = runner.findRelevantUsers(user1, data.dataset);
         assert(relevantUsers.contains(user2));
@@ -41,8 +42,8 @@ public class RelevantPairwiseRunnerTests {
 
     @Test
     public void nonmutual_outgoing_friends_are_compared() {
-        User user1 = new User("id", 1, new HashSet<>(Arrays.asList(2)));
-        User user2 = new User("id", 2, new HashSet<>(Arrays.asList()));
+        User user1 = new YelpUser(1, "id");
+        User user2 = new YelpUser(2, "id");
         data.registerUsers(Arrays.asList(user1, user2));
         HashSet<User> relevantUsers = runner.findRelevantUsers(user1, data.dataset);
         assert(relevantUsers.contains(user2));
@@ -50,9 +51,9 @@ public class RelevantPairwiseRunnerTests {
 
     @Test
     public void nonmutual_incoming_friends_are_not_compared() {
-        User user1 = Mockito.spy(new User("id", 1, new HashSet<>()));
-        Mockito.doReturn(new HashSet<>(Arrays.asList(2))).when(user1).getFriendsLinksIncoming();
-        User user2 = new User("id", 2, new HashSet<>(Arrays.asList(1)));
+        User user1 = Mockito.spy(new YelpUser(1, "id"));
+        Mockito.doReturn(new HashSet<>(Arrays.asList(2))).when(user1).getTrustLinksOutgoing();
+        User user2 = new YelpUser(2, "id");
         data.registerUsers(Arrays.asList(user1, user2));
         HashSet<User> relevantUsers = runner.findRelevantUsers(user1, data.dataset);
         assert(relevantUsers.size() == 0);
@@ -60,8 +61,8 @@ public class RelevantPairwiseRunnerTests {
 
     @Test
     public void users_not_compared_to_themselves() {
-        User user1 = new User("id", 1, new HashSet<>(Arrays.asList(1, 2)));
-        User user2 = new User("id", 2, new HashSet<>(Arrays.asList(1, 2)));
+        User user1 = new YelpUser(1, "id");
+        User user2 = new YelpUser(2, "id");
         data.registerUsers(Arrays.asList(user1, user2));
         HashSet<User> relevantUsers = runner.findRelevantUsers(user1, data.dataset);
         assert(!relevantUsers.contains(user1));
@@ -69,10 +70,10 @@ public class RelevantPairwiseRunnerTests {
 
     @Test
     public void users_who_trust_a_middle_user_are_compared() {
-        User user1 = new User("id", 1, new HashSet<>(Arrays.asList(2)));
-        User user2 = Mockito.spy(new User("id", 2, new HashSet<>(Arrays.asList())));
-        Mockito.doReturn(new HashSet<>(Arrays.asList(1, 3))).when(user2).getFriendsLinksIncoming();
-        User user3 = new User("id", 3, new HashSet<>(Arrays.asList(2)));
+        User user1 = new YelpUser(1, "id");
+        User user2 = Mockito.spy(new YelpUser(2, "id"));
+        Mockito.doReturn(new HashSet<>(Arrays.asList(1, 3))).when(user2).getTrustLinksOutgoing();
+        User user3 = new YelpUser(3, "id");
 
         data.registerUsers(Arrays.asList(user1, user2, user3));
         HashSet<User> relevantUsers = runner.findRelevantUsers(user1, data.dataset);
@@ -81,10 +82,10 @@ public class RelevantPairwiseRunnerTests {
 
     @Test
     public void user_who_have_reviewed_the_same_item_are_compared() {
-        User user1 = new User("id", 1, new HashSet<>());
+        User user1 = new YelpUser(1, "id");
         Review r1 = new Review(1, 3, "", 0);
         user1.addReviews(Arrays.asList(r1));
-        User user2 = new User("id", 2, new HashSet<>());
+        User user2 = new YelpUser(2, "id");
         Review r2 = new Review(2, 3, "", 0);
         user2.addReviews(Arrays.asList(r2));
 
@@ -97,8 +98,8 @@ public class RelevantPairwiseRunnerTests {
 
     @Test
     public void users_who_have_no_relation_are_not_compared() {
-        User user1 = new User("id", 1, new HashSet<>());
-        User user2 = new User("id", 2, new HashSet<>());
+        User user1 = new YelpUser(1, "id");
+        User user2 = new YelpUser(2, "id");
 
         data.registerUsers(Arrays.asList(user1, user2));
 

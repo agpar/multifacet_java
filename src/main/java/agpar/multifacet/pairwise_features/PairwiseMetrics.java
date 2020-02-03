@@ -1,6 +1,7 @@
 package agpar.multifacet.pairwise_features;
 
 import agpar.multifacet.data_interface.data_classes.Review;
+import agpar.multifacet.data_interface.yelp.YelpUser;
 import agpar.multifacet.pairwise_features.review_avg_calculators.ReviewAvgCalculator;
 import agpar.multifacet.data_interface.collections.ReviewList;
 import agpar.multifacet.data_interface.data_classes.User;
@@ -10,7 +11,7 @@ import java.util.Set;
 
 public class PairwiseMetrics {
     public static boolean areFriends(User user1, User user2) {
-        return user1.getFriendsLinksOutgoing().contains(user2.getUserId());
+        return user1.getTrustLinksOutgoing().contains(user2.getUserId());
     }
 
     public static Double reviewPcc(User user1, User user2, ReviewAvgCalculator avgCalculator, int minOverlap) {
@@ -75,7 +76,7 @@ public class PairwiseMetrics {
     }
 
     public static double socialJaccard(User user1, User user2) {
-        return PairwiseMetrics.jaccard(user1.getFriendsLinksOutgoing(), user2.getFriendsLinksOutgoing());
+        return PairwiseMetrics.jaccard(user1.getTrustLinksOutgoing(), user2.getTrustLinksOutgoing());
     }
 
     public static double itemJaccard(User user1, User user2) {

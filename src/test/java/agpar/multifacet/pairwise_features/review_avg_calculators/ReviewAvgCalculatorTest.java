@@ -3,12 +3,12 @@ package agpar.multifacet.pairwise_features.review_avg_calculators;
 import agpar.multifacet.MockedDataSet;
 import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.data_classes.User;
+import agpar.multifacet.data_interface.yelp.YelpUser;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 
@@ -20,7 +20,7 @@ public class ReviewAvgCalculatorTest {
     @Before
     public void setup(){
         data = new MockedDataSet()    ;
-        user1 = new User("id", 1, new HashSet<>());
+        user1 = new YelpUser(1, "id");
         ArrayList<Review> reviews1 = new ArrayList<>(List.of(
                 new Review(1, 1, "", 0),
                 new Review(1, 2, "", 3),
@@ -29,7 +29,7 @@ public class ReviewAvgCalculatorTest {
         user1.addReviews(reviews1);
         data.registerReviews(reviews1);
 
-        User user2 = new User("id", 2, new HashSet<>());
+        User user2 = new YelpUser(2, "id");
         ArrayList<Review> reviews2 = new ArrayList<>(List.of(
                 new Review(2, 1, "", 5)
         ));
@@ -52,7 +52,7 @@ public class ReviewAvgCalculatorTest {
 
     @Test
     public void user_avg_fails_with_no_reviews() {
-        User user = new User("id", 1, new HashSet<>());
+        User user = new YelpUser(1, "id");
         try {
             double userAverage = new UserReviewAvgCalculator(data.dataset.getReviewsByItemId()).getUserAvg(user);
         } catch (IllegalArgumentException e) {
