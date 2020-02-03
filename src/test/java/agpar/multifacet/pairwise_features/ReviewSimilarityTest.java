@@ -9,12 +9,12 @@ public class ReviewSimilarityTest {
     @Test
     public void pcc_full_correlation() {
         Review[] reviews1 = new Review[] {
-                new Review("test", 1, 1, "", 5),
-                new Review("test", 1, 2, "", 0),
+                new Review(1, 1, "", 5),
+                new Review(1, 2, "", 0),
         };
         Review[] reviews2 = new Review[] {
-                new Review("test", 2, 1, "", 5),
-                new Review("test", 2, 2, "", 0),
+                new Review(2, 1, "", 5),
+                new Review(2, 2, "", 0),
         };
         double[] reviewAvgs = new double[] {2.5, 2.5};
         double pcc = ReviewSimilarity.pcc(reviews1, reviewAvgs, reviews2, reviewAvgs);
@@ -24,12 +24,12 @@ public class ReviewSimilarityTest {
     @Test
     public void pcc_full_anti_correlation() {
         Review[] reviews1 = new Review[] {
-                new Review("test", 1, 1, "", 0),
-                new Review("test", 1, 2, "", 5),
+                new Review(1, 1, "", 0),
+                new Review(1, 2, "", 5),
         };
         Review[] reviews2 = new Review[] {
-                new Review("test", 2, 1, "", 5),
-                new Review("test", 2, 2, "", 0),
+                new Review(2, 1, "", 5),
+                new Review(2, 2, "", 0),
         };
         double[] reviewAvgs = new double[] {2.5, 2.5};
         double pcc = ReviewSimilarity.pcc(reviews1, reviewAvgs, reviews2, reviewAvgs);
@@ -39,12 +39,12 @@ public class ReviewSimilarityTest {
     @Test
     public void pcc_fails_when_reviews_are_out_of_order() {
         Review[] reviews1 = new Review[] {
-                new Review("test", 1, 2, "", 0),
-                new Review("test", 1, 1, "", 5),
+                new Review(1, 2, "", 0),
+                new Review(1, 1, "", 5),
         };
         Review[] reviews2 = new Review[] {
-                new Review("test", 2, 1, "", 5),
-                new Review("test", 2, 2, "", 0),
+                new Review(2, 1, "", 5),
+                new Review(2, 2, "", 0),
         };
 
         double[] reviewAvgs = new double[] {2.5, 2.5};
@@ -59,11 +59,11 @@ public class ReviewSimilarityTest {
     @Test
     public void pcc_fails_when_review_lens_differ() {
         Review[] reviews1 = new Review[] {
-                new Review("test", 1, 2, "", 0),
-                new Review("test", 1, 1, "", 5),
+                new Review(1, 2, "", 0),
+                new Review(1, 1, "", 5),
         };
         Review[] reviews2 = new Review[] {
-                new Review("test", 2, 1, "", 5),
+                new Review( 2, 1, "", 5),
         };
         double[] reviewAvgs = new double[] {2.5, 2.5};
         try {

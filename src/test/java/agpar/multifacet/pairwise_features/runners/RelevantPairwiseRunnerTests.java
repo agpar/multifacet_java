@@ -82,10 +82,10 @@ public class RelevantPairwiseRunnerTests {
     @Test
     public void user_who_have_reviewed_the_same_item_are_compared() {
         User user1 = new User("id", 1, new HashSet<>());
-        Review r1 = new Review("r1", 1, 3, "", 0);
+        Review r1 = new Review(1, 3, "", 0);
         user1.addReviews(Arrays.asList(r1));
         User user2 = new User("id", 2, new HashSet<>());
-        Review r2 = new Review("r2", 2, 3, "", 0);
+        Review r2 = new Review(2, 3, "", 0);
         user2.addReviews(Arrays.asList(r2));
 
         data.registerUsers(Arrays.asList(user1, user2));

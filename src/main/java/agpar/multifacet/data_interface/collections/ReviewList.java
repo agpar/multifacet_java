@@ -20,7 +20,7 @@ public class ReviewList implements Iterable<Review>{
     private void initItemsReviewed(List<Review> reviews) {
         this.itemsReviewed = new HashSet<>();
         for (Review review : reviews) {
-            this.itemsReviewed.add(review.getItemIdInt());
+            this.itemsReviewed.add(review.getItemId());
         }
     }
 
@@ -28,7 +28,7 @@ public class ReviewList implements Iterable<Review>{
         if (this.itemsReviewed == null) {
             this.initItemsReviewed(reviews);
         }
-        reviews.sort(Comparator.comparingInt(Review::getItemIdInt));
+        reviews.sort(Comparator.comparingInt(Review::getItemId));
         if (this.itemsReviewed.size() == reviews.size()) {
             return reviews.toArray(new Review[reviews.size()]);
         }
@@ -36,18 +36,18 @@ public class ReviewList implements Iterable<Review>{
         int i = 0;
         int j = 0;
         Review[] dedupedReviews = new Review[this.itemsReviewed.size()];
-        int currentItem = reviews.get(0).getItemIdInt();
+        int currentItem = reviews.get(0).getItemId();
         Review latestReviewForItem = reviews.get(0);
         while (i < reviews.size() - 1) {
             Review nextReview = reviews.get(i + 1);
-            if (nextReview.getItemIdInt() == (currentItem)) {
+            if (nextReview.getItemId() == (currentItem)) {
                 if(nextReview.getDate().compareTo(latestReviewForItem.getDate()) > 0) {
                     latestReviewForItem = nextReview;
                 }
             } else {
                 dedupedReviews[j] = (latestReviewForItem);
                 j++;
-                currentItem = nextReview.getItemIdInt();
+                currentItem = nextReview.getItemId();
                 latestReviewForItem = nextReview;
             }
             i++;

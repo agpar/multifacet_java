@@ -1,13 +1,9 @@
 package agpar.multifacet.pairwise_features.result_calculators;
 
-import agpar.multifacet.data_interface.DataSet;
-import agpar.multifacet.data_interface.data_classes.Business;
 import agpar.multifacet.data_interface.data_classes.User;
 import agpar.multifacet.pairwise_features.PairwiseMetrics;
 import agpar.multifacet.pairwise_features.PairwiseResult;
 import agpar.multifacet.pairwise_features.review_avg_calculators.ReviewAvgCalculator;
-
-import java.util.Map;
 
 /*
 Only returns a result when the pair of users have either a item-reviewed or social overlap
@@ -35,7 +31,7 @@ public class RelevantConnectionsCalculator extends ResultCalculator {
         Double predictability = PairwiseMetrics.predictability(user1, user2, 1, 3);
         double categoryJacc = PairwiseMetrics.categoryJaccard(user1, user2);
 
-        PairwiseResult result =  new PairwiseResult(user1.getUserIdInt(), user2.getUserIdInt());
+        PairwiseResult result =  new PairwiseResult(user1.getUserId(), user2.getUserId());
         result.addResult("PCC", pcc);
         result.addResult("socialJacc", socialJacc);
         result.addResult("areFriends", areFriends);

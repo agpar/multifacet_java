@@ -6,17 +6,17 @@ import com.google.gson.JsonObject;
 import java.util.*;
 
 public class User {
-    private String userId;
-    private int userIdInt;
-    private HashSet<Integer> friendsInt;
+    private String trueUserId;
+    private int userId;
+    private HashSet<Integer> friends;
     private HashSet<Integer> categoriesReviewed = new HashSet<>();
     private HashSet<Region> regionsReviewed = new HashSet<>();
     private ReviewList reviews = new ReviewList(new ArrayList<>());
 
-    public User(String userId, int userIdInt, HashSet<Integer> friendsInt) {
-        this.userId = userId;
-        this.userIdInt = userIdInt;
-        this.friendsInt = friendsInt;
+    public User(String trueUserId, int userIdInt, HashSet<Integer> friends) {
+        this.trueUserId = trueUserId;
+        this.userId = userIdInt;
+        this.friends = friends;
     }
 
     public static User fromJson(JsonObject obj) {
@@ -31,19 +31,19 @@ public class User {
         return new User(userId, userIdInt, friendsInt);
     }
 
-    public String getUserId() {
+    public String getTrueUserId() {
+        return this.trueUserId;
+    }
+
+    public int getUserId() {
         return this.userId;
     }
 
-    public int getUserIdInt() {
-        return this.userIdInt;
-    }
-
     public Set<Integer> getFriendsLinksOutgoing() {
-        return Collections.unmodifiableSet(this.friendsInt);
+        return Collections.unmodifiableSet(this.friends);
     }
 
-    public Set<Integer> getFriendsLinksIncoming() { return Collections.unmodifiableSet(this.friendsInt); }
+    public Set<Integer> getFriendsLinksIncoming() { return Collections.unmodifiableSet(this.friends); }
 
     public void addReviews(List<Review> reviews) {
        this.reviews = new ReviewList(reviews);

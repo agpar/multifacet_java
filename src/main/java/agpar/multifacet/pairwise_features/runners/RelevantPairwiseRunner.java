@@ -72,10 +72,10 @@ public class RelevantPairwiseRunner implements Runnable{
 
         // Connect up users who have reviewed an item this user has reviewed.
         for (Review review : baseUser.getReviews()) {
-            for (Review reviewOfSameItem : allReviews.get(review.getItemIdInt())) {
-                if (reviewOfSameItem.getUserIdInt() != baseUser.getUserIdInt() &&
-                        allUsers.containsKey(reviewOfSameItem.getUserIdInt())) {
-                    usersToCompareTo.add(allUsers.get(reviewOfSameItem.getUserIdInt()));
+            for (Review reviewOfSameItem : allReviews.get(review.getItemId())) {
+                if (reviewOfSameItem.getUserId() != baseUser.getUserId() &&
+                        allUsers.containsKey(reviewOfSameItem.getUserId())) {
+                    usersToCompareTo.add(allUsers.get(reviewOfSameItem.getUserId()));
                 }
             }
         }

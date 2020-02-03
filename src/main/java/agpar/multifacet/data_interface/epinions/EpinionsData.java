@@ -24,7 +24,7 @@ public class EpinionsData extends DataSet {
         ReviewsById reviewsByUserId = new ReviewsById();
         for (List<Review> reviews: this.reviewsByItemId.values()) {
             for (Review review : reviews) {
-                reviewsByUserId.put(review.getUserIdInt(), review);
+                reviewsByUserId.put(review.getUserId(), review);
             }
         }
 
@@ -35,13 +35,13 @@ public class EpinionsData extends DataSet {
         this.businesses = reader.loadBusinesses();
 
         for (User user : this.usersById.values()) {
-            user.addReviews(reviewsByUserId.get(user.getUserIdInt()));
+            user.addReviews(reviewsByUserId.get(user.getUserId()));
         }
 
         // Adding categories
         for(User user: this.usersById.values()) {
             for (Review review : user.getReviews()) {
-                Business business = this.businesses.get(review.getItemIdInt());
+                Business business = this.businesses.get(review.getItemId());
                 user.getCategoriesReviewed().addAll(business.categories);
             }
         }

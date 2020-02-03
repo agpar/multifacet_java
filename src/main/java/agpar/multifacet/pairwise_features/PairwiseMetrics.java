@@ -1,20 +1,16 @@
 package agpar.multifacet.pairwise_features;
 
-import agpar.multifacet.data_interface.DataSet;
-import agpar.multifacet.data_interface.data_classes.Business;
 import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.pairwise_features.review_avg_calculators.ReviewAvgCalculator;
 import agpar.multifacet.data_interface.collections.ReviewList;
 import agpar.multifacet.data_interface.data_classes.User;
 
-import javax.sql.DataSource;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class PairwiseMetrics {
     public static boolean areFriends(User user1, User user2) {
-        return user1.getFriendsLinksOutgoing().contains(user2.getUserIdInt());
+        return user1.getFriendsLinksOutgoing().contains(user2.getUserId());
     }
 
     public static Double reviewPcc(User user1, User user2, ReviewAvgCalculator avgCalculator, int minOverlap) {
@@ -94,7 +90,7 @@ public class PairwiseMetrics {
         Review[] filteredReviews = new Review[itemSet.size()];
         int i = 0;
         for (Review review : reviews) {
-            if (itemSet.contains(review.getItemIdInt())) {
+            if (itemSet.contains(review.getItemId())) {
                 filteredReviews[i] = review;
                 i++;
             }

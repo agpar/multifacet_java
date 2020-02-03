@@ -45,7 +45,7 @@ public class RatingTupleGenerator {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath));
                 for(Review review : reviewsToWrite) {
-                    String line = String.format("%d %d %f\n", review.getUserIdInt(), review.getItemIdInt(), review.getStars());
+                    String line = String.format("%d %d %f\n", review.getUserId(), review.getItemId(), review.getStars());
                     writer.write(line);
                 }
             writer.close();

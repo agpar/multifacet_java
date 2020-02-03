@@ -27,12 +27,12 @@ public class YelpData extends DataSet {
         ReviewsById reviewsByUserId = new ReviewsById();
         for (List<Review> reviews: this.reviewsByItemId.values()) {
             for (Review review: reviews) {
-                reviewsByUserId.put(review.getUserIdInt(), review);
+                reviewsByUserId.put(review.getUserId(), review);
             }
         }
 
         for (User user : this.usersById.values()) {
-            user.addReviews(reviewsByUserId.get(user.getUserIdInt()));
+            user.addReviews(reviewsByUserId.get(user.getUserId()));
         }
 
         // Adding categories and regions
@@ -40,7 +40,7 @@ public class YelpData extends DataSet {
             var userCategories = user.getCategoriesReviewed();
             var userRegions = user.getRegionsReviewed();
             for (Review review : user.getReviews()) {
-                Business business = this.businesses.get(review.getItemIdInt());
+                Business business = this.businesses.get(review.getItemId());
                 userCategories.addAll(business.categories);
                 var region = business.getRegion();
                 if (region != null) {

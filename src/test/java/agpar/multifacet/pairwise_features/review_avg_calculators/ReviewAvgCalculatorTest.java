@@ -22,16 +22,16 @@ public class ReviewAvgCalculatorTest {
         data = new MockedDataSet()    ;
         user1 = new User("id", 1, new HashSet<>());
         ArrayList<Review> reviews1 = new ArrayList<>(List.of(
-                new Review("test", 1, 1, "", 0),
-                new Review("test", 1, 2, "", 3),
-                new Review("test", 1, 3, "", 5)
+                new Review(1, 1, "", 0),
+                new Review(1, 2, "", 3),
+                new Review(1, 3, "", 5)
         ));
         user1.addReviews(reviews1);
         data.registerReviews(reviews1);
 
         User user2 = new User("id", 2, new HashSet<>());
         ArrayList<Review> reviews2 = new ArrayList<>(List.of(
-                new Review("test", 2, 1, "", 5)
+                new Review(2, 1, "", 5)
         ));
         user2.addReviews(reviews2);
         data.registerReviews(reviews2);;

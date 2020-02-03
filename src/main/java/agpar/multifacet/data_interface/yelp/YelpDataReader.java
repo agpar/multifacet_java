@@ -74,7 +74,7 @@ public class YelpDataReader {
             while (line != null) {
                 JsonObject obj = parser.parse(line).getAsJsonObject();
                 Review review = Review.fromJson(obj);
-                reviews.put(review.getItemIdInt(), review);
+                reviews.put(review.getItemId(), review);
                 line = reader.readLine();
             }
             reader.close();

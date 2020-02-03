@@ -14,7 +14,7 @@ public class ReviewSimilarity {
         double denom1 = 0.0;
         double denom2 = 0.0;
         for(int i = 0; i < reviews1.length; i++) {
-            assert(reviews1[i].getItemIdInt() == reviews2[i].getItemIdInt());
+            assert(reviews1[i].getItemId() == reviews2[i].getItemId());
             double score1 = reviews1[i].getStars();
             double avg1 = avgs1[i];
             double score2 = reviews2[i].getStars();

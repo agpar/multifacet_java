@@ -4,7 +4,6 @@ import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.collections.ReviewsById;
 import agpar.multifacet.data_interface.data_classes.User;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,12 +22,12 @@ public abstract class ReviewAvgCalculator {
     public abstract double[] getAvgs(Review[] reviews, User user);
 
     public double getUserAvg(User user) {
-        Double cachedAvg = this.avgUserReviews.get(user.getUserIdInt());
+        Double cachedAvg = this.avgUserReviews.get(user.getUserId());
         if(cachedAvg != null) {
             return cachedAvg;
         } else {
             double val = this.avg(user.getReviews());
-            this.avgUserReviews.put(user.getUserIdInt(), val);
+            this.avgUserReviews.put(user.getUserId(), val);
             return val;
         }
     }

@@ -33,7 +33,7 @@ public class MockedDataSet {
 
     public void registerReviews(List<Review> reviewList) {
         for (Review review : reviewList) {
-            reviews.put(review.getItemIdInt(), review);
+            reviews.put(review.getItemId(), review);
         }
     }
 }

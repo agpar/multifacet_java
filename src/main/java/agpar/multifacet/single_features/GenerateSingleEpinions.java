@@ -4,17 +4,15 @@ import agpar.multifacet.data_interface.DataSet;
 import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.data_classes.User;
 import agpar.multifacet.data_interface.epinions.EpinionsUser;
-import agpar.multifacet.pairwise_features.PairwiseMetrics;
 import agpar.multifacet.pairwise_features.ReviewSimilarity;
 import agpar.multifacet.pairwise_features.review_avg_calculators.GlobalReviewAvgCalculator;
 import agpar.multifacet.pairwise_features.review_avg_calculators.ItemReviewAvgCalculator;
-import agpar.multifacet.pairwise_features.review_avg_calculators.ReviewAvgCalculator;
 import agpar.multifacet.pairwise_features.review_avg_calculators.UserReviewAvgCalculator;
 
 import java.io.*;
 import java.util.HashMap;
 
-public class GenerateAllSingle {
+public class GenerateSingleEpinions {
 
     private static GlobalReviewAvgCalculator globalAverageReviews;
     public static void generateData(String path) {
@@ -31,13 +29,13 @@ public class GenerateAllSingle {
         for(User user : ds.getUsers()) {
             // Count outgoing trust links for users.
             EpinionsUser epUser = (EpinionsUser) user;
-            HashMap<String, String> trusterFeats = usersToFeatures.getOrDefault(user.getUserIdInt(), new HashMap<>());
+            HashMap<String, String> trusterFeats = usersToFeatures.getOrDefault(user.getUserId(), new HashMap<>());
             trusterFeats.put("outgoingTrust", String.valueOf(user.getFriendsLinksOutgoing().size()));
             trusterFeats.put("outgoingDistrust", String.valueOf(epUser.getDistrustedUsers().size()));
             trusterFeats.put("incomingTrust", String.valueOf(epUser.getFriendsLinksIncoming().size()));
-            trusterFeats.put("userId", String.valueOf(user.getUserIdInt()));
+            trusterFeats.put("userId", String.valueOf(user.getUserId()));
             trusterFeats.put("incomingDistrust", "0");
-            usersToFeatures.put(user.getUserIdInt(), trusterFeats);
+            usersToFeatures.put(user.getUserId(), trusterFeats);
 
             // Increment incoming distrust links for all enemies
             for (Integer trusteeId : epUser.getDistrustedUsers()) {
@@ -70,9 +68,8 @@ public class GenerateAllSingle {
 
         Review[] globalReviews = new Review[u.getReviews().size()];
         for(int i = 0; i < globalReviews.length; i++) {
-            int itemReviewed = u1Reviews[i].getItemIdInt();
+            int itemReviewed = u1Reviews[i].getItemId();
             Review avgReview = new Review(
-                    "fake",
                     -1,
                     itemReviewed,
                     "",

@@ -41,7 +41,6 @@ public class EpinionsDataReader {
             while (line != null) {
                 String[] splitLine = line.split(",");
                 reviews.put(reviewId, new Review(
-                        Integer.valueOf(reviewId).toString(),
                         Integer.parseInt(splitLine[1]),
                         Integer.parseInt(splitLine[0]),
                         splitLine[5],

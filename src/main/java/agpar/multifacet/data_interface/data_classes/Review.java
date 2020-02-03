@@ -3,24 +3,21 @@ package agpar.multifacet.data_interface.data_classes;
 import com.google.gson.JsonObject;
 
 public class Review {
-    private String reviewId;
-    private int userIdInt;
-    private int itemIdInt;
+    private int userId;
+    private int itemId;
     private String date;
     private double stars;
 
 
-    public Review(String reviewId, int userIdInt, int itemIdInt, String date, double stars) {
-        this.reviewId = reviewId;
-        this.userIdInt = userIdInt;
-        this.itemIdInt = itemIdInt;
+    public Review(int userId, int itemId, String date, double stars) {
+        this.userId = userId;
+        this.itemId = itemId;
         this.date = date;
         this.stars = stars;
     }
 
     public static Review fromJson(JsonObject obj) {
         return new Review(
-                obj.get("true_review_id").getAsString(),
                 obj.get("user_id").getAsInt(),
                 obj.get("business_id").getAsInt(),
                 obj.get("date").getAsString(),
@@ -28,16 +25,12 @@ public class Review {
         );
     }
 
-    public String getReviewId() {
-        return reviewId;
+    public int getUserId() {
+        return userId;
     }
 
-    public int getUserIdInt() {
-        return userIdInt;
-    }
-
-    public int getItemIdInt() {
-        return itemIdInt;
+    public int getItemId() {
+        return itemId;
     }
 
     public String getDate() {

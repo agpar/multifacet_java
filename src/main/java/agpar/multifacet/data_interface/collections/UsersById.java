@@ -9,7 +9,7 @@ public class UsersById {
     private HashMap<Integer, User> users = new HashMap<>();
 
     public void put(User user) {
-        this.users.put(user.getUserIdInt(), user);
+        this.users.put(user.getUserId(), user);
     }
 
     public User get(int userId) {

@@ -1,7 +1,7 @@
 package agpar.multifacet.commands;
 
 import agpar.multifacet.data_interface.DATA_SOURCE;
-import agpar.multifacet.single_features.GenerateAllSingle;
+import agpar.multifacet.single_features.GenerateSingleEpinions;
 
 import java.util.List;
 
@@ -25,6 +25,6 @@ public class GenerateSingle implements Command {
     public void runCommand() {
         System.out.printf("Generating single features and outputting to %s\n", outputPath);
         System.out.printf("Using %s data.\n", source.toString());
-        GenerateAllSingle.generateData(outputPath);
+        GenerateSingleEpinions.generateData(outputPath);
     }
 }

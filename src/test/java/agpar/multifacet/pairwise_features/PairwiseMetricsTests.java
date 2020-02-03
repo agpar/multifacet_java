@@ -66,14 +66,14 @@ public class PairwiseMetricsTests {
         User user2 = new User("id", 2, new HashSet<>(Arrays.asList()));
 
         user1.addReviews(Arrays.asList(
-                new Review("id", 1, 1, "", 0),
-                new Review("id", 1, 2, "", 0),
-                new Review("id", 1, 3, "", 5)
+                new Review(1, 1, "", 0),
+                new Review(1, 2, "", 0),
+                new Review(1, 3, "", 5)
         ));
         user2.addReviews(Arrays.asList(
-                new Review("id", 2, 1, "", 0),
-                new Review("id", 2, 2, "", 0),
-                new Review("id", 2, 3, "", 5)
+                new Review(2, 1, "", 0),
+                new Review(2, 2, "", 0),
+                new Review(2, 3, "", 5)
         ));
 
         Double pcc = PairwiseMetrics.reviewPcc(user1, user2, new UserReviewAvgCalculator(null), 3);
@@ -87,14 +87,14 @@ public class PairwiseMetricsTests {
         User user2 = new User("id", 2, new HashSet<>(Arrays.asList()));
 
         user1.addReviews(Arrays.asList(
-                new Review("id", 1, 1, "", 0),
-                new Review("id", 1, 2, "", 0),
-                new Review("id", 1, 3, "", 5)
+                new Review(1, 1, "", 0),
+                new Review(1, 2, "", 0),
+                new Review(1, 3, "", 5)
         ));
         user2.addReviews(Arrays.asList(
-                new Review("id", 2, 1, "", 5),
-                new Review("id", 2, 2, "", 5),
-                new Review("id", 2, 3, "", 0)
+                new Review(2, 1, "", 5),
+                new Review(2, 2, "", 5),
+                new Review(2, 3, "", 0)
         ));
 
         Double pcc = PairwiseMetrics.reviewPcc(user1, user2, new UserReviewAvgCalculator(null), 3);
@@ -109,12 +109,12 @@ public class PairwiseMetricsTests {
         User user2 = new User("id", 2, new HashSet<>(Arrays.asList()));
 
         user1.addReviews(Arrays.asList(
-                new Review("id", 1, 1, "", 0),
-                new Review("id", 1, 2, "", 5)
+                new Review(1, 1, "", 0),
+                new Review(1, 2, "", 5)
         ));
         user2.addReviews(Arrays.asList(
-                new Review("id", 2, 1, "", 5),
-                new Review("id", 2, 2, "", 0)
+                new Review(2, 1, "", 5),
+                new Review(2, 2, "", 0)
         ));
         Double pcc = PairwiseMetrics.reviewPcc(user1, user2, new UserReviewAvgCalculator(null), 3);
         Assert.assertNull(pcc);

@@ -13,7 +13,7 @@ public class ItemReviewAvgCalculator extends ReviewAvgCalculator {
     public double[] getAvgs(Review[] reviews, User user) {
         double[] output = new double[reviews.length];
         for(int i = 0; i < reviews.length; i++) {
-            output[i] = this.getItemAvg(reviews[i].getItemIdInt());
+            output[i] = this.getItemAvg(reviews[i].getItemId());
         }
         return output;
     }
