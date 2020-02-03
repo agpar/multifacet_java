@@ -1,15 +1,19 @@
 from clustering.cluster_tools import *
 
 
-def cluster(dists: np.array, k, iters):
+def cluster(dists: np.array, k, iters, save_iter_scores=False):
     init_clusteroids = choose_initial_clusteroids(dists, k, strategy='partition')
     clusters = assign_points_to_clusters(dists, init_clusteroids)
+    scores = []
     for i in range(iters - 1):
         new_clusteroids = choose_next_clusteroids(dists, k, clusters, "cluster-avg")
         clusters = assign_points_to_clusters(dists, new_clusteroids)
-        # print(f"{i}: Average intra cluster dist: {average_intra_clust_distance(dists, clusters)}")
-        # print(f"{i}: Silo score: {eval_silhouette(dists, clusters_to_labels(dists, clusters))}")
+        if save_iter_scores:
+            scores.append(eval_both(dists, clusters_to_labels(dists, clusters)))
 
+    if save_iter_scores:
+        print("Iter scores:\n")
+        print(scores)
     return clusters_to_labels(dists, clusters)
 
 
