@@ -84,20 +84,21 @@ def pairwise_dist_matrix(single_path, pairwise_path, selector, default_val):
             val = selector(line)
             arr[user1_idx][user2_idx] = val
             arr[user2_idx][user1_idx] = val
+
+    # Diagonal dist values must be 0.
+    np.fill_diagonal(arr, 0)
     return arr
 
 
 def gen_dist_matrix(single_path, pairwise_path, cluster_type):
     init_indexes(single_path, pairwise_path)
     if cluster_type == "pcc":
-        dist_arr = pcc_dists(single_path, pairwise_path)
+        return pcc_dists(single_path, pairwise_path)
     elif cluster_type == "social":
-        dist_arr = social_jacc_dists(single_path, pairwise_path)
+        return social_jacc_dists(single_path, pairwise_path)
     else:
         print(f"Cluster type must be 'pcc' or 'social', not {cluster_type}")
         exit(1)
-
-    return dist_arr
 
 
 def run(single_path, pairwise_path, cluster_type, output_path, dists_in, dists_out, k, iters):
