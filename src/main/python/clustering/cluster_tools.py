@@ -9,8 +9,6 @@ def eval_both(dists, cluster_labels):
 
 
 def eval_silhouette(dists, cluster_labels):
-    if np.isnan(dists).any():
-        return None
     return float(silhouette_score(dists, cluster_labels, metric='precomputed'))
 
 
@@ -78,19 +76,26 @@ class AvgClusterDistCalculator:
         :param clusters: A dict : int -> set(int) of clusters, like produced by labels_to_clusters()
         """
         self.dist_matrix = dist_matrix
+        self.dist_masked = self._mask_diag()
         self.dist_max = np.nanmax(dist_matrix).item()
         self.clusters = clusters
 
     def avg_dist_psuedo_means(self):
         new_clusteroids = np.empty((len(self.clusters), self.dist_matrix.shape[0]))
 
-        old_diag_val = self.dist_matrix[0][0]
-        np.fill_diagonal(self.dist_matrix, np.nan)
         for key in sorted(list(self.clusters.keys())):
             cluster = self.clusters[key]
             if cluster:
-                new_clusteroids[key] = np.nanmean(self.dist_matrix[list(cluster)], axis=0)
+                new_clusteroids[key] = np.ma.mean(self.dist_masked[list(cluster)], axis=0)
             else:
                 new_clusteroids[key] = np.full(self.dist_matrix.shape[0], self.dist_max)
-        np.fill_diagonal(self.dist_matrix, old_diag_val)
         return new_clusteroids
+
+    def _mask_diag(self):
+        diag_indices = np.diag_indices(self.dist_matrix.shape[0])
+        mask_array = np.zeros(self.dist_matrix.shape, dtype=np.dtype('byte'))
+        mask_array[diag_indices] = 1
+        masked_view = self.dist_matrix.view(np.ma.MaskedArray)
+        masked_view.mask = mask_array
+        return masked_view
+
