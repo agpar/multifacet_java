@@ -6,7 +6,7 @@ import numpy as np
 
 def learn_logit(X, Y):
     clf = LogisticRegression(class_weight='balanced',
-            penalty='l2', solver='saga').fit(X, Y)
+            penalty='l2', solver='saga', max_iter=1000).fit(X, Y)
     return clf
 
 
