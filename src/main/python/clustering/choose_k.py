@@ -18,7 +18,7 @@ def _clust_and_eval(cluster_fn, dists_path, k, iters, eval_fn):
         return k, (-1, -1)
 
 
-def choose_k(cluster_fn, dists_path, k_range, iters, eval_fn, num_procs=12):
+def choose_k(cluster_fn, dists_path, k_range, iters, eval_fn, num_procs=8):
     """Evaluate multiple values of n using multiprocessing.
 
     :param dists_path: The realpath of saved numpy dists to load

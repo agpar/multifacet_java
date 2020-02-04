@@ -135,22 +135,21 @@ def run(experiment_dir=None, data_set=None, skipto=None):
         social_dist_matrix = cluster.gen_dist_matrix(single_path, pairwise_path, "social")
         np.save(social_dist_matrix_path, social_dist_matrix)
 
-    # TODO figure out why this step sometimes hangs.
     pcc_cluster_path = os.path.join(experiment_dir, "pcc_clusters.json")
     social_cluster_path = os.path.join(experiment_dir, "social_clusters.json")
     if SETUP_STEPS.index("cluster") >= skip_to:
         print("Determining optimal cluster count...")
-        k_goodness_pcc = choose_k(clusteroid_kmeans.cluster, pcc_dist_matrix_path, range(15, 60), 20, eval_silhouette)
+        k_goodness_pcc = choose_k(clusteroid_kmeans.cluster, pcc_dist_matrix_path, range(10, 100), 20, eval_silhouette)
         with open(os.path.join(experiment_dir, "k_pcc_results.json"), 'w') as f:
             json.dump(k_goodness_pcc, f)
 
-        k_goodness_social = choose_k(clusteroid_kmeans.cluster, social_dist_matrix_path, range(15, 60), 20, eval_silhouette)
+        k_goodness_social = choose_k(clusteroid_kmeans.cluster, social_dist_matrix_path, range(10, 100), 20, eval_silhouette)
         with open(os.path.join(experiment_dir, "k_social_results.json"), 'w') as f:
             json.dump(k_goodness_social, f)
 
         print("Generating clusters...")
-        cluster.run(single_path, pairwise_path, "pcc", pcc_cluster_path, [pcc_dist_matrix_path], None, k_goodness_pcc[0][0], 50)
-        cluster.run(single_path, pairwise_path, "social", social_cluster_path, [social_dist_matrix_path], None, k_goodness_social[0][0], 50)
+        cluster.run(single_path, pairwise_path, "pcc", pcc_cluster_path, [pcc_dist_matrix_path], None, k_goodness_pcc[0][0], 60)
+        cluster.run(single_path, pairwise_path, "social", social_cluster_path, [social_dist_matrix_path], None, k_goodness_social[0][0], 60)
 
     if SETUP_STEPS.index("predict") >= skip_to:
         print("Running all predictions in parallel.")
