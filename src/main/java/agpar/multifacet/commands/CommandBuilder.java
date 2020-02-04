@@ -12,13 +12,13 @@ public class CommandBuilder {
 
     public CommandBuilder(String[] cmdLindArgs) {
         args = cmdLindArgs;
-    }
-
-    public Command build() throws CommandError{
         if(args.length == 0) {
             throw new CommandError("At least one experiment description file or flag is required.");
         }
         parseArgs(args);
+    }
+
+    public Command build() throws CommandError{
         return buildCommand();
     }
 
