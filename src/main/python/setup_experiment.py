@@ -22,7 +22,23 @@ if "MULTIFACET_ROOT" not in os.environ:
 MULTIFACET_ROOT = os.environ["MULTIFACET_ROOT"]
 
 SETUP_STEPS = ("filter", "single", "pairwise", "dists", "cluster", "predict", "tuples")
-
+SETUP_STEP_FILES = {
+    'filter': [],
+    'single': ['single_feats.csv'],
+    'pairwise': ['pairwise_feats.csv'],
+    'dists':  ['pcc_dists.npy', 'social_dists.npy'],
+    'cluster': ['pcc_clusters.json', 'social_clusters.json'],
+    'predict': [
+        "global_pcc_predictions.txt",
+        "global_social_predictions.txt",
+        "global_real_friends.txt",
+        "pcc_clustered_pcc_predictions.txt",
+        "pcc_clustered_social_predictions.txt",
+        "social_clustered_pcc_predictions.txt",
+        "social_clustered_social_predictions.txt"
+    ],
+    'tuples': ['rating_tuples.txt']
+}
 
 class DataSetEnum:
     def __init__(self, data_str):
@@ -96,6 +112,17 @@ def generate_rating_tuples(data_set, output_path):
     os.system(f"{executable} --genTuples {data_flag} {output_path}")
 
 
+def delete_files_to_recreate(experiment_dir, skip_to_index):
+    for i in range(len(SETUP_STEPS)):
+        if i < skip_to_index:
+            continue
+        for fname in SETUP_STEP_FILES[SETUP_STEPS[i]]:
+            full_path = os.path.join(experiment_dir, fname)
+            if os.path.exists(full_path):
+                new_path = full_path + ".old"
+                shutil.move(full_path, new_path)
+
+
 def run(experiment_dir=None, data_set=None, skipto=None):
     if skipto is None:
         skip_to = SETUP_STEPS.index("filter")
@@ -110,6 +137,8 @@ def run(experiment_dir=None, data_set=None, skipto=None):
 
     if not os.path.exists(experiment_dir):
         os.makedirs(experiment_dir, exist_ok=True)
+
+    delete_files_to_recreate(experiment_dir, skip_to)
 
     if SETUP_STEPS.index("filter") >= skip_to:
         print("Filtering data...")
