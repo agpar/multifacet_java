@@ -8,7 +8,7 @@ public class CommandBuilder {
     private String[] args;
     private ArrayList<String> flags = new ArrayList<>();
     private ArrayList<String> files = new ArrayList<>();
-    private static String[] knownFlags = {"-h", "--help", "--numThreads", "--genPairs", "--genSingle", "--genTuples", "--epinions"};
+    private static String[] knownFlags = {"-h", "--help", "--numThreads", "--genPairs", "--genSingle", "--genTuples", "--genStats", "--epinions"};
 
     public CommandBuilder(String[] cmdLindArgs) {
         args = cmdLindArgs;
@@ -65,6 +65,9 @@ public class CommandBuilder {
         }
         if (anyFlagStartsWith("--genSingle")) {
             return new GenerateSingle(files, dataSource());
+        }
+        if (anyFlagStartsWith("--genStats")){
+            return new GenerateStats(dataSource());
         }
         // If no above flag is supplied, try to start a prediction task.
         if (files.size() > 0) {
