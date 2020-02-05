@@ -6,6 +6,7 @@ import java.util.*;
 
 public class DataStatsCalculator {
     public static class StatsBundle {
+        public double[] values;
         public double mean;
         public double median;
         public double mode;
@@ -13,6 +14,7 @@ public class DataStatsCalculator {
         public double max;
 
         public StatsBundle(double[] items) {
+            values = items;
             mean = DataStatsCalculator.mean(items);
             median = DataStatsCalculator.median(items);
             mode = DataStatsCalculator.mode(items);
@@ -36,6 +38,24 @@ public class DataStatsCalculator {
        }
 
        return new StatsBundle(reviewCounts);
+    }
+
+    public static StatsBundle userReviewAverages(DataSet ds) {
+        var users = ds.getUsers();
+        double[] userReviewAverages = new double[users.size()];
+        int i = 0;
+        for (var user : users) {
+            double[] userReviewScores = new double[user.getReviews().size()];
+            int j = 0;
+            for (var review : user.getReviews()) {
+                userReviewScores[j] = review.getStars();
+                j++;
+            }
+            userReviewAverages[i] = mean(userReviewScores);
+            i++;
+        }
+
+        return new StatsBundle(userReviewAverages);
     }
 
     public static StatsBundle itemReviewCount(DataSet ds) {

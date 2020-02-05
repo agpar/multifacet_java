@@ -17,7 +17,14 @@ public class GenerateStats implements Command {
         ds.load(0, DEFAULT_USER_UPPER_BOUND);
 
         System.out.printf("Generated stats for %s dataset.\n", source.toString());
+
         System.out.print("User Review Counts\n");
         System.out.printf("%s\n", DataStatsCalculator.userReviewCount(ds).toString());
+
+        System.out.print("Item Review Counts\n");
+        System.out.printf("%s\n", DataStatsCalculator.itemReviewCount(ds).toString());
+
+        System.out.print("Global Review scores\n");
+        System.out.printf("%s\n", DataStatsCalculator.reviewScores(ds).toString());
     }
 }
