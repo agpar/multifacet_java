@@ -29,7 +29,7 @@ public class GenerateStats implements Command {
 
         printAndWrite("User Review Counts", DataStatsCalculator.userReviewCount(ds));
         printAndWrite("User Average Review Scores", DataStatsCalculator.userReviewAverages(ds));
-        printAndWrite("UserFriendCount", DataStatsCalculator.friendsPerUser(ds));
+        printAndWrite("User Friend Count", DataStatsCalculator.friendsPerUser(ds));
         printAndWrite("Item Review Counts", DataStatsCalculator.itemReviewCount(ds));
         printAndWrite("Global Review Scores", DataStatsCalculator.reviewScores(ds));
     }
