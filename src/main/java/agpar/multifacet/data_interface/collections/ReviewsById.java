@@ -5,6 +5,7 @@ import agpar.multifacet.data_interface.data_classes.Review;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 
 public class ReviewsById {
     private HashMap<Integer, ArrayList<Review>> reviewsByItem = new HashMap<>();
@@ -27,5 +28,9 @@ public class ReviewsById {
 
     public Collection<ArrayList<Review>> values() {
         return this.reviewsByItem.values();
+    }
+
+    public Set<Integer> keys() {
+        return reviewsByItem.keySet();
     }
 }
