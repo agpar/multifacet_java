@@ -42,8 +42,9 @@ public class GenerateStats implements Command {
 
         try {
             Writer writer = new BufferedWriter(new FileWriter(outputFile));
-            List<String> vals = Stream.of(stats.values).map(Object::toString).collect(Collectors.toList());
-            writer.write(String.join(",", vals));
+            for (var val : stats.values) {
+                writer.write(String.format("%f\n", val));
+            }
             writer.close();
         } catch (IOException e) {
             System.out.printf("Failed to output data to %s", outputFile);
