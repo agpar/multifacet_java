@@ -40,11 +40,15 @@ public class EpinionsDataReader {
             String line = reader.readLine();
             while (line != null) {
                 String[] splitLine = line.split(",");
-                reviews.put(reviewId, new Review(
-                        Integer.parseInt(splitLine[1]),
-                        Integer.parseInt(splitLine[0]),
-                        splitLine[5],
-                        Double.parseDouble(splitLine[2])
+                int itemId = Integer.parseInt(splitLine[0]);
+                int userId = Integer.parseInt(splitLine[1]);
+                String date = splitLine[5];
+                int rating = Integer.parseInt(splitLine[2]);
+                reviews.put(itemId, new Review(
+                        userId,
+                        itemId,
+                        date,
+                        rating
                 ));
                 reviewId++;
                 line = reader.readLine();
