@@ -21,7 +21,7 @@ public class DataStatsCalculator {
         }
 
         public String toString() {
-            String fstring = "mean: %d, median %d, mode %d, min %d, max %d";
+            String fstring = "mean: %f, median %f, mode %f, min %f, max %f";
             return String.format(fstring, mean, median, mode, min, max);
         }
     }
