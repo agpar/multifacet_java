@@ -21,6 +21,12 @@ public class GenerateStats implements Command {
         System.out.print("User Review Counts\n");
         System.out.printf("%s\n", DataStatsCalculator.userReviewCount(ds).toString());
 
+        System.out.print("User Average Review Scores\n");
+        System.out.printf("%s\n", DataStatsCalculator.userReviewAverages(ds).toString());
+
+        System.out.print("User Friend Counts\n");
+        System.out.printf("%s\n", DataStatsCalculator.friendsPerUser(ds).toString());
+
         System.out.print("Item Review Counts\n");
         System.out.printf("%s\n", DataStatsCalculator.itemReviewCount(ds).toString());
 

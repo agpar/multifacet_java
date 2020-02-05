@@ -93,6 +93,17 @@ public class DataStatsCalculator {
         return new StatsBundle(scores);
     }
 
+    public static StatsBundle friendsPerUser(DataSet ds) {
+        var users = ds.getUsers();
+        double[] userFriendCount = new double[users.size()];
+        int i = 0;
+        for (var user : users) {
+            userFriendCount[i] = user.getTrustLinksOutgoing().size();
+            i++;
+        }
+        return new StatsBundle(userFriendCount);
+    }
+
 
     private static double mean(double[] items) {
         int count = 0;
