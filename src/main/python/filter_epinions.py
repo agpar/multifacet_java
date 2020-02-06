@@ -32,6 +32,8 @@ def read_all():
         reader = csv.reader(f, delimiter='\t')
         for row in reader:
             review = Review(*row)
+            if int(review.rating) > 5:
+                review = review._replace(rating='5')
             reviews_by_user[review.user_id].append(review)
 
     relevant_users = set()
@@ -94,7 +96,6 @@ def write_filtered(relevant_users, reviews, trust_links, content):
                 review = review._replace(user_id=userIdMap.get_int(review.user_id))
                 review = review._replace(object_id=itemIdMap.get_int(review.object_id))
                 writer.writerow(review)
-
 
     with open(CONTENT_FILTERED, 'w') as f:
         writer = csv.writer(f)
