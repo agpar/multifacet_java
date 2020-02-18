@@ -1,17 +1,18 @@
 from data_set import DataSet
 from prediction.classifier_trainer import ClassifierTrainer
-from prediction_tools import INDEXES
 
 
 class FriendshipTrainer(ClassifierTrainer):
 
-    @staticmethod
-    def to_dataset(lines, header):
+    def __init__(self, header):
+        super().__init__(header)
+        self.friend_index = header.index('areFriends')
+
+    def to_dataset(self, lines, header):
         ds = DataSet(lines, header)
-        ds = ds.split(header.index('areFriends'), start_col=2)
+        ds = ds.split(self.friend_index, start_col=2)
         return ds.X, ds.Y
 
-    @staticmethod
-    def filter_target(line):
-        line[INDEXES['areFriends']] = 0
+    def filter_target(self, line):
+        line[self.friend_index] = 0
         return line

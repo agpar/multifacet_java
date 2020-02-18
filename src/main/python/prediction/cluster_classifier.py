@@ -1,22 +1,22 @@
 from multiprocessing import Pool, Queue
 
 from prediction.classifier_trainer import ClassifierTrainer
-from prediction_tools import combined_headers
 from typing import List
 import settings
+from vector_combiners.vector_combiner import VectorCombiner
 
 
-def _train_classifier(i, single_path, pairwise_path, header, combiner, clf_trainer, userIds=None, numVects=None):
-    training_set = combiner(single_path, pairwise_path, userIds=userIds, numVects=numVects)
-    X, Y = clf_trainer.to_dataset(training_set, header)
+def _train_classifier(i, single_path, pairwise_path, combiner_class, clf_trainer, userIds=None, numVects=None):
+    combiner = combiner_class(single_path, pairwise_path)
+    training_set = list(combiner(user_ids=userIds, max_lines=numVects))
+    X, Y = clf_trainer.to_dataset(training_set, combiner.header)
     if len(X) < 1000:
         return None, f"Not learned, only {len(X)} examples", i
-    clf, score = clf_trainer.learn_classifier(X, Y, header, 1.0)
+    clf, score = clf_trainer.learn_classifier(X, Y, combiner.header, 1.0)
     if score > 0.6:
         return clf, score, i
     else:
         return None, score, i
-
 
 class ClusterClassifier:
     SINGLE_PATH = ""
@@ -40,7 +40,7 @@ class ClusterClassifier:
             self.user_clusters[i] = clust
 
     def train_classifiers(self):
-        header = combined_headers(self.SINGLE_PATH, self.PAIRWISE_PATH)
+        header = VectorCombiner(self.SINGLE_PATH, self.PAIRWISE_PATH).header
         self.classifiers = [None for i in range(self.NUM_CLUSTERS)]
 
         # Start a process pool of workers
