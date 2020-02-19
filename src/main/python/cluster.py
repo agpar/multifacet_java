@@ -33,8 +33,8 @@ from sys import exit
 
 import numpy as np
 
-from prediction_tools import INDEXES, init_indexes
 import clustering.clusteroid_kmeans as kmeans
+from vector_combiners.vector_combiner import VectorCombiner
 
 
 def pcc_dists(single_path, pairwise_path):
@@ -42,10 +42,13 @@ def pcc_dists(single_path, pairwise_path):
     def pcc_to_dist(pcc):
         return 1.0 - pcc
 
+    vc = VectorCombiner(single_path, pairwise_path)
+    pcc_index = vc.pairwise_header.index('PCC')
+
     def selector(line):
-        pcc = line[INDEXES['PCC']]
+        pcc = line[pcc_index]
         if pcc == 'null':
-            return pcc_to_dist(0.0)
+            return np.nan
         else:
             return pcc_to_dist(float(pcc))
 
@@ -57,9 +60,12 @@ def social_jacc_dists(single_path, pairwise_path):
     def social_jacc_to_dist(jacc):
         return 1.0 - jacc
 
+    vc = VectorCombiner(single_path, pairwise_path)
+    social_index = vc.pairwise_header.index('socialJacc')
+
     def selector(line):
-        jacc = line[INDEXES['socialJacc']]
-        return social_jacc_to_dist(float(jacc))
+        jacc = float(line[social_index])
+        return social_jacc_to_dist(jacc)
 
     return pairwise_dist_matrix(single_path, pairwise_path, selector, social_jacc_to_dist(0))
 
@@ -67,12 +73,9 @@ def social_jacc_dists(single_path, pairwise_path):
 def pairwise_dist_matrix(single_path, pairwise_path, selector, default_val):
     count = 0
     # iterate through once to count the number of users
-    with open(single_path, 'r') as f:
-        # throw away header
-        _ = f.readline()
-        for line in f:
-            if line:
-                count += 1
+    for line in VectorCombiner.stream_csv(single_path):
+        if line:
+            count += 1
 
     arr = np.full((count, count), default_val, dtype=np.dtype("float32"))
     with open(pairwise_path, 'r') as f:
@@ -91,7 +94,6 @@ def pairwise_dist_matrix(single_path, pairwise_path, selector, default_val):
 
 
 def gen_dist_matrix(single_path, pairwise_path, cluster_type):
-    init_indexes(single_path, pairwise_path)
     if cluster_type == "pcc":
         return pcc_dists(single_path, pairwise_path)
     elif cluster_type == "social":
@@ -102,7 +104,6 @@ def gen_dist_matrix(single_path, pairwise_path, cluster_type):
 
 
 def run(single_path, pairwise_path, cluster_type, output_path, dists_in, dists_out, k, iters):
-    init_indexes(single_path, pairwise_path)
     dist_arr = None
     if dists_in:
         dist_arr = np.load(dists_in[0])

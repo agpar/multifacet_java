@@ -1,26 +1,26 @@
 from prediction.classifier_trainer import ClassifierTrainer
-from prediction_tools import INDEXES
 from data_set import DataSet
 
 
 class FriendPredictor:
+    def __init__(self, header):
+        self.friend_index = header.index('areFriends')
+
     def predict(self, pairs):
         predictions = []
         for pair in pairs:
-            predictions.append(int(pair[INDEXES['areFriends']]))
+            predictions.append(int(pair[self.friend_index]))
         return predictions
 
 
 class RealFriendTrainer(ClassifierTrainer):
-    def learn_classifier(self, X, Y, header, train_size):
-        return FriendPredictor(), 1.0
+    def learn_classifier(self, X, Y,  train_size):
+        return FriendPredictor(self.header), 1.0
 
-    @staticmethod
-    def filter_target(line):
+    def filter_target(self, line):
         return line
 
-    @staticmethod
-    def to_dataset(lines, header):
+    def to_dataset(self, lines, header):
         lines_mem = []
         for i in range(10_000):
             lines_mem.append(next(lines))

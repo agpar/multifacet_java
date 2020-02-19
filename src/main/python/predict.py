@@ -4,29 +4,38 @@ import json
 from prediction.actual_friendship import RealFriendTrainer
 from prediction.cluster_classifier import ClusterClassifier
 from prediction.predict_friendship import FriendshipTrainer
-from prediction_tools import combine_balanced_friends, combine_balanced_pcc, combine_stream
 from prediction.predict_pcc import PCCTrainer
-from prediction_tools import init_indexes, stream_csv, write_predictions
+from vector_combiners import *
+
+
+def write_predictions(stream, clf, path):
+    with open(path, 'w') as f:
+        for pair in stream:
+            user1_id = int(pair[0])
+            user2_id = int(pair[1])
+            pred1 = int(clf.predict(user1_id, [clf.trainer.filter_target(pair[2:])])[0])
+            if pred1:
+                f.write(f"{user1_id} {user2_id} {pred1}\n")
 
 
 def run(single_path, pairwise_path, output_path, cluster_path, target):
-    init_indexes(single_path, pairwise_path)
-
     # Assign all users to a single cluster if no clusters are specified
     if cluster_path is not None:
         with open(cluster_path[0]) as f:
             clusters = json.load(f)
     else:
         clusters = []
-        for line in stream_csv(single_path):
+        for _ in VectorCombiner.stream_csv(single_path):
             clusters.append(0)
 
+    vc = VectorCombiner(single_path, pairwise_path)
+
     if target == 'pcc':
-        classifier = ClusterClassifier(clusters, combine_balanced_pcc, PCCTrainer())
+        classifier = ClusterClassifier(clusters, BalancedPCCCombiner, PCCTrainer(vc.header))
     elif target == 'friend':
-        classifier = ClusterClassifier(clusters, combine_balanced_friends, FriendshipTrainer())
+        classifier = ClusterClassifier(clusters, BalancedFriendCombiner, FriendshipTrainer(vc.header))
     elif target == 'realfriend':
-        classifier = ClusterClassifier(clusters, combine_stream, RealFriendTrainer())
+        classifier = ClusterClassifier(clusters, BalancedVectorCombiner, RealFriendTrainer(vc.header))
     else:
         print(f"Unknown target of prediction: {target}")
         exit(1)
@@ -35,7 +44,8 @@ def run(single_path, pairwise_path, output_path, cluster_path, target):
     classifier.PAIRWISE_PATH = pairwise_path
     classifier.fit()
 
-    write_predictions(combine_stream(single_path, pairwise_path, filter=classifier.trainer.filter_target), classifier, output_path)
+    vector_stream = map(classifier.trainer.filter_target, VectorCombiner(single_path, pairwise_path).stream())
+    write_predictions(vector_stream, classifier, output_path)
 
 
 if __name__ == '__main__':
