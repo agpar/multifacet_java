@@ -4,3 +4,5 @@ target
 *.iml
 settings_local.properties
 __pycache__
+.env
+*.pyc
