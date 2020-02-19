@@ -5,10 +5,17 @@ from prediction.actual_friendship import RealFriendTrainer
 from prediction.cluster_classifier import ClusterClassifier
 from prediction.predict_friendship import FriendshipTrainer
 from prediction.predict_pcc import PCCTrainer
-from prediction_tools import write_predictions
-from vector_combiners.balanced_vector_combiner import BalancedPCCCombiner, BalancedFriendCombiner, \
-    BalancedVectorCombiner
-from vector_combiners.vector_combiner import VectorCombiner
+from vector_combiners import *
+
+
+def write_predictions(stream, clf, path):
+    with open(path, 'w') as f:
+        for pair in stream:
+            user1_id = int(pair[0])
+            user2_id = int(pair[1])
+            pred1 = int(clf.predict(user1_id, [clf.trainer.filter_target(pair[2:])])[0])
+            if pred1:
+                f.write(f"{user1_id} {user2_id} {pred1}\n")
 
 
 def run(single_path, pairwise_path, output_path, cluster_path, target):
