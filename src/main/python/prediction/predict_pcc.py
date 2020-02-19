@@ -10,7 +10,7 @@ class PCCTrainer(ClassifierTrainer):
         self.pcc_index = header.index('PCC')
 
     def to_dataset(self, lines, header):
-        ds = DataSet(lines, header)
+        ds = DataSet(list(lines), header)
         ds = ds.split(self.pcc_index, start_col=2)
 
         Y_disc = [1 if y > 0 else 0 for y in ds.Y]

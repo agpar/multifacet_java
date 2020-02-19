@@ -9,7 +9,7 @@ class FriendshipTrainer(ClassifierTrainer):
         self.friend_index = header.index('areFriends')
 
     def to_dataset(self, lines, header):
-        ds = DataSet(lines, header)
+        ds = DataSet(list(lines), header)
         ds = ds.split(self.friend_index, start_col=2)
         return ds.X, ds.Y
 

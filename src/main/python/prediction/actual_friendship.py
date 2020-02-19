@@ -14,15 +14,13 @@ class FriendPredictor:
 
 
 class RealFriendTrainer(ClassifierTrainer):
-    def learn_classifier(self, X, Y, header, train_size):
-        return FriendPredictor(header), 1.0
+    def learn_classifier(self, X, Y,  train_size):
+        return FriendPredictor(self.header), 1.0
 
-    @staticmethod
-    def filter_target(line):
+    def filter_target(self, line):
         return line
 
-    @staticmethod
-    def to_dataset(lines, header):
+    def to_dataset(self, lines, header):
         lines_mem = []
         for i in range(10_000):
             lines_mem.append(next(lines))
