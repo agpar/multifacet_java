@@ -11,6 +11,7 @@ class VectorCombiner:
         self.single_header = None
         self.pairwise_header = None
         self.header = None
+        self.header_no_ids = None
         self._parse_headers()
 
     def _parse_headers(self):
@@ -23,20 +24,33 @@ class VectorCombiner:
 
         self.header = ['user1_id', 'user2_id'] + ['user1_' + s for s in single_header] + \
                ['user2_' + s for s in single_header] + pairwise_header
+        self.header_no_ids = self.header[2:]
 
-    def array(self, length, **kwargs):
+    def array(self, length, exclude_ids=False, **kwargs):
         """Create a numpy array comprised of `length` combined vectors, includes user ids"""
-        arr = np.ndarray((length, len(self.header)), dtype=np.float16)
+        col_names = self.header
+        if exclude_ids:
+            col_names = self.header[2:]
+
+        arr = np.ndarray((length, len(col_names)), dtype=np.float16)
         generator = self.stream(**kwargs)
+        if exclude_ids:
+            generator = self._filter_out_ids(generator)
+
         for i in range(length):
             arr[i] = next(generator)
         return arr
+
+    def _filter_out_ids(self, vects):
+        for vect in vects:
+            yield vect[2:]
 
     def stream(self, **kwargs):
         """Stream vectors, including user ids."""
         single_vects_by_id = self._single_vects_by_id()
         for line in self.stream_csv(self.pairwise_path):
             yield self._combine_vects(line, single_vects_by_id)
+
 
     def _single_vects_by_id(self):
         return {line[0]: line[1:] for line in self.stream_csv(self.single_path)}
