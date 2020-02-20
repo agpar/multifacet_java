@@ -41,7 +41,6 @@ class ClusterClassifier:
             self.user_clusters[i] = clust
 
     def train_classifiers(self):
-        header = VectorCombiner(self.SINGLE_PATH, self.PAIRWISE_PATH).header
         self.classifiers = [None for i in range(self.NUM_CLUSTERS)]
 
         # Start a process pool of workers
