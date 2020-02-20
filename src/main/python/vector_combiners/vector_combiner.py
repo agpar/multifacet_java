@@ -51,9 +51,12 @@ class VectorCombiner:
         for line in self.stream_csv(self.pairwise_path):
             yield self._combine_vects(line, single_vects_by_id)
 
-
     def _single_vects_by_id(self):
-        return {line[0]: line[1:] for line in self.stream_csv(self.single_path)}
+        lines = list(self.stream_csv(self.single_path))
+        arr = np.empty((len(lines), len(lines[0]-1)))
+        for line in lines:
+            arr[int(line[0])] = map(self._to_float, line[1:])
+        return arr
 
     @staticmethod
     def stream_csv(path):
@@ -64,13 +67,15 @@ class VectorCombiner:
                 yield line
 
     def _combine_vects(self, line, single_vects_by_id):
-        user1_vect = single_vects_by_id[line[0]]
-        user2_vect = single_vects_by_id[line[1]]
+        user1_id, user2_id = int(line[0]), int(line[1])
+        user1_vect = single_vects_by_id[user1_id]
+        user2_vect = single_vects_by_id[user2_id]
 
-        vect = [int(line[0]), int(line[1])]
-        for entry in chain(user1_vect, user2_vect, line[2:]):
-            if entry == 'null':
-                vect.append(0.0)
-            else:
-                vect.append(float(entry))
+        vect = [user1_id, user2_id]
+        vect.extend(map(self._to_float, chain(user1_vect, user2_vect, line[2:])))
         return vect
+
+    def _to_float(self, str_val):
+        if str_val == 'null':
+            return 0.0
+        return float(str_val)
