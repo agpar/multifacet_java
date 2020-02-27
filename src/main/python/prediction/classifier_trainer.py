@@ -1,7 +1,8 @@
-from prediction.scaling_classifier import ScalingClassifier
-from regression import learn_rf
+from machine_learning.models import learn_rf
 from sklearn.model_selection import train_test_split
 import numpy as np
+
+from machine_learning.models import ChosenClassifier
 
 
 class ClassifierTrainer:
@@ -12,10 +13,10 @@ class ClassifierTrainer:
     def learn_classifier(self, X, Y, train_size):
         if train_size < 1.0:
             X, X_test, Y, Y_test = train_test_split(X, Y, train_size=0.8, shuffle=True, random_state=42)
-            clf = ScalingClassifier(learn_rf).fit(X, Y)
+            clf = ChosenClassifier().fit(X, Y)
             return clf, clf.score(np.array(X_test), np.array(Y_test))
         else:
-            clf = ScalingClassifier(learn_rf).fit(X, Y)
+            clf = ChosenClassifier().fit(X, Y)
             return clf, clf.score(np.array(X), np.array(Y))
 
     def to_dataset(self, lines, header):

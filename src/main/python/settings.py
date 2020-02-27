@@ -25,6 +25,8 @@ with open(settings_path) as f:
 
 YELP_DATA_DIR = settings['yelp_data_dir']
 EPINIONS_DATA_DIR = settings['epinions_data_dir']
+ML_MODEL = settings['ml_model']
+
 DATA_NUM_USERS = math.inf  # legacy, used to control the max number of users read from data files.
 DATA_READ_SAMPLE = False  # legacy, used when checking to see if a sample of users should be taken
 if settings['multiprocess_predictions'].lower() == 'true':
