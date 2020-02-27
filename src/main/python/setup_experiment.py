@@ -21,12 +21,13 @@ if "MULTIFACET_ROOT" not in os.environ:
     raise Exception("$MULTIFACET_ROOT is not set. Can't determine where project is located.")
 MULTIFACET_ROOT = os.environ["MULTIFACET_ROOT"]
 
-SETUP_STEPS = ("filter", "single", "pairwise", "dists", "cluster", "predict", "tuples")
+SETUP_STEPS = ("filter", "single", "pairwise", "dists", "choose_k", "cluster", "predict", "tuples")
 SETUP_STEP_FILES = {
     'filter': [],
     'single': ['single_feats.csv'],
     'pairwise': ['pairwise_feats.csv'],
     'dists':  ['pcc_dists.npy', 'social_dists.npy'],
+    'choose_k': ['k_pcc_results.json', 'k_social_results.json'],
     'cluster': ['pcc_clusters.json', 'social_clusters.json'],
     'predict': [
         "global_pcc_predictions.txt",
@@ -39,6 +40,7 @@ SETUP_STEP_FILES = {
     ],
     'tuples': ['rating_tuples.txt']
 }
+
 
 class DataSetEnum:
     def __init__(self, data_str):
@@ -123,11 +125,15 @@ def delete_files_to_recreate(experiment_dir, skip_to_index):
                 shutil.move(full_path, new_path)
 
 
+def should_run_step(step_name, skip_to):
+    return SETUP_STEPS.index(step_name) >= skip_to
+
+
 def run(experiment_dir=None, data_set=None, skipto=None):
     if skipto is None:
-        skip_to = SETUP_STEPS.index("filter")
+        step_to_skip_to = SETUP_STEPS.index("filter")
     else:
-        skip_to = SETUP_STEPS.index(skipto)
+        step_to_skip_to = SETUP_STEPS.index(skipto)
 
     data_set = DataSetEnum(data_set)
     if data_set.IS_EPINIONS:
@@ -138,25 +144,25 @@ def run(experiment_dir=None, data_set=None, skipto=None):
     if not os.path.exists(experiment_dir):
         os.makedirs(experiment_dir, exist_ok=True)
 
-    delete_files_to_recreate(experiment_dir, skip_to)
+    delete_files_to_recreate(experiment_dir, step_to_skip_to)
 
-    if SETUP_STEPS.index("filter") >= skip_to:
+    if should_run_step("filter", step_to_skip_to):
         print("Filtering data...")
         filter_data(data_set)
 
     single_path = os.path.join(experiment_dir, "single_feats.csv")
-    if SETUP_STEPS.index("single") >= skip_to:
+    if should_run_step("single", step_to_skip_to):
         print("Generating single user data...")
         generate_single(data_set, single_path)
 
     pairwise_path = os.path.join(experiment_dir, "pairwise_feats.csv")
-    if SETUP_STEPS.index("pairwise") >= skip_to:
+    if should_run_step("pairwise", step_to_skip_to):
         print("Generating pairwise...")
         generate_pairwise(data_set, pairwise_path)
 
     pcc_dist_matrix_path = os.path.join(experiment_dir, "pcc_dists.npy")
     social_dist_matrix_path = os.path.join(experiment_dir, "social_dists.npy")
-    if SETUP_STEPS.index("dists") >= skip_to:
+    if should_run_step("dists", step_to_skip_to):
         print("Saving dist matrices...")
         pcc_dist_matrix = cluster.gen_dist_matrix(single_path, pairwise_path, "pcc")
         np.save(pcc_dist_matrix_path, pcc_dist_matrix)
@@ -164,23 +170,30 @@ def run(experiment_dir=None, data_set=None, skipto=None):
         social_dist_matrix = cluster.gen_dist_matrix(single_path, pairwise_path, "social")
         np.save(social_dist_matrix_path, social_dist_matrix)
 
-    pcc_cluster_path = os.path.join(experiment_dir, "pcc_clusters.json")
-    social_cluster_path = os.path.join(experiment_dir, "social_clusters.json")
-    if SETUP_STEPS.index("cluster") >= skip_to:
+    k_pcc_path = os.path.join(experiment_dir, "k_pcc_results.json")
+    k_social_path = os.path.join(experiment_dir, "k_social_results.json")
+    if should_run_step('choose_k', step_to_skip_to):
         print("Determining optimal cluster count...")
         k_goodness_pcc = choose_k(clusteroid_kmeans.cluster, pcc_dist_matrix_path, range(10, 100), 20, eval_silhouette)
-        with open(os.path.join(experiment_dir, "k_pcc_results.json"), 'w') as f:
+        with open(k_pcc_path, 'w') as f:
             json.dump(k_goodness_pcc, f)
 
         k_goodness_social = choose_k(clusteroid_kmeans.cluster, social_dist_matrix_path, range(10, 100), 20, eval_silhouette)
-        with open(os.path.join(experiment_dir, "k_social_results.json"), 'w') as f:
+        with open(k_social_path, 'w') as f:
             json.dump(k_goodness_social, f)
 
+    pcc_cluster_path = os.path.join(experiment_dir, "pcc_clusters.json")
+    social_cluster_path = os.path.join(experiment_dir, "social_clusters.json")
+    if should_run_step("cluster", step_to_skip_to):
         print("Generating clusters...")
+        with open(k_pcc_path, 'r') as f:
+            k_goodness_pcc = json.load(f)
+        with open(k_social_path, 'r') as f:
+            k_goodness_social = json.load(f)
         cluster.run(single_path, pairwise_path, "pcc", pcc_cluster_path, [pcc_dist_matrix_path], None, k_goodness_pcc[0][0], 60)
         cluster.run(single_path, pairwise_path, "social", social_cluster_path, [social_dist_matrix_path], None, k_goodness_social[0][0], 60)
 
-    if SETUP_STEPS.index("predict") >= skip_to:
+    if should_run_step("predict", step_to_skip_to):
         print("Running all predictions in parallel.")
         generate_predictions(experiment_dir, single_path, pairwise_path, pcc_cluster_path, social_cluster_path)
 
