@@ -53,9 +53,9 @@ class VectorCombiner:
 
     def _single_vects_by_id(self):
         lines = list(self.stream_csv(self.single_path))
-        arr = np.empty((len(lines), len(lines[0]-1)))
+        arr = np.empty((len(lines), len(lines[0]) - 1))
         for line in lines:
-            arr[int(line[0])] = map(self._to_float, line[1:])
+            arr[int(line[0])] = list(map(self._to_float, line[1:]))
         return arr
 
     @staticmethod
