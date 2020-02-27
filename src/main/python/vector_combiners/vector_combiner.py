@@ -1,6 +1,7 @@
 import csv
+import os
 from itertools import chain
-
+from tqdm import tqdm
 import numpy as np
 
 
@@ -26,20 +27,32 @@ class VectorCombiner:
                ['user2_' + s for s in single_header] + pairwise_header
         self.header_no_ids = self.header[2:]
 
-    def array(self, length, exclude_ids=False, **kwargs):
-        """Create a numpy array comprised of `length` combined vectors, includes user ids"""
-        col_names = self.header
-        if exclude_ids:
-            col_names = self.header[2:]
+    def array(self, length, **kwargs):
+        """Create a numpy array comprised of `length` combined vectors, and a map from user ids to indexes"""
+        col_names = self.header[2:]
 
-        arr = np.ndarray((length, len(col_names)), dtype=np.float16)
+        arr = np.empty((length, len(col_names)), dtype=np.float16)
+        id_map = np.empty((length, 2), dtype=np.int32)
+
         generator = self.stream(**kwargs)
-        if exclude_ids:
-            generator = self._filter_out_ids(generator)
+        if 'print_progress' in kwargs and kwargs['print_progress']:
+            generator = self._print_progress(generator, length)
+        i = 0
+        for val in generator:
+            id_map[i] = val[:2]
+            arr[i] = val[2:]
 
-        for i in range(length):
-            arr[i] = next(generator)
-        return arr
+            i += 1
+            if i >= length:
+                break
+
+        return id_map, arr
+
+    def _print_progress(self, vects, length):
+        t = tqdm(total=length)
+        for v in vects:
+            yield v
+            t.update()
 
     def _filter_out_ids(self, vects):
         for vect in vects:
@@ -66,6 +79,11 @@ class VectorCombiner:
             for line in reader:
                 yield line
 
+    @staticmethod
+    def csv_data_len(path):
+        wc_stream = os.popen(f'wc -l {path}')
+        return int(wc_stream.read().split(' ')[0]) - 1
+
     def _combine_vects(self, line, single_vects_by_id):
         user1_id, user2_id = int(line[0]), int(line[1])
         user1_vect = single_vects_by_id[user1_id]
@@ -77,5 +95,5 @@ class VectorCombiner:
 
     def _to_float(self, str_val):
         if str_val == 'null':
-            return 0.0
+            return float('nan')
         return float(str_val)
