@@ -34,7 +34,7 @@ from sys import exit
 import numpy as np
 
 import clustering.clusteroid_kmeans as kmeans
-from vector_combiners.vector_combiner import VectorCombiner
+from vector_combiners.text_vector_combiner import TextVectorCombiner
 
 
 def pcc_dists(single_path, pairwise_path):
@@ -42,7 +42,7 @@ def pcc_dists(single_path, pairwise_path):
     def pcc_to_dist(pcc):
         return 1.0 - pcc
 
-    vc = VectorCombiner(single_path, pairwise_path)
+    vc = TextVectorCombiner(single_path, pairwise_path)
     pcc_index = vc.pairwise_header.index('PCC')
 
     def selector(line):
@@ -60,7 +60,7 @@ def social_jacc_dists(single_path, pairwise_path):
     def social_jacc_to_dist(jacc):
         return 1.0 - jacc
 
-    vc = VectorCombiner(single_path, pairwise_path)
+    vc = TextVectorCombiner(single_path, pairwise_path)
     social_index = vc.pairwise_header.index('socialJacc')
 
     def selector(line):
@@ -73,7 +73,7 @@ def social_jacc_dists(single_path, pairwise_path):
 def pairwise_dist_matrix(single_path, pairwise_path, selector, default_val):
     count = 0
     # iterate through once to count the number of users
-    for line in VectorCombiner.stream_csv(single_path):
+    for line in TextVectorCombiner.stream_csv(single_path):
         if line:
             count += 1
 

@@ -3,11 +3,19 @@ from multiprocessing import Pool, Queue
 from prediction.classifier_trainer import ClassifierTrainer
 from typing import List
 import settings
-from vector_combiners.vector_combiner import VectorCombiner
+from vector_combiners import TextVectorCombiner
+from vector_combiners.binary_vector_combiner import BinaryVectorCombiner
 
 
 def _train_classifier(i, single_path, pairwise_path, combiner_class, clf_trainer, userIds=None, numVects=None):
-    combiner = combiner_class(single_path, pairwise_path)
+    if single_path.endswith('.csv'):
+        vector_loader = TextVectorCombiner(single_path, pairwise_path)
+    elif single_path.endswith('.npz'):
+        vector_loader = BinaryVectorCombiner(single_path, pairwise_path)
+    else:
+        raise Exception("Unknown vector file format.")
+
+    combiner = combiner_class(vector_loader)
     training_set = combiner.stream(user_ids=userIds, max_lines=numVects)
     X, Y = clf_trainer.to_dataset(training_set, combiner.header)
     if len(X) < 1000:

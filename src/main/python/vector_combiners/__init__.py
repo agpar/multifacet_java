@@ -1,2 +1,2 @@
-from .balanced_vector_combiner import BalancedFriendCombiner, BalancedPCCCombiner, BalancedVectorCombiner
-from .vector_combiner import VectorCombiner
+from .balanced_dataset_builder import BalancedFriendDataSetBuilder, BalancedPCCDataSetBuilder, BalancedDataSetBuilder
+from .text_vector_combiner import TextVectorCombiner
