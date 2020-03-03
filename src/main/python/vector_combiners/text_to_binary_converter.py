@@ -9,7 +9,7 @@ class TextToBinaryConverter:
     def __init__(self, csv_file):
         self.csv_file = csv_file
 
-    def convert(self):
+    def convert(self, sort=True):
         file_length = TextVectorCombiner.csv_data_len(self.csv_file)
 
         with open(self.csv_file, 'r') as f:
@@ -35,9 +35,10 @@ class TextToBinaryConverter:
                 t.update()
 
             # sort on the first id
-            sorted_indexes = np.argsort(id_arr[:,0])
-            id_arr = id_arr[sorted_indexes]
-            arr = arr[sorted_indexes]
+            if sort:
+                sorted_indexes = np.argsort(id_arr[:,0])
+                id_arr = id_arr[sorted_indexes]
+                arr = arr[sorted_indexes]
 
         output_dir = "/".join(self.csv_file.split("/")[:-1])
         output_file = self.csv_file.split("/")[-1]

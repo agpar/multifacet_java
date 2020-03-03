@@ -16,6 +16,7 @@ import predict
 from clustering import clusteroid_kmeans
 from clustering.choose_k import choose_k
 from clustering.cluster_tools import eval_silhouette
+from vector_combiners.text_to_binary_converter import TextToBinaryConverter
 
 if "MULTIFACET_ROOT" not in os.environ:
     raise Exception("$MULTIFACET_ROOT is not set. Can't determine where project is located.")
@@ -151,14 +152,19 @@ def run(experiment_dir=None, data_set=None, skipto=None):
         filter_data(data_set)
 
     single_path = os.path.join(experiment_dir, "single_feats.csv")
+    single_bin = single_path.replace('.csv', '.npz')
     if should_run_step("single", step_to_skip_to):
         print("Generating single user data...")
         generate_single(data_set, single_path)
+        TextToBinaryConverter(single_path).convert()
 
     pairwise_path = os.path.join(experiment_dir, "pairwise_feats.csv")
+    pairwise_bin = pairwise_path.replace('.csv', '.npz')
     if should_run_step("pairwise", step_to_skip_to):
         print("Generating pairwise...")
         generate_pairwise(data_set, pairwise_path)
+        TextToBinaryConverter(pairwise_path).convert()
+
 
     pcc_dist_matrix_path = os.path.join(experiment_dir, "pcc_dists.npy")
     social_dist_matrix_path = os.path.join(experiment_dir, "social_dists.npy")
@@ -195,7 +201,7 @@ def run(experiment_dir=None, data_set=None, skipto=None):
 
     if should_run_step("predict", step_to_skip_to):
         print("Running all predictions in parallel.")
-        generate_predictions(experiment_dir, single_path, pairwise_path, pcc_cluster_path, social_cluster_path)
+        generate_predictions(experiment_dir, single_bin, pairwise_bin, pcc_cluster_path, social_cluster_path)
 
     rating_tuple_path = os.path.join(experiment_dir, "rating_tuples.txt")
     generate_rating_tuples(data_set, rating_tuple_path)

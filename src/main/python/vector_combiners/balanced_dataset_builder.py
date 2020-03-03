@@ -3,7 +3,7 @@ import numpy as np
 
 
 class BalancedDataSetBuilder(VectorCombiner):
-    def __init__(self, vector_combiner: VectorCombiner, balancer_fn=None):
+    def __init__(self, vector_combiner, balancer_fn=None):
         super().__init__()
         self.combiner = vector_combiner
         self.header = vector_combiner.header
@@ -30,23 +30,31 @@ class BalancedDataSetBuilder(VectorCombiner):
         yield from vector_stream
 
     def _filter_user_ids(self, lines, user_ids):
-        for line in lines:
-            if int(line[0]) in user_ids:
-                yield line
+        for pair_ids, pair_data in lines:
+            if int(pair_ids[0]) in user_ids:
+                yield pair_ids, pair_data
 
     def _filter_balance(self, lines):
         neg_count = 0
         pos_count = 0
-        for line in lines:
-            balance_result = self._balancer(line)
+        neg_buffer = []
+        for pair_ids, pair_data in lines:
+            balance_result = self._balancer(pair_data)
             if balance_result is None:
                 continue
             if balance_result:
-                yield line
+                yield pair_ids, pair_data
                 pos_count += 1
             elif neg_count < pos_count:
-                yield line
+                yield pair_ids, pair_data
                 neg_count += 1
+            elif len(neg_buffer) < max(len(neg_buffer), 1000):
+                neg_buffer.append((pair_ids, pair_data))
+        for i in range(pos_count - neg_count):
+            if i < len(neg_buffer):
+                yield neg_buffer[i]
+            else:
+                break
 
     def _filter_max(self, lines, max_lines):
         counter = 0
@@ -61,7 +69,7 @@ class BalancedFriendDataSetBuilder(BalancedDataSetBuilder):
     def __init__(self, vector_combiner):
         super().__init__(vector_combiner)
 
-        friend_index = self.combiner.header.index('areFriends')
+        friend_index = self.combiner.header.index('areFriends') - 2
         def are_friends(line):
             return int(line[friend_index]) > 0
         self._balancer = are_friends
@@ -71,7 +79,7 @@ class BalancedPCCDataSetBuilder(BalancedDataSetBuilder):
     def __init__(self, vector_combiner):
         super().__init__(vector_combiner)
 
-        pcc_index = self.combiner.header.index('PCC')
+        pcc_index = self.combiner.header.index('PCC') - 2
         def pos_pcc(line):
             pcc = line[pcc_index]
             if pcc == 'null' or np.isnan(pcc):

@@ -19,7 +19,7 @@ class ClassifierTrainer:
             clf = ChosenClassifier().fit(X, Y)
             return clf, clf.score(np.array(X), np.array(Y))
 
-    def to_dataset(self, lines, header):
+    def to_dataset(self, lines):
         """Transform lines into (X,Y) by identifying the target variable."""
         raise NotImplemented
 

@@ -48,7 +48,7 @@ def pcc_dists(single_path, pairwise_path):
     def selector(line):
         pcc = line[pcc_index]
         if pcc == 'null':
-            return np.nan
+            return 0
         else:
             return pcc_to_dist(float(pcc))
 

@@ -1,23 +1,18 @@
-from multiprocessing import Pool, Queue
+from multiprocessing import Pool
 
 from prediction.classifier_trainer import ClassifierTrainer
 from typing import List
 import settings
-from vector_combiners import TextVectorCombiner
-from vector_combiners.binary_vector_combiner import BinaryVectorCombiner
+from vector_combiners.vector_combiner_builder import VectorCombinerBuilder
+import numpy as np
 
 
 def _train_classifier(i, single_path, pairwise_path, combiner_class, clf_trainer, userIds=None, numVects=None):
-    if single_path.endswith('.csv'):
-        vector_loader = TextVectorCombiner(single_path, pairwise_path)
-    elif single_path.endswith('.npz'):
-        vector_loader = BinaryVectorCombiner(single_path, pairwise_path)
-    else:
-        raise Exception("Unknown vector file format.")
-
+    vector_loader = VectorCombinerBuilder.build(single_path, pairwise_path)
     combiner = combiner_class(vector_loader)
-    training_set = combiner.stream(user_ids=userIds, max_lines=numVects)
-    X, Y = clf_trainer.to_dataset(training_set, combiner.header)
+    training_set = combiner.array(user_ids=userIds, max_lines=numVects)[1]
+    X, Y = clf_trainer.to_dataset(training_set)
+    np.nan_to_num(X, copy=False)
     if len(X) < 1000:
         return None, f"Not learned, only {len(X)} examples", i
     clf, score = clf_trainer.learn_classifier(X, Y, 1.0)
@@ -62,6 +57,7 @@ class ClusterClassifier:
 
         # Compute the "general" classifier at the same time
         args.append((-1, ) + args_base)
+        # TODO it should take a random sample as much as possible.
         kwargs.append({'numVects': 1_000_000})
         if settings.MULTIPROCESS_PREDICTIONS:
             self._train_with_pool(args, kwargs)
@@ -89,10 +85,10 @@ class ClusterClassifier:
     def _apply_result(self, clf, score, i):
         if i == -1:
             self.overall_classifier = clf
-            print(f"Overall classifier score: {score}")
+            print(f"{self.trainer}: Overall classifier score: {score}")
         else:
             self.classifiers[i] = clf
-            print(f"Classifier {i} score: {score}")
+            print(f"{self.trainer}: Classifier {i} score: {score}")
 
     def fit(self):
         self.init_clusters()
