@@ -27,6 +27,7 @@ public class TrustSVDTester extends RecommenderTester {
         // Use a low learn rate.
         conf.setFloat("rec.iterator.learnrate.maximum", 0.1f);
         conf.setFloat("rec.iterator.learnrate", 0.0001f);
+        conf.setBoolean("rec.recommender.earlystop", true);
     }
 
     @Override

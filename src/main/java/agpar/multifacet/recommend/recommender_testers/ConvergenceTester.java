@@ -7,7 +7,13 @@ public class ConvergenceTester {
 
     private Log logger;
     private String recName;
-    private double convergenceLimit = 5.0;
+    private double convergenceLimit = 5;
+
+    /*
+    * How to tell how many iterations actually occured?
+    * What to actually set the convergence limit at?
+    *
+     */
 
     public ConvergenceTester(String recName, Log logger) {
         this.logger = logger;

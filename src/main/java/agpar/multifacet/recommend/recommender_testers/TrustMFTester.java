@@ -20,6 +20,7 @@ public class TrustMFTester extends RecommenderTester {
         super.loadDescription(description);
 
         conf.setFloat("rec.social.regularization", description.getSocialReg());
+        conf.setBoolean("rec.recommender.earlystop", true);
     }
 
     @Override
