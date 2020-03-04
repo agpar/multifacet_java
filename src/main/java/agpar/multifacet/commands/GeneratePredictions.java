@@ -44,36 +44,22 @@ public class GeneratePredictions implements Command {
     }
 
     private void runAllExperimentsParallel(List<Experiment> experiments) {
-        // It's more memory efficient to run multiple experiments with the same social matrix at the same time.
-        HashMap<String, List<Experiment>> experimentsBySocial = new HashMap<>();
-        for (Experiment exp : experiments) {
-            if (!experimentsBySocial.containsKey(exp.getDescription().getPredictionFile())) {
-                experimentsBySocial.put(exp.getDescription().getPredictionFile(), new ArrayList<Experiment>());
+            ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+            for (Experiment exp : experiments) {
+                executor.execute(exp);
             }
-            experimentsBySocial.get(exp.getDescription().getPredictionFile()).add(exp);
-        }
 
-        // Run all experiments with the same social data set in parallel
-        for (var experimentGroup : experimentsBySocial.values()) {
-                ExecutorService executor = Executors.newFixedThreadPool(numThreads);
-                for (Experiment exp : experimentGroup) {
-                    executor.execute(exp);
+            boolean exited;
+            try {
+                executor.shutdown();
+                exited = executor.awaitTermination(7, TimeUnit.DAYS);
+                if (!exited) {
+                    throw new Exception("Executor did not terminate.");
                 }
-
-                boolean exited;
-                try {
-                    executor.shutdown();
-                    exited = executor.awaitTermination(7, TimeUnit.DAYS);
-                    if (!exited) {
-                        throw new Exception("Executor did not terminate.");
-                    }
-                    ResultWriter.flushAll();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    exit(1);
-                }
-            // clear social data matrix before moving to next set of experiments
-            SharedDataModel.resetSocial();
-        }
+                ResultWriter.flushAll();
+            } catch (Exception e) {
+                e.printStackTrace();
+                exit(1);
+            }
     }
 }
