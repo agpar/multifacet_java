@@ -7,6 +7,7 @@ import agpar.multifacet.data_interface.collections.TrustGraph;
 import agpar.multifacet.data_interface.data_classes.Business;
 import agpar.multifacet.data_interface.data_classes.Review;
 import agpar.multifacet.data_interface.data_classes.User;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 import java.util.List;
 
@@ -51,5 +52,10 @@ public class EpinionsData extends DataSet {
                 user.getCategoriesReviewed().addAll(business.categories);
             }
         }
+    }
+
+    @Override
+    public ReviewsById getTestReviews() {
+        throw new UnsupportedOperationException("Not yet implemented.");
     }
 }

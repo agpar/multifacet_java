@@ -21,7 +21,7 @@ public class YelpData extends DataSet {
         System.out.println("Loading Users");
         this.usersById = reader.loadUsers(start, stop);
         System.out.println("Loading Reviews");
-        this.reviewsByItemId = reader.loadReviews();
+        this.reviewsByItemId = reader.loadTrainReviews();
         System.out.println("Loading Businesses");
         this.businesses = reader.loadBusinesses();
         System.out.println("Loading Trust");
@@ -56,4 +56,10 @@ public class YelpData extends DataSet {
             }
         }
     }
+
+    @Override
+    public ReviewsById getTestReviews() {
+        return this.reader.loadTestReviews();
+    }
+
 }

@@ -23,5 +23,6 @@ public class GenerateTuples implements Command{
         System.out.printf("Generating rating tuples for librec and outputting to %s\n", outputPath);
         System.out.printf("Using %s data.\n", source.toString());
         RatingTupleGenerator.GenerateTrainReviewTuples(DEFAULT_USER_UPPER_BOUND, outputPath);
+        RatingTupleGenerator.GenerateTestReviewTuples(DEFAULT_USER_UPPER_BOUND, outputPath);
     }
 }

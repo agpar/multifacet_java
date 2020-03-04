@@ -49,6 +49,8 @@ public abstract class DataSet {
         return this.reviewsByItemId;
     }
 
+    public abstract ReviewsById getTestReviews();
+
     public Collection<User> getUsers() {
         return this.usersById.values();
     }

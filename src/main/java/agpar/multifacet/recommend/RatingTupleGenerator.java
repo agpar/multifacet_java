@@ -10,6 +10,7 @@ import agpar.multifacet.data_interface.yelp.YelpDataReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,17 +29,17 @@ public class RatingTupleGenerator {
                 reviewsToWrite.add(review);
             }
         }
-        writeOut(reviewsToWrite, outputPath);
+        writeOut(reviewsToWrite, Path.of(outputPath, "ratings_train.txt").toString());
     }
     
-    public static void GenerateTestReviewTuples(int userCount, String outputFile) {
-        YelpDataReader reader = new YelpDataReader(Settings.YELP_DATA_DIR());
-        ReviewsById reviews = reader.loadReviews();
+    public static void GenerateTestReviewTuples(int userCount, String outputPath) {
+        DataSet ds = DataSet.getInstance();
+        ReviewsById reviews = ds.getTestReviews();
         ArrayList<Review> reviewsToWrite = new ArrayList<>();
         for (Collection<Review> reviewList : reviews.values()) {
             reviewsToWrite.addAll(reviewList);
         }
-        writeOut(reviewsToWrite, outputFile);
+        writeOut(reviewsToWrite, Path.of(outputPath, "ratings_test.txt").toString());
     }
 
     private static void writeOut(List<Review> reviewsToWrite, String outputPath) {

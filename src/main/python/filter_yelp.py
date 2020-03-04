@@ -19,7 +19,7 @@ user in any matrix in later processing.
 """
 
 MIN_USER_REVIEWS = 20
-NUM_USERS = 40_000
+NUM_USERS = 40000
 BUSINESS_FILE = path.join(settings.YELP_DATA_DIR, 'business.json')
 REVIEW_FILE = path.join(settings.YELP_DATA_DIR, 'review.json')
 USER_FILE = path.join(settings.YELP_DATA_DIR, 'user.json')
@@ -71,12 +71,24 @@ def choose_sample(users_by_id, reviews_by_userid):
     keys = list(users_by_id.keys())
     probs = np.array([math.log(len(reviews_by_userid[key])) for key in keys])
     probs = probs / np.sum(probs)
-    random_ids = np.random.choice(keys, size=NUM_USERS, replace=False, p=probs)
+    random_ids = np.random.choice(keys, size=min(NUM_USERS, len(users_by_id)), replace=False, p=probs)
     random_users_by_id = dict()
     for random_id in random_ids:
         random_users_by_id[random_id] = users_by_id[random_id]
 
     return random_users_by_id
+
+def split_reviews(users_by_id, reviews_by_userid):
+    train_reviews = []
+    test_reviews = []
+    for user_id in users_by_id.keys():
+        user_reviews = reviews_by_userid[user_id]
+        test_review = np.random.choice(user_reviews)
+        test_reviews.append(test_review)
+        for review in user_reviews:
+            if review['review_id'] != test_review['review_id']:
+                train_reviews.apend(review)
+    return train_reviews, test_reviews
 
 
 def write_stats(nat_users, sampled_users, reviews):
@@ -101,9 +113,10 @@ def filter_friend_list(user, userIdMap):
     return ", ".join([str(userIdMap.get_int(u)) for u in user['friends'].split(", ")])
 
 
-def write_filtered(users_by_id, reviews, tips_by_userid, businesses):
+def write_filtered(users_by_id, reviews_train, reviews_test, tips_by_userid, businesses):
     business_filtered = path.join(settings.YELP_DATA_DIR, 'business_filtered.json')
-    review_filtered = path.join(settings.YELP_DATA_DIR, 'review_filtered.json')
+    review_train_filtered = path.join(settings.YELP_DATA_DIR, 'review_train_filtered.json')
+    review_test_filtered = path.join(settings.YELP_DATA_DIR, 'review_test_filtered.json')
     user_filtered = path.join(settings.YELP_DATA_DIR, 'user_filtered.json')
     tip_filtered = path.join(settings.YELP_DATA_DIR, 'tip_filtered.json')
 
@@ -121,9 +134,10 @@ def write_filtered(users_by_id, reviews, tips_by_userid, businesses):
             user['friends'] = filter_friend_list(user, userIdMap)
             f.write(f"{json.dumps(user)}\n")
 
-    with open(review_filtered, 'w') as f:
-        for user_id, reviews in reviews.items():
-            for review in reviews:
+    review_tasks = [(review_train_filtered, reviews_train), (review_test_filtered, reviews_test)]
+    for review_file, review_list in review_tasks:
+        with open(review_file, 'w') as f:
+            for review in review_list:
                 review['true_review_id'] = review['review_id']
                 review['review_id'] = reviewIdMap.get_int(review['review_id'])
                 review['business_id'] = businessIdMap.get_int(review['business_id'])
@@ -157,13 +171,11 @@ def plot_review_counts(user_ids, reviews_by_userid):
 
 def run():
     users_by_id, reviews_by_userid, tips_by_userid, businesses = read_all()
-    # random_users = choose_sample(users_by_id, reviews_by_userid)
-    # write_stats(users_by_id, random_users, reviews_by_userid)
-    write_filtered(users_by_id, reviews_by_userid, tips_by_userid, businesses)
+    random_users = choose_sample(users_by_id, reviews_by_userid)
+    reviews_train, reviews_test = split_reviews(users_by_id, reviews_by_userid)
+
+    write_filtered(random_users, reviews_train, reviews_test, tips_by_userid, businesses)
 
 
 if __name__ == '__main__':
     run()
-
-
-
