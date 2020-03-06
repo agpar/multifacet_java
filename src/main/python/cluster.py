@@ -112,7 +112,11 @@ def run(single_path, pairwise_path, cluster_type, output_path, dists_in, dists_o
     if dists_out:
         np.save(dists_out[0], dist_arr)
 
-    clusters = kmeans.cluster(dist_arr, k, iters)
+    if k == 1:
+        clusters = np.array([0 for i in range(len(dist_arr))])
+    else:
+        clusters = kmeans.cluster(dist_arr, k, iters)
+
     with open(output_path, 'w') as f:
         f.write(json.dumps(clusters.tolist()))
     return clusters
