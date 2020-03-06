@@ -33,6 +33,7 @@ class TextToBinaryConverter:
                     id_arr[i][j] = int(line[id_index])
                 arr[i] = list(map(TextVectorCombiner.to_float, line[id_indexes[-1] + 1:]))
                 t.update()
+            t.close()
 
             # sort on the first id
             if sort:
