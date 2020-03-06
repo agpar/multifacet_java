@@ -31,7 +31,7 @@ class ClusterClassifier:
         self.cluster_labels = cluster_labels
         self.combiner = combiner
         self.trainer = trainer
-        self.NUM_CLUSTERS = len(set(self.cluster_labels))
+        self.NUM_CLUSTERS = max(cluster_labels) + 1
         self.clusters = []
         self.user_clusters = {}
         self.classifiers = []
