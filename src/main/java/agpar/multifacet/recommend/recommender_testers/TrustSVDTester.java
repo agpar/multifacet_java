@@ -5,6 +5,7 @@ import agpar.multifacet.recommend.RecommenderTester;
 import agpar.multifacet.recommend.data_sharing.SharedDataModel;
 import net.librec.common.LibrecException;
 import net.librec.data.DataModel;
+import net.librec.data.model.TextDataModel;
 import net.librec.math.algorithm.Randoms;
 import net.librec.recommender.Recommender;
 import net.librec.recommender.RecommenderContext;
@@ -33,7 +34,7 @@ public class TrustSVDTester extends RecommenderTester {
     @Override
     protected Recommender learnImplementation() throws LibrecException {
         // build data model
-        DataModel dataModel = new SharedDataModel(conf);
+        DataModel dataModel = new TextDataModel(conf);
         dataModel.buildDataModel();
 
         // set recommendation context

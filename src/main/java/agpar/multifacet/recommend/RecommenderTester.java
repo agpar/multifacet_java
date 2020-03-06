@@ -16,20 +16,24 @@ public abstract class RecommenderTester {
     protected String baseExperimentDir;
     protected String experimentName;
     protected String experimentDir;
-    protected String ratingFile;
+    protected String ratingTrainFile;
+    protected String ratingTestFile;
     protected String socialFile;
     protected long randomSeed;
     public Configuration conf = new Configuration();
 
-    public  HashMap<String, Double> learn(String experimentDir, String experimentName, String ratingFile, String socialFile) throws LibrecException {
+    public  HashMap<String, Double> learn(String experimentDir, String experimentName, String ratingTrainFile, String ratingTestFile, String socialFile) throws LibrecException {
         this.baseExperimentDir = experimentDir;
         this.experimentName = experimentName;
         this.experimentDir = Path.of(experimentDir, experimentName).toString();
-        this.ratingFile = ratingFile;
+        this.ratingTrainFile = ratingTrainFile;
+        this.ratingTestFile = ratingTestFile;
         this.socialFile = socialFile;
 
         conf.set("dfs.data.dir", this.baseExperimentDir);
-        conf.set("data.input.path", this.ratingFile);
+        conf.set("data.input.path", this.ratingTrainFile + " " + this.ratingTestFile);
+        conf.set("data.testset.path", this.ratingTestFile);
+        conf.set("data.model.splitter", "net.librec.data.splitter.GivenTestSetDataSplitter");
         conf.set("data.appender.path", this.socialFile);
         conf.set("data.appender.class", "net.librec.data.convertor.appender.SocialDataAppender");
 

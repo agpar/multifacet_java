@@ -131,7 +131,7 @@ def read_data(user_range=(0, settings.DATA_NUM_USERS), read_sample=settings.DATA
     if not read_sample:
         USERS_FILE = path.join(settings.YELP_DATA_DIR, 'user_filtered.json')
         BUSINESS_FILE = path.join(settings.YELP_DATA_DIR, 'business_filtered.json')
-        REVIEW_FILE = path.join(settings.YELP_DATA_DIR, 'review_filtered.json')
+        REVIEW_FILE = path.join(settings.YELP_DATA_DIR, 'review_train_filtered.json')
         TIP_FILE = path.join(settings.YELP_DATA_DIR, 'tip_filtered.json')
     else:
         USERS_FILE = path.join(settings.YELP_DATA_DIR, 'user_sample.json')

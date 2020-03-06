@@ -7,6 +7,7 @@ import net.librec.conf.Configured;
 import net.librec.data.DataConvertor;
 import net.librec.data.DataModel;
 import net.librec.data.model.AbstractDataModel;
+import net.librec.data.splitter.GivenTestSetDataSplitter;
 import net.librec.math.structure.DataSet;
 import org.apache.commons.lang.StringUtils;
 
@@ -48,8 +49,9 @@ public class SharedDataModel extends AbstractDataModel implements DataModel {
         int splitNum = conf.getInt("data.splitter.cv.number", 5);
         conf.setInt("data.splitter.cv.number", splitNum);
 
-        dataSplitter = SharedRatioDataSplitter.getInstance(dataConvertor, conf);
+        //dataSplitter = SharedRatioDataSplitter.getInstance(dataConvertor, conf);
         //dataSplitter = ThreadSafeKCVDataSplitter.getInstance(splitIndex, splitNum,  dataConvertor, conf);
+        dataSplitter = new GivenTestSetDataSplitter(dataConvertor, conf);
 
         dataSplitter.splitData();
         trainDataSet = dataSplitter.getTrainData();

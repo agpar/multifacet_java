@@ -10,7 +10,8 @@ import java.nio.file.Path;
 import java.util.HashMap;
 
 public class Experiment implements Runnable {
-    private final static String expectedRatingFileName = "rating_tuples.txt";
+    private final static String expectedRatingTrainFileName = "ratings_train.txt";
+    private final static String expectedRatingTestFileName = "ratings_test.txt";
     private RecommenderTester recommender;
     private ExperimentDescription description;
     private ResultWriter resultWriter;
@@ -31,31 +32,31 @@ public class Experiment implements Runnable {
     }
 
     private void checkForNecessaryInputFiles() {
-        if (!this.predictionsFileExists())
+        if (!Files.exists(this.predictionsFilePath()))
         {
             throw new ExperimentException("Prediction file not found at expected path: " +
                     this.predictionsFilePath());
         }
-        if (!this.ratingFileExists()) {
-            throw new ExperimentException("Rating file not found at expected path: " +
-                    this.ratingFilePath());
+        if (!Files.exists(this.ratingTrainFilePath())) {
+            throw new ExperimentException("Rating train file not found at expected path: " +
+                    this.ratingTrainFilePath());
+        }
+        if (!Files.exists(this.ratingTestFilePath())) {
+            throw new ExperimentException("Rating test file not found at expected path: " +
+                    this.ratingTestFilePath());
         }
     }
 
-    private boolean predictionsFileExists() {
-        return Files.exists(Path.of(this.predictionsFilePath()));
-    }
-
-    private String predictionsFilePath() {
-        return Path.of(this.description.getExperimentDir(), description.getPredictionFile()).toString();
+    private Path predictionsFilePath() {
+        return Path.of(this.description.getExperimentDir(), description.getPredictionFile());
     };
 
-    private boolean ratingFileExists() {
-        return Files.exists(Path.of(this.ratingFilePath()));
+    private Path ratingTrainFilePath() {
+        return Path.of(this.description.getExperimentDir(), expectedRatingTrainFileName);
     }
 
-    private String ratingFilePath() {
-        return Path.of(this.description.getExperimentDir(), expectedRatingFileName).toString();
+    private Path ratingTestFilePath() {
+        return Path.of(this.description.getExperimentDir(), expectedRatingTestFileName);
     }
 
     private void runExperiment() {
@@ -63,6 +64,7 @@ public class Experiment implements Runnable {
         try {
             description.addResults(this.evaluatePredictions());
             resultWriter.writeResults(String.format("%s\n", description.toJson()));
+            resultWriter.flush();
         } catch (LibrecException e) {
             System.out.println("Recommender system failed.");
             throw new ExperimentException(e);
@@ -82,8 +84,9 @@ public class Experiment implements Runnable {
         return this.recommender.learn(
                 this.description.getExperimentDir(),
                 this.description.getExperimentName(),
-                Path.of(this.ratingFilePath()).getFileName().toString(),
-                Path.of(this.predictionsFilePath()).getFileName().toString()
+                this.ratingTrainFilePath().getFileName().toString(),
+                this.ratingTestFilePath().getFileName().toString(),
+                this.predictionsFilePath().getFileName().toString()
         );
     }
 }
