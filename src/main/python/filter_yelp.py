@@ -20,6 +20,7 @@ user in any matrix in later processing.
 
 MIN_USER_REVIEWS = 20
 NUM_USERS = 40000
+LEAVE_OUT = 4
 BUSINESS_FILE = path.join(settings.YELP_DATA_DIR, 'business.json')
 REVIEW_FILE = path.join(settings.YELP_DATA_DIR, 'review.json')
 USER_FILE = path.join(settings.YELP_DATA_DIR, 'user.json')
@@ -78,16 +79,18 @@ def choose_sample(users_by_id, reviews_by_userid):
 
     return random_users_by_id
 
+
 def split_reviews(users_by_id, reviews_by_userid):
     train_reviews = []
     test_reviews = []
     for user_id in users_by_id.keys():
         user_reviews = reviews_by_userid[user_id]
-        test_review = np.random.choice(user_reviews)
-        test_reviews.append(test_review)
+        user_withheld_reviews = np.random.choice(user_reviews, LEAVE_OUT, replace=False)
+        test_reviews.extend(user_withheld_reviews)
+        user_withheld_review_ids = set([r['review_id'] for r in user_withheld_reviews])
         for review in user_reviews:
-            if review['review_id'] != test_review['review_id']:
-                train_reviews.apend(review)
+            if review['review_id'] not in user_withheld_review_ids:
+                train_reviews.append(review)
     return train_reviews, test_reviews
 
 
@@ -172,7 +175,7 @@ def plot_review_counts(user_ids, reviews_by_userid):
 def run():
     users_by_id, reviews_by_userid, tips_by_userid, businesses = read_all()
     random_users = choose_sample(users_by_id, reviews_by_userid)
-    reviews_train, reviews_test = split_reviews(users_by_id, reviews_by_userid)
+    reviews_train, reviews_test = split_reviews(random_users, reviews_by_userid)
 
     write_filtered(random_users, reviews_train, reviews_test, tips_by_userid, businesses)
 
