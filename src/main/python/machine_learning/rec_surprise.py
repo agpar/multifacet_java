@@ -4,20 +4,28 @@ import numpy as np
 from scipy.sparse import coo_matrix
 from surprise import Reader, Dataset
 from surprise. model_selection import PredefinedKFold
-from surprise import accuracy
 from surprise.similarities import pearson
 import os
-from multiprocessing import Pool
+import pickle
+
+TRAIN_FILE = 'surprise_train.pickle'
+TEST_FILE = 'surprise_test.pickle'
+SIM_FILE = 'surprise_sims.npy'
 
 
 class MauroU2UCF(KNNWithMeans):
-    def __init__(self, beta=0.1, trust_mat=None, **kwargs):
+    def __init__(self, beta=0.1, trust_mat=None, sims=None, **kwargs):
         super().__init__(**kwargs)
         self.beta = beta
         self.trust_mat = trust_mat
+        self.precomputed_sims = sims
 
     def compute_similarities(self):
-        sims = super().compute_similarities()
+        if self.precomputed_sims is not None:
+            sims = self.precomputed_sims
+        else:
+            sims = super().compute_similarities()
+
         # Assert inner ids are equiv to outer ids.
         for i in range(sims.shape[0]):
             assert(i == int(self.trainset.to_raw_uid(i)))
@@ -65,7 +73,7 @@ class SparseTrustMatrix:
         return self.mat.getrow(i)
 
 
-def perform_precomputation(experiment_dir):
+def precompute_data(experiment_dir):
     rating_train_path = os.path.join(experiment_dir, 'ratings_train.txt')
     rating_test_path = os.path.join(experiment_dir, 'ratings_test.txt')
     ratings_reader = Reader(line_format="user item rating", sep=' ')
@@ -80,57 +88,21 @@ def perform_precomputation(experiment_dir):
     return trainset, testset, sims
 
 
-def evaluate_links(experiment_dir, trust_file, **kwargs):
-    trust_path = os.path.join(experiment_dir, trust_file)
-    trust_mat = SparseTrustMatrix(trust_path)
+def dump_precomputed_data(experiment_dir, train, test, sims):
+    with open(os.path.join(experiment_dir, TRAIN_FILE), 'wb') as f:
+        pickle.dump(train, f)
 
-    rating_train_path = os.path.join(experiment_dir, 'ratings_train.txt')
-    rating_test_path = os.path.join(experiment_dir, 'ratings_test.txt')
-    ratings_reader = Reader(line_format="user item rating", sep=' ')
-    dataset = Dataset.load_from_folds([(rating_train_path, rating_test_path)], ratings_reader)
-    pkf = PredefinedKFold()
-    trainset, testset = list(pkf.split(dataset))[0]
+    with open(os.path.join(experiment_dir, TEST_FILE), 'wb') as f:
+        pickle.dump(test, f)
 
-    beta = kwargs.get('beta', 0.1)
-    k = kwargs.get('k', 50)
-
-    algo = MauroU2UCF(beta=beta, trust_mat=trust_mat, k=k, sim_options={'name':'msd', 'min_support':3} )
-    fitted_algo = algo.fit(trainset)
-    predictions = fitted_algo.test(testset)
-    return {
-        "MAE": accuracy.mae(predictions),
-        "RMSE": accuracy.rmse(predictions),
-        "predictions": predictions
-    }
+    np.save(os.path.join(experiment_dir, SIM_FILE), sims)
 
 
-def evaluate_all_links(experiment_dir, trust_files, **kwargs):
-    # Assert all files exist:
-    for trust_file in trust_files:
-        full_path = os.path.join(experiment_dir, trust_file)
-        if not os.path.exists(full_path):
-            raise Exception(f"Prediction file does not exist: {full_path}")
+def load_precomputed_data(experiment_dir):
+    with open(os.path.join(experiment_dir, TRAIN_FILE), 'rb') as f:
+        train = pickle.load(f)
+    with open(os.path.join(experiment_dir, TEST_FILE), 'rb') as f:
+        test = pickle.load(f)
+    sims = np.load(os.path.join(experiment_dir, SIM_FILE))
+    return train, test, sims
 
-    beta = kwargs.get('beta', 0.1)
-    k = kwargs.get('k', 50)
-    pool_args = []
-    pool_kwargs = []
-
-    for trust_file in trust_files:
-        pool_args.append((experiment_dir, trust_file))
-        pool_kwargs.append({'beta': beta, 'k': k})
-
-    pool = Pool()
-    results = []
-    for args, kwargs in zip(pool_args, pool_kwargs):
-        exp_name = "_".join(map(str, (args[1], kwargs['beta'], kwargs['k'])))
-        results.append((exp_name, pool.apply_async(evaluate_links, args=args, kwds=kwargs)))
-
-    pool.close()
-    all_results = []
-    for exp_name, res in results:
-        exp_results = res.get()
-        all_results.append((exp_name, exp_results))
-    pool.join()
-
-    return all_results
