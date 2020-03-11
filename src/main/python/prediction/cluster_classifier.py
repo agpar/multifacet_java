@@ -102,6 +102,15 @@ class ClusterClassifier:
 
         return clf.predict(lines)
 
+    def predict_proba(self, user_id, lines):
+        clf_idx = self.user_clusters[user_id]
+        clf = self.classifiers[clf_idx]
+        if clf is None:
+            clf = self.overall_classifier
+        pos_class_idx = list(clf.classes_).index(1)
+
+        return [c[pos_class_idx] for c in clf.predict_proba(lines)]
+
     def get_clf(self, i):
         if self.classifiers[i] is not None:
             return self.classifiers[i]

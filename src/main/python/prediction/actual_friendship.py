@@ -2,6 +2,11 @@ from prediction.classifier_trainer import ClassifierTrainer
 from data_set import DataSet
 
 
+def inf_stream(element):
+    while True:
+        yield element
+
+
 class FriendPredictor:
     def __init__(self, friend_index):
         self.friend_index = friend_index
@@ -11,6 +16,13 @@ class FriendPredictor:
         for pair in pairs:
             predictions.append(int(pair[self.friend_index]))
         return predictions
+
+    def predict_proba(self, pairs):
+        return list(zip(inf_stream(0), self.predict(pairs)))
+
+    @property
+    def classes_(self):
+        return [0, 1]
 
 
 class RealFriendTrainer(ClassifierTrainer):

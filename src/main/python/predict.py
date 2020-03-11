@@ -11,14 +11,19 @@ from vector_combiners import *
 from vector_combiners.vector_combiner_builder import VectorCombinerBuilder
 
 
-def write_predictions(stream, clf, path):
+def write_predictions(stream, clf, path, predict_proba=True):
     with open(path, 'w') as f:
         for pair in stream:
             pair_ids, pair_vect = pair
             user1_id, user2_id = pair_ids
-            pred1 = int(clf.predict(user1_id, [pair_vect])[0])
-            if pred1:
-                f.write(f"{user1_id} {user2_id} {pred1}\n")
+            if predict_proba:
+                pred1 = clf.predict_proba(user1_id, [pair_vect])[0]
+                if pred1 > 0.5:
+                    f.write(f"{user1_id} {user2_id} {pred1}\n")
+            else:
+                pred1 = int(clf.predict(user1_id, [pair_vect])[0])
+                if pred1:
+                    f.write(f"{user1_id} {user2_id} {pred1}\n")
 
 
 def run(single_path, pairwise_path, output_path, cluster_path, target):
@@ -41,12 +46,18 @@ def run(single_path, pairwise_path, output_path, cluster_path, target):
         print(f"Unknown target of prediction: {target}")
         exit(1)
 
-    classifier.SINGLE_PATH = single_path
-    classifier.PAIRWISE_PATH = pairwise_path
-    classifier.fit()
-
     output_dir = "/".join(output_path.split("/")[:-1])
     model_name = output_path.split("/")[-1].split('.')[0] + "_model"
+
+    if os.path.exists(os.path.join(output_dir, model_name)):
+        print("Reusing dumped classifier.")
+        with open(os.path.join(output_dir, model_name), 'rb') as f:
+            classifier = pickle.load(f)
+    else:
+        classifier.SINGLE_PATH = single_path
+        classifier.PAIRWISE_PATH = pairwise_path
+        classifier.fit()
+
     with open(os.path.join(output_dir, model_name), 'wb') as f:
         pickle.dump(classifier, f)
 
