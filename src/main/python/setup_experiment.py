@@ -165,45 +165,27 @@ def run(experiment_dir=None, data_set=None, skipto=None):
         generate_pairwise(data_set, pairwise_path)
         TextToBinaryConverter(pairwise_path).convert()
 
-
     pcc_dist_matrix_path = os.path.join(experiment_dir, "pcc_dists.npy")
     social_dist_matrix_path = os.path.join(experiment_dir, "social_dists.npy")
     if should_run_step("dists", step_to_skip_to):
         print("Saving dist matrices...")
-        pcc_dist_matrix = cluster.gen_dist_matrix(single_path, pairwise_path, "pcc")
+        pcc_dist_matrix = cluster.gen_sim_matrix(single_path, pairwise_path, "pcc")
         np.save(pcc_dist_matrix_path, pcc_dist_matrix)
 
-        social_dist_matrix = cluster.gen_dist_matrix(single_path, pairwise_path, "social")
+        social_dist_matrix = cluster.gen_sim_matrix(single_path, pairwise_path, "social")
         np.save(social_dist_matrix_path, social_dist_matrix)
-
-    k_pcc_path = os.path.join(experiment_dir, "k_pcc_results.json")
-    k_social_path = os.path.join(experiment_dir, "k_social_results.json")
-    if should_run_step('choose_k', step_to_skip_to):
-        print("Determining optimal cluster count...")
-        k_goodness_pcc = choose_k(clusteroid_kmeans.cluster, pcc_dist_matrix_path, range(10, 100), 20, eval_silhouette)
-        with open(k_pcc_path, 'w') as f:
-            json.dump(k_goodness_pcc, f)
-
-        k_goodness_social = choose_k(clusteroid_kmeans.cluster, social_dist_matrix_path, range(10, 100), 20, eval_silhouette)
-        with open(k_social_path, 'w') as f:
-            json.dump(k_goodness_social, f)
 
     pcc_cluster_path = os.path.join(experiment_dir, "pcc_clusters.json")
     social_cluster_path = os.path.join(experiment_dir, "social_clusters.json")
     if should_run_step("cluster", step_to_skip_to):
-        print("Generating clusters...")
-        with open(k_pcc_path, 'r') as f:
-            k_goodness_pcc = json.load(f)
-        with open(k_social_path, 'r') as f:
-            k_goodness_social = json.load(f)
-        cluster.run(single_path, pairwise_path, "pcc", pcc_cluster_path, [pcc_dist_matrix_path], None, k_goodness_pcc[0][0], 60)
-        cluster.run(single_path, pairwise_path, "social", social_cluster_path, [social_dist_matrix_path], None, k_goodness_social[0][0], 60)
+        cluster.run(single_path, pairwise_path, "pcc", pcc_cluster_path, [pcc_dist_matrix_path], None, 30, 60)
+        cluster.run(single_path, pairwise_path, "social", social_cluster_path, [social_dist_matrix_path], None, 30, 60)
 
     if should_run_step("predict", step_to_skip_to):
         print("Running all predictions in parallel.")
         generate_predictions(experiment_dir, single_bin, pairwise_bin, pcc_cluster_path, social_cluster_path)
 
-    rating_tuple_path = os.path.join(experiment_dir, "rating_tuples.txt")
+    rating_tuple_path = experiment_dir
     generate_rating_tuples(data_set, rating_tuple_path)
 
 
