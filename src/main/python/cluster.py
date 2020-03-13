@@ -119,7 +119,7 @@ def run(single_path, pairwise_path, cluster_type, output_path, sims_in, sims_out
         sparse.save_npz(sims_out[0], sim_arr)
 
     if k == 1:
-        clusters = np.array([0 for i in range(len(sim_arr))])
+        clusters = np.array([0 for i in range(sim_arr.shape[0])])
     else:
         dist_arr = sims_to_dists(sim_arr)
         clusters = kmeans.cluster(dist_arr, k, iters)
