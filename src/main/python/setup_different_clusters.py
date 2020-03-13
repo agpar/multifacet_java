@@ -12,10 +12,7 @@ def cluster_and_predict(step_to_skip_to, experiment_dir, single_path, pairwise_p
 
 
 def run(experiment_dir=None, data_set=None, skipto=None, krange=None):
-    if skipto is None:
-        step_to_skip_to = SETUP_STEPS.index("filter")
-    else:
-        step_to_skip_to = SETUP_STEPS.index(skipto)
+    step_to_skip_to = parse_skipto(skipto)
 
     data_set = DataSetEnum(data_set)
     if data_set.IS_EPINIONS:
@@ -26,46 +23,35 @@ def run(experiment_dir=None, data_set=None, skipto=None, krange=None):
     if not os.path.exists(experiment_dir):
         os.makedirs(experiment_dir, exist_ok=True)
 
+    paths = generate_paths(experiment_dir)
     delete_files_to_recreate(experiment_dir, step_to_skip_to)
 
     if should_run_step("filter", step_to_skip_to):
         print("Filtering data...")
         filter_data(data_set)
 
-    single_path = os.path.join(experiment_dir, "single_feats.csv")
-    single_bin = single_path.replace('.csv', '.npz')
     if should_run_step("single", step_to_skip_to):
         print("Generating single user data...")
-        generate_single(data_set, single_path)
-        TextToBinaryConverter(single_path).convert()
+        generate_single(data_set, paths)
 
-    pairwise_path = os.path.join(experiment_dir, "pairwise_feats.csv")
-    pairwise_bin = pairwise_path.replace('.csv', '.npz')
     if should_run_step("pairwise", step_to_skip_to):
         print("Generating pairwise...")
-        generate_pairwise(data_set, pairwise_path)
-        TextToBinaryConverter(pairwise_path).convert()
+        generate_pairwise(data_set, paths['pairwise_path'])
 
-    pcc_sim_matrix_path = os.path.join(experiment_dir, "pcc_sims.npz")
-    social_sim_matrix_path = os.path.join(experiment_dir, "social_sims.npz")
     if should_run_step("dists", step_to_skip_to):
         print("Saving dist/sim matrices...")
-        pcc_sim_matrix = cluster.gen_sim_matrix(single_path, pairwise_path, "pcc")
-        sparse.save_npz(pcc_sim_matrix_path, pcc_sim_matrix)
-
-        social_sim_matrix = cluster.gen_sim_matrix(single_path, pairwise_path, "social")
-        sparse.save_npz(social_sim_matrix_path, social_sim_matrix)
+        generate_dists(paths)
 
     pool = Pool(8)
     for k in krange:
         args = (
             step_to_skip_to,
             experiment_dir,
-            single_path,
-            pairwise_path,
-            single_bin,
-            pairwise_bin,
-            social_sim_matrix_path,
+            paths['single_pathpaths['],
+            paths['pairwise_path'],
+            paths['single_bin'],
+            paths['pairwise_bin'],
+            paths['social_sim_matrix_path'],
             k)
         pool.apply_async(cluster_and_predict, args=args)
     pool.close()

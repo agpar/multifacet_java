@@ -67,33 +67,48 @@ def filter_data(data_set: DataSetEnum):
         filter_epinions.run()
 
 
-def generate_single(data_set: DataSetEnum, output_path):
+def generate_single(data_set: DataSetEnum, paths):
     if data_set.IS_EPINIONS:
         executable = os.path.join(MULTIFACET_ROOT, "run.sh")
-        os.system(f"{executable} --genSingle --epinions {output_path}")
+        os.system(f"{executable} --genSingle --epinions {paths['single_path']}")
     else:
         executable = os.path.join(MULTIFACET_ROOT, "src/main/python/generate_single_vects.py")
-        os.system(f"python3 {executable} 0 1000000 {output_path}")
+        os.system(f"python3 {executable} 0 1000000 {paths['single_path']}")
+    TextToBinaryConverter(paths['single_path']).convert()
 
 
-def generate_pairwise(data_set: DataSetEnum, output_path):
+def generate_pairwise(data_set: DataSetEnum, paths):
     executable = os.path.join(MULTIFACET_ROOT, "run.sh")
     if data_set.IS_EPINIONS:
-        os.system(f"{executable} --genPairs --epinions {output_path}")
+        os.system(f"{executable} --genPairs --epinions {paths['pairwise_path']}")
     else:
-        os.system(f"{executable} --genPairs {output_path}")
+        os.system(f"{executable} --genPairs {paths['pairwise_path']}")
+    TextToBinaryConverter(paths['pairwise_path']).convert()
 
 
-def generate_predictions(experiment_dir, single_path, pairwise_path, pcc_cluster_path, social_cluster_path):
-    base_args = (single_path, pairwise_path)
+def generate_dists(paths):
+    pcc_dist_matrix = cluster.gen_sim_matrix(paths['single_path'], paths['pairwise_path'], "pcc")
+    sparse.save_npz(paths['pcc_sim_matrix_path'], pcc_dist_matrix)
+
+    social_dist_matrix = cluster.gen_sim_matrix(paths['single_path'], paths['pairwise_path'], "social")
+    sparse.save_npz(paths['social_sim_matrix_path'], social_dist_matrix)
+
+
+def generate_clusters(paths):
+    cluster.run(paths['single_path'], paths['pairwise_path'], "pcc", paths['pcc_cluster_path'], [paths['pcc_sim_matrix_path']], None, 30, 60)
+    cluster.run(paths['single_path'], paths['pairwise_path'], "social", paths['social_cluster_path'], [paths['social_sim_matrix_path']], None, 30, 60)
+
+
+def generate_predictions(experiment_dir, paths):
+    base_args = (paths['single_path'], paths['pairwise_path'])
     prediction_tasks = [
         (os.path.join(experiment_dir, "global_pcc_predictions.txt"), None, "pcc"),
         (os.path.join(experiment_dir, "global_social_predictions.txt"), None, "friend"),
         (os.path.join(experiment_dir, "global_real_friends.txt"), None, "realfriend"),
-        (os.path.join(experiment_dir, "pcc_clustered_pcc_predictions.txt"), [pcc_cluster_path], "pcc"),
-        (os.path.join(experiment_dir, "pcc_clustered_social_predictions.txt"), [pcc_cluster_path], "friend"),
-        (os.path.join(experiment_dir, "social_clustered_pcc_predictions.txt"), [social_cluster_path], "pcc"),
-        (os.path.join(experiment_dir, "social_clustered_social_predictions.txt"), [social_cluster_path], "friend")
+        (os.path.join(experiment_dir, "pcc_clustered_pcc_predictions.txt"), [paths['pcc_cluster_path']], "pcc"),
+        (os.path.join(experiment_dir, "pcc_clustered_social_predictions.txt"), [paths['pcc_cluster_path']], "friend"),
+        (os.path.join(experiment_dir, "social_clustered_pcc_predictions.txt"), [paths['social_cluster_path']], "pcc"),
+        (os.path.join(experiment_dir, "social_clustered_social_predictions.txt"), [paths['social_cluster_path']], "friend")
     ]
 
     processes = []
@@ -128,11 +143,28 @@ def should_run_step(step_name, skip_to):
     return SETUP_STEPS.index(step_name) >= skip_to
 
 
-def run(experiment_dir=None, data_set=None, skipto=None):
+def generate_paths(experiment_dir):
+    return {
+        "single_path": os.path.join(experiment_dir, "single_feats.csv"),
+        "single_bin": os.path.join(experiment_dir, "single_feats.csv").replace('.csv', '.npz'),
+        "pairwise_path": os.path.join(experiment_dir, "pairwise_feats.csv"),
+        "pairwise_bin": os.path.join(experiment_dir, "pairwise_feats.csv").replace('.csv', '.npz'),
+        "pcc_sim_matrix_path": os.path.join(experiment_dir, "pcc_sims.npz"),
+        "social_sim_matrix_path": os.path.join(experiment_dir, "social_sims.npz"),
+        "pcc_cluster_path": os.path.join(experiment_dir, "pcc_clusters.json"),
+        "social_cluster_path": os.path.join(experiment_dir, "social_clusters.json")
+    }
+
+
+def parse_skipto(skipto):
     if skipto is None:
-        step_to_skip_to = SETUP_STEPS.index("filter")
+        return SETUP_STEPS.index("filter")
     else:
-        step_to_skip_to = SETUP_STEPS.index(skipto)
+        return  SETUP_STEPS.index(skipto)
+
+
+def run(experiment_dir=None, data_set=None, skipto=None):
+    step_to_skip_to = parse_skipto(skipto)
 
     data_set = DataSetEnum(data_set)
     if data_set.IS_EPINIONS:
@@ -143,48 +175,35 @@ def run(experiment_dir=None, data_set=None, skipto=None):
     if not os.path.exists(experiment_dir):
         os.makedirs(experiment_dir, exist_ok=True)
 
+    paths = generate_paths(experiment_dir)
     delete_files_to_recreate(experiment_dir, step_to_skip_to)
 
     if should_run_step("filter", step_to_skip_to):
         print("Filtering data...")
         filter_data(data_set)
 
-    single_path = os.path.join(experiment_dir, "single_feats.csv")
-    single_bin = single_path.replace('.csv', '.npz')
     if should_run_step("single", step_to_skip_to):
         print("Generating single user data...")
-        generate_single(data_set, single_path)
-        TextToBinaryConverter(single_path).convert()
+        generate_single(data_set, paths)
 
-    pairwise_path = os.path.join(experiment_dir, "pairwise_feats.csv")
-    pairwise_bin = pairwise_path.replace('.csv', '.npz')
     if should_run_step("pairwise", step_to_skip_to):
         print("Generating pairwise...")
-        generate_pairwise(data_set, pairwise_path)
-        TextToBinaryConverter(pairwise_path).convert()
+        generate_pairwise(data_set, paths['pairwise_path'])
 
-    pcc_sim_matrix_path = os.path.join(experiment_dir, "pcc_sims.npz")
-    social_sim_matrix_path = os.path.join(experiment_dir, "social_sims.npz")
     if should_run_step("dists", step_to_skip_to):
         print("Saving dist/sim matrices...")
-        pcc_dist_matrix = cluster.gen_sim_matrix(single_path, pairwise_path, "pcc")
-        sparse.save_npz(pcc_sim_matrix_path, pcc_dist_matrix)
+        generate_dists(paths)
 
-        social_dist_matrix = cluster.gen_sim_matrix(single_path, pairwise_path, "social")
-        sparse.save_npz(social_sim_matrix_path, social_dist_matrix)
-
-    pcc_cluster_path = os.path.join(experiment_dir, "pcc_clusters.json")
-    social_cluster_path = os.path.join(experiment_dir, "social_clusters.json")
     if should_run_step("cluster", step_to_skip_to):
-        cluster.run(single_path, pairwise_path, "pcc", pcc_cluster_path, [pcc_sim_matrix_path], None, 30, 60)
-        cluster.run(single_path, pairwise_path, "social", social_cluster_path, [social_sim_matrix_path], None, 30, 60)
+        print("Generating clusters...")
 
     if should_run_step("predict", step_to_skip_to):
         print("Running all predictions in parallel.")
-        generate_predictions(experiment_dir, single_bin, pairwise_bin, pcc_cluster_path, social_cluster_path)
+        generate_predictions(experiment_dir, paths)
 
-    rating_tuple_path = experiment_dir
-    generate_rating_tuples(data_set, rating_tuple_path)
+    if should_run_step("tuple", step_to_skip_to):
+        rating_tuple_path = experiment_dir
+        generate_rating_tuples(data_set, rating_tuple_path)
 
 
 if __name__ == '__main__':
