@@ -8,14 +8,12 @@ import shutil
 from multiprocessing import Process
 
 import numpy as np
+from scipy import sparse
 
 import filter_yelp
 import filter_epinions
 import cluster
 import predict
-from clustering import clusteroid_kmeans
-from clustering.choose_k import choose_k
-from clustering.cluster_tools import eval_silhouette
 from vector_combiners.text_to_binary_converter import TextToBinaryConverter
 
 if "MULTIFACET_ROOT" not in os.environ:
@@ -27,7 +25,7 @@ SETUP_STEP_FILES = {
     'filter': [],
     'single': ['single_feats.csv'],
     'pairwise': ['pairwise_feats.csv'],
-    'dists':  ['pcc_dists.npy', 'social_dists.npy'],
+    'dists':  ['pcc_sims.npz', 'social_sims.npz'],
     'choose_k': ['k_pcc_results.json', 'k_social_results.json'],
     'cluster': ['pcc_clusters.json', 'social_clusters.json'],
     'predict': [
@@ -165,21 +163,21 @@ def run(experiment_dir=None, data_set=None, skipto=None):
         generate_pairwise(data_set, pairwise_path)
         TextToBinaryConverter(pairwise_path).convert()
 
-    pcc_dist_matrix_path = os.path.join(experiment_dir, "pcc_dists.npy")
-    social_dist_matrix_path = os.path.join(experiment_dir, "social_dists.npy")
+    pcc_sim_matrix_path = os.path.join(experiment_dir, "pcc_sims.npz")
+    social_sim_matrix_path = os.path.join(experiment_dir, "social_sims.npz")
     if should_run_step("dists", step_to_skip_to):
-        print("Saving dist matrices...")
+        print("Saving dist/sim matrices...")
         pcc_dist_matrix = cluster.gen_sim_matrix(single_path, pairwise_path, "pcc")
-        np.save(pcc_dist_matrix_path, pcc_dist_matrix)
+        sparse.save_npz(pcc_sim_matrix_path, pcc_dist_matrix)
 
         social_dist_matrix = cluster.gen_sim_matrix(single_path, pairwise_path, "social")
-        np.save(social_dist_matrix_path, social_dist_matrix)
+        sparse.save_npz(social_sim_matrix_path, social_dist_matrix)
 
     pcc_cluster_path = os.path.join(experiment_dir, "pcc_clusters.json")
     social_cluster_path = os.path.join(experiment_dir, "social_clusters.json")
     if should_run_step("cluster", step_to_skip_to):
-        cluster.run(single_path, pairwise_path, "pcc", pcc_cluster_path, [pcc_dist_matrix_path], None, 30, 60)
-        cluster.run(single_path, pairwise_path, "social", social_cluster_path, [social_dist_matrix_path], None, 30, 60)
+        cluster.run(single_path, pairwise_path, "pcc", pcc_cluster_path, [pcc_sim_matrix_path], None, 30, 60)
+        cluster.run(single_path, pairwise_path, "social", social_cluster_path, [social_sim_matrix_path], None, 30, 60)
 
     if should_run_step("predict", step_to_skip_to):
         print("Running all predictions in parallel.")
