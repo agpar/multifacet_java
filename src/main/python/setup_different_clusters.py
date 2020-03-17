@@ -2,13 +2,17 @@ from setup_experiment import *
 from multiprocessing import Pool
 
 
-def cluster_and_predict(step_to_skip_to, experiment_dir, single_path, pairwise_path, single_bin, pairwise_bin, social_sim_matrix_path, k):
-    social_cluster_path = os.path.join(experiment_dir, f"social_{k}_clusters.json")
+def cluster_and_predict(step_to_skip_to, experiment_dir, single_path, pairwise_path, single_bin, pairwise_bin, sim_matrix_path, k, cluster_type, predict_type):
+    cluster_path = os.path.join(experiment_dir, f"{cluster_type}_{k}_clusters.json")
     if should_run_step("cluster", step_to_skip_to):
-        cluster.run(single_path, pairwise_path, "social", social_cluster_path, [social_sim_matrix_path], None, k, 60)
+        cluster.run(single_path, pairwise_path, cluster_type, cluster_path, [sim_matrix_path], None, k, 60)
 
     if should_run_step("predict", step_to_skip_to):
-        predict.run(single_bin, pairwise_bin, os.path.join(f"social_clustered_{k}_social_predictions.txt"), [social_cluster_path], "friend")
+        predict.run(single_bin,
+                    pairwise_bin,
+                    os.path.join(experiment_dir, f"{cluster_type}_clustered_{k}_{predict_type}_predictions.txt"),
+                    [cluster_path],
+                    predict_type)
 
 
 def run(experiment_dir=None, data_set=None, skipto=None, krange=None):
@@ -47,12 +51,14 @@ def run(experiment_dir=None, data_set=None, skipto=None, krange=None):
         args = (
             step_to_skip_to,
             experiment_dir,
-            paths['single_pathpaths['],
+            paths['single_path'],
             paths['pairwise_path'],
             paths['single_bin'],
             paths['pairwise_bin'],
             paths['social_sim_matrix_path'],
-            k)
+            k,
+            'pcc',
+            'social')
         pool.apply_async(cluster_and_predict, args=args)
     pool.close()
     pool.join()
