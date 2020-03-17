@@ -7,7 +7,7 @@ import json
 from tools.id_index_map import IDIndexMap
 import numpy as np
 import math
-from collections import defaultdict, Counter
+from collections import Counter
 
 """
 Filter users. Only look at users who have rated at least MIN_REVIEWS restaurants. Pick
@@ -20,7 +20,7 @@ user in any matrix in later processing.
 
 MIN_USER_REVIEWS = 20
 NUM_USERS = 40000
-LEAVE_OUT = 4
+LEAVE_OUT = 0.2
 BUSINESS_FILE = path.join(settings.YELP_DATA_DIR, 'business.json')
 REVIEW_FILE = path.join(settings.YELP_DATA_DIR, 'review.json')
 USER_FILE = path.join(settings.YELP_DATA_DIR, 'user.json')
@@ -85,7 +85,7 @@ def split_reviews(users_by_id, reviews_by_userid):
     test_reviews = []
     for user_id in users_by_id.keys():
         user_reviews = reviews_by_userid[user_id]
-        user_withheld_reviews = np.random.choice(user_reviews, LEAVE_OUT, replace=False)
+        user_withheld_reviews = np.random.choice(user_reviews, int(LEAVE_OUT * len(user_reviews)), replace=False)
         test_reviews.extend(user_withheld_reviews)
         user_withheld_review_ids = set([r['review_id'] for r in user_withheld_reviews])
         for review in user_reviews:
