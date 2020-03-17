@@ -23,8 +23,8 @@ def evaluate_links(experiment_dir="", trust_file="", beta=0.1, k=50):
     predictions = fitted_algo.test(testset)
     return {
         "MAE": accuracy.mae(predictions),
+        "MSE": accuracy.mse(predictions),
         "RMSE": accuracy.rmse(predictions),
-        "predictions": predictions
     }
 
 
@@ -40,12 +40,7 @@ class Experiment:
         return "_".join(map(str, (self.trust_file, self.beta, self.k)))
 
     def to_dict(self):
-        return {
-            'experiment_dir': self.experiment_dir,
-            'trust_file': self.trust_file,
-            'beta': self.beta,
-            'k': self.k
-        }
+        return self.__dict__.copy()
 
 
 def evaluate_all_links(experiments, **kwargs):
@@ -55,10 +50,10 @@ def evaluate_all_links(experiments, **kwargs):
         if not os.path.exists(full_path):
             raise Exception(f"Prediction file does not exist: {full_path}")
 
-    pool = Pool()
+    pool = Pool(10)
     results = []
     for exp in experiments:
-        results.append((exp, pool.apply_async(evaluate_links, kwds=exp.to_dict())))
+        results.append((exp.to_dict(), pool.apply_async(evaluate_links, kwds=exp.to_dict())))
 
     pool.close()
     all_results = []
