@@ -57,8 +57,7 @@ class ClusterClassifier:
 
         # Compute the "general" classifier at the same time
         args.append((-1, ) + args_base)
-        # TODO it should take a random sample as much as possible.
-        kwargs.append({'numVects': 1_000_000})
+        kwargs.append({'numVects': 1_000_000_000})
         if settings.MULTIPROCESS_PREDICTIONS:
             self._train_with_pool(args, kwargs)
         else:
